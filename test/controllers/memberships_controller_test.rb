@@ -63,6 +63,59 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
     assert memberships(:film_owner).reload.owner?
   end
 
+  test "owner can remove a member" do
+    sign_in_as(users(:owner))
+
+    assert_difference("Membership.count", -1) do
+      delete organization_member_path(organizations(:film_society), memberships(:film_member))
+    end
+
+    assert_redirected_to organization_members_path(organizations(:film_society))
+  end
+
+  test "officer can remove a member" do
+    memberships(:film_member).update!(role: :officer)
+    new_member = User.create!(name: "Riley Chen", email_address: "riley@example.com", password: "password1234")
+    target = Membership.create!(organization: organizations(:film_society), user: new_member, role: :member)
+    sign_in_as(users(:member))
+
+    assert_difference("Membership.count", -1) do
+      delete organization_member_path(organizations(:film_society), target)
+    end
+  end
+
+  test "member cannot remove another member" do
+    sign_in_as(users(:member))
+
+    assert_no_difference("Membership.count") do
+      delete organization_member_path(organizations(:film_society), memberships(:film_owner))
+    end
+
+    assert_response :forbidden
+  end
+
+  test "non-member cannot remove an organization member" do
+    target = Membership.create!(organization: organizations(:garden_club), user: users(:owner), role: :owner)
+    sign_in_as(users(:member))
+
+    assert_no_difference("Membership.count") do
+      delete organization_member_path(organizations(:garden_club), target)
+    end
+
+    assert_response :not_found
+  end
+
+  test "last owner cannot be removed" do
+    sign_in_as(users(:owner))
+
+    assert_no_difference("Membership.count") do
+      delete organization_member_path(organizations(:film_society), memberships(:film_owner))
+    end
+
+    assert_redirected_to organization_members_path(organizations(:film_society))
+    assert memberships(:film_owner).reload.persisted?
+  end
+
   private
 
   def sign_in_as(user)

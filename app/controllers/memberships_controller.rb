@@ -1,7 +1,7 @@
 class MembershipsController < ApplicationController
   before_action :set_organization
   before_action :require_organization_membership
-  before_action :set_membership, only: :update
+  before_action :set_membership, only: %i[update destroy]
 
   def index
     @current_membership = current_user.memberships.find_by!(organization: @organization)
@@ -16,6 +16,20 @@ class MembershipsController < ApplicationController
 
     if MembershipRoleUpdater.new(membership: @membership, role: new_role).update
       redirect_to organization_members_path(@organization), notice: "#{@membership.user.name} is now #{@membership.role.humanize.downcase}."
+    else
+      redirect_to organization_members_path(@organization), alert: @membership.errors.full_messages.to_sentence
+    end
+  end
+
+  def destroy
+    policy = MembershipPolicy.new(current_user, @organization, @membership)
+    return head :forbidden unless policy.remove?
+
+    member_name = @membership.user.name
+    destination = @membership.user == current_user ? root_path : organization_members_path(@organization)
+
+    if MembershipRemover.new(membership: @membership).remove
+      redirect_to destination, notice: "#{member_name} was removed from #{@organization.name}."
     else
       redirect_to organization_members_path(@organization), alert: @membership.errors.full_messages.to_sentence
     end

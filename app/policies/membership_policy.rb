@@ -14,4 +14,10 @@ class MembershipPolicy
 
     []
   end
+
+  def remove?
+    return true if @actor&.owner?
+
+    @actor&.officer? && (@membership.coordinator? || @membership.member?)
+  end
 end

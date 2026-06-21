@@ -44,6 +44,11 @@
                 <% else %>
                   <span class="text-xs text-ink-soft">Managed by an owner</span>
                 <% end %>
+                <% if policy.remove? %>
+                  <%= button_to "Remove", organization_member_path(@organization, membership), method: :delete,
+                    class: "mt-2 text-xs font-bold text-brick underline decoration-brick/40 underline-offset-4",
+                    form: { data: { turbo_confirm: "Remove #{membership.user.name} from #{@organization.name}? This removes them from the roster." } } %>
+                <% end %>
               </td>
             <% end %>
           </tr>
