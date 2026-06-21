@@ -57,12 +57,38 @@
       </section>
 
       <section class="workspace-section">
-        <p class="eyebrow">Events</p>
-        <h2 class="mt-1 text-2xl font-semibold">Upcoming gatherings</h2>
-        <div class="mt-5 border-l-4 border-amber bg-amber-pale/45 px-4 py-3">
-          <p class="font-bold">No gatherings yet.</p>
-          <p class="mt-1 text-sm text-ink-soft">The first meeting will appear here when the organization calendar is ready.</p>
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="eyebrow">Events</p>
+            <h2 class="mt-1 text-2xl font-semibold">Upcoming gatherings</h2>
+          </div>
+          <% if @can_create_events %><%= link_to "Add gathering", new_organization_event_path(@organization), class: "button-secondary" %><% end %>
         </div>
+
+        <% if @upcoming_events.any? %>
+          <div class="mt-5 divide-y divide-rule border-y border-rule">
+            <% @upcoming_events.each do |event| %>
+              <article class="event-row">
+                <time class="event-date" datetime="<%= event.starts_at.iso8601 %>">
+                  <span class="text-xs font-bold text-moss-dark"><%= event.starts_at.strftime("%b") %></span>
+                  <span class="font-serif text-2xl font-semibold leading-none"><%= event.starts_at.day %></span>
+                </time>
+                <div class="min-w-0 flex-1">
+                  <h3 class="text-lg font-semibold"><%= link_to event.title, organization_event_path(@organization, event), class: "text-link" %></h3>
+                  <p class="mt-1 text-sm text-ink-soft"><%= event.starts_at.strftime("%A at %-I:%M %p") %><% if event.location.present? %> · <%= event.location %><% end %></p>
+                  <p class="mt-2 text-xs font-semibold text-ink-soft"><%= pluralize(event.attending_count, "member") %> attending<% if event.capacity.present? %> · <%= event.capacity %> spots<% end %></p>
+                </div>
+                <% if (rsvp = @dashboard_rsvps[event.id]) %><span class="role-tag"><%= rsvp.status.humanize %></span><% end %>
+              </article>
+            <% end %>
+          </div>
+          <p class="mt-4 text-sm font-bold"><%= link_to "See all gatherings →", organization_events_path(@organization), class: "text-link" %></p>
+        <% else %>
+          <div class="mt-5 border-l-4 border-amber bg-amber-pale/45 px-4 py-3">
+            <p class="font-bold">No gatherings yet.</p>
+            <p class="mt-1 text-sm text-ink-soft">Add the first meeting when your calendar is ready.</p>
+          </div>
+        <% end %>
       </section>
 
       <section class="workspace-section">

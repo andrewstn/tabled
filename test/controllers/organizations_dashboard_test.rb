@@ -16,7 +16,8 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: "What needs attention"
     assert_select "p", text: /members around the table/, count: 0
     assert_select ".member-row .role-tag", count: 2
-    assert_select "p", text: "No gatherings yet."
+    assert_select "h3", text: events(:upcoming_film_night).title
+    assert_select ".event-row .role-tag", text: "Maybe"
     assert_select "p", text: /The board is clear/
     assert_select "p", text: "Nothing needs follow-up right now."
     assert_select "p", text: "No notes in the log book yet."
@@ -32,6 +33,18 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
 
     assert_select "a[href=?]", new_organization_invitation_path(organizations(:film_society)), text: "Invite member"
     assert_select "a[href=?]", organization_invitations_path(organizations(:film_society)), text: "Pending invitations (1)"
+    assert_select "a[href=?]", new_organization_event_path(organizations(:film_society)), text: "Add gathering"
+  end
+
+  test "dashboard shows the gathering empty state from real data" do
+    organizations(:film_society).events.destroy_all
+    sign_in_as(users(:member))
+
+    get organization_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "p", text: "No gatherings yet."
+    assert_select "h3", text: "First Friday Film Night", count: 0
   end
 
   test "navigation lets a user switch organizations" do

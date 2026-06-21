@@ -22,6 +22,9 @@ class OrganizationsController < ApplicationController
     @membership = current_user.memberships.find_by!(organization: @organization)
     @can_manage_members = organization_policy.manage?
     @pending_invitation_count = @organization.invitations.pending.count if @can_manage_members
+    @upcoming_events = @organization.events.upcoming.includes(:rsvps).limit(3)
+    @dashboard_rsvps = @membership.rsvps.where(event: @upcoming_events).index_by(&:event_id)
+    @can_create_events = EventPolicy.new(current_user, @organization).create?
   end
 
   def edit
