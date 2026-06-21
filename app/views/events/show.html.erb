@@ -1,0 +1,91 @@
+<% content_for :title, "#{@event.title} · #{@organization.name} · Tabled" %>
+
+<article class="binder-page w-full">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span><%= link_to "Gatherings", organization_events_path(@organization), class: "text-link" %></span>
+    <span><%= @event.upcoming? ? "Upcoming" : "Past gathering" %></span>
+  </div>
+
+  <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <p class="eyebrow"><%= @event.starts_at.strftime("%A, %B %-d") %></p>
+    <h1 class="mt-2 max-w-4xl text-3xl font-semibold sm:text-4xl"><%= @event.title %></h1>
+    <p class="mt-3 text-sm text-ink-soft">Hosted by <%= @event.created_by.name %></p>
+  </header>
+
+  <div class="lg:grid lg:grid-cols-[1fr_19rem]">
+    <div class="divide-y divide-rule lg:border-r lg:border-rule">
+      <section class="workspace-section" aria-labelledby="gathering-details">
+        <div class="workspace-section-heading">
+          <p class="eyebrow">On the calendar</p>
+          <h2 id="gathering-details" class="mt-1 text-2xl font-semibold">Gathering details</h2>
+        </div>
+
+        <dl class="mt-6 grid gap-x-8 gap-y-5 sm:grid-cols-2">
+          <div>
+            <dt class="text-sm font-bold text-moss-dark">Starts</dt>
+            <dd class="mt-1 leading-6"><time datetime="<%= @event.starts_at.iso8601 %>"><%= @event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %></time></dd>
+          </div>
+          <% if @event.ends_at.present? %>
+            <div>
+              <dt class="text-sm font-bold text-moss-dark">Ends</dt>
+              <dd class="mt-1 leading-6"><time datetime="<%= @event.ends_at.iso8601 %>"><%= @event.ends_at.strftime("%A, %B %-d at %-I:%M %p") %></time></dd>
+            </div>
+          <% end %>
+          <% if @event.location.present? %>
+            <div>
+              <dt class="text-sm font-bold text-moss-dark">Location</dt>
+              <dd class="mt-1 leading-6"><%= @event.location %></dd>
+            </div>
+          <% end %>
+          <% if @event.capacity.present? %>
+            <div>
+              <dt class="text-sm font-bold text-moss-dark">Capacity</dt>
+              <dd class="mt-1 leading-6"><%= pluralize(@event.capacity, "spot") %></dd>
+            </div>
+          <% end %>
+          <% if @event.rsvp_deadline.present? %>
+            <div>
+              <dt class="text-sm font-bold text-moss-dark">RSVPs close</dt>
+              <dd class="mt-1 leading-6"><time datetime="<%= @event.rsvp_deadline.iso8601 %>"><%= @event.rsvp_deadline.strftime("%A, %B %-d at %-I:%M %p") %></time></dd>
+            </div>
+          <% end %>
+        </dl>
+
+        <% if @event.description.present? %>
+          <div class="mt-7 border-t border-rule pt-5">
+            <h3 class="text-lg font-semibold">Notes for members</h3>
+            <div class="mt-2 whitespace-pre-line leading-7 text-ink-soft"><%= @event.description %></div>
+          </div>
+        <% end %>
+      </section>
+
+      <section class="workspace-section" aria-labelledby="your-rsvp">
+        <div class="workspace-section-heading">
+          <p class="eyebrow">Your place</p>
+          <h2 id="your-rsvp" class="mt-1 text-2xl font-semibold">Your RSVP</h2>
+        </div>
+        <% if @rsvp %>
+          <p class="mt-5">You answered <span class="role-tag"><%= @rsvp.status.humanize %></span></p>
+          <% if @rsvp.note.present? %><p class="mt-3 text-sm leading-6 text-ink-soft"><%= @rsvp.note %></p><% end %>
+        <% else %>
+          <p class="mt-5 text-sm leading-6 text-ink-soft">You have not answered yet. RSVP choices will appear here.</p>
+        <% end %>
+      </section>
+    </div>
+
+    <aside class="border-t-2 border-ink/15 bg-paper-deep/35 lg:border-t-0">
+      <section class="p-5 sm:p-6">
+        <p class="eyebrow text-amber">Around the table</p>
+        <h2 class="mt-1 text-xl font-semibold">RSVP summary</h2>
+        <p class="mt-4 font-serif text-3xl font-semibold"><%= @event.attending_count %></p>
+        <p class="text-sm text-ink-soft"><%= "member".pluralize(@event.attending_count) %> attending<% if @event.capacity.present? %> of <%= @event.capacity %> spots<% end %></p>
+        <% if @event.full? %><p class="form-note mt-4">This gathering is full.</p><% end %>
+        <% if @event.rsvp_deadline_passed? %><p class="mt-4 text-sm font-bold text-brick">RSVPs are closed.</p><% end %>
+        <% if @event_policy.view_roster? %>
+          <p class="mt-5 border-t border-rule pt-4 text-sm text-ink-soft">Organizer access includes the full event roster.</p>
+        <% end %>
+      </section>
+    </aside>
+  </div>
+</article>

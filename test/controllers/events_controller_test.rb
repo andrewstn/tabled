@@ -23,6 +23,42 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "organization member can view a gathering" do
+    sign_in_as(users(:member))
+
+    get organization_event_path(organizations(:film_society), events(:upcoming_film_night))
+
+    assert_response :success
+    assert_select "h1", events(:upcoming_film_night).title
+    assert_select "h2", "Gathering details"
+    assert_select "h2", "Your RSVP"
+    assert_select ".role-tag", text: "Maybe"
+    assert_select "p", text: /Organizer access includes/, count: 0
+  end
+
+  test "organizer sees RSVP roster context" do
+    sign_in_as(users(:owner))
+
+    get organization_event_path(organizations(:film_society), events(:upcoming_film_night))
+
+    assert_response :success
+    assert_select "p", text: /Organizer access includes the full event roster/
+  end
+
+  test "non-member cannot view an organization gathering" do
+    sign_in_as(users(:member))
+    garden_event = Event.create!(
+      organization: organizations(:garden_club),
+      created_by: users(:owner),
+      title: "Garden work day",
+      starts_at: 1.week.from_now
+    )
+
+    get organization_event_path(organizations(:garden_club), garden_event)
+
+    assert_response :not_found
+  end
+
   private
 
   def sign_in_as(user)

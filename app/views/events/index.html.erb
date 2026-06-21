@@ -28,7 +28,7 @@
               <span class="font-serif text-2xl font-semibold leading-none"><%= event.starts_at.day %></span>
             </time>
             <div class="min-w-0 flex-1">
-              <h3 class="text-lg font-semibold"><%= event.title %></h3>
+              <h3 class="text-lg font-semibold"><%= link_to event.title, organization_event_path(@organization, event), class: "text-link" %></h3>
               <p class="mt-1 text-sm text-ink-soft">
                 <%= event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %>
                 <% if event.location.present? %> · <%= event.location %><% end %>
@@ -68,7 +68,7 @@
               <span class="font-serif text-2xl font-semibold leading-none"><%= event.starts_at.day %></span>
             </time>
             <div class="min-w-0 flex-1">
-              <h3 class="text-lg font-semibold"><%= event.title %></h3>
+              <h3 class="text-lg font-semibold"><%= link_to event.title, organization_event_path(@organization, event), class: "text-link" %></h3>
               <p class="mt-1 text-sm text-ink-soft"><%= event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %><% if event.location.present? %> · <%= event.location %><% end %></p>
             </div>
           </article>
