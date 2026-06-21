@@ -18,5 +18,6 @@ class InvitationMailerTest < ActionMailer::TestCase
     assert_match invitation.expires_at.to_date.to_fs(:long), mail.body.encoded
     acceptance_url = Rails.application.routes.url_helpers.invitation_acceptance_url(invitation.token, host: "example.com")
     assert_includes mail.text_part.body.decoded, acceptance_url
+    assert_includes mail.text_part.body.encoded, acceptance_url
   end
 end

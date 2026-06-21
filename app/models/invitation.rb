@@ -32,7 +32,8 @@ class Invitation < ApplicationRecord
   end
 
   def self.find_by_token(token)
-    find_by(token_digest: digest(token)) if token.present?
+    normalized_token = token.to_s.delete("=")
+    find_by(token_digest: digest(normalized_token)) if normalized_token.present?
   end
 
   def pending?
@@ -62,7 +63,7 @@ class Invitation < ApplicationRecord
   private
 
   def generate_token
-    @token = SecureRandom.urlsafe_base64(32)
+    @token = SecureRandom.urlsafe_base64(24)
     self.token_digest = self.class.digest(@token)
   end
 
