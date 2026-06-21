@@ -1,9 +1,36 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+demo_users = [
+  { name: "Avery Thompson", email_address: "demo-owner@example.test" },
+  { name: "Maya Patel", email_address: "maya.member@example.test" },
+  { name: "Theo Brooks", email_address: "theo.member@example.test" },
+  { name: "Nina Alvarez", email_address: "nina.member@example.test" }
+].to_h do |attributes|
+  user = User.find_or_initialize_by(email_address: attributes[:email_address]).tap do |user|
+    user.name = attributes[:name]
+    user.password = "tabled-demo-password" if user.new_record?
+    user.save!
+  end
+  [ attributes[:email_address], user ]
+end
+
+organization = Organization.find_or_initialize_by(slug: "buckeye-film-society")
+organization.update!(
+  name: "Buckeye Film Society",
+  description: "A campus table for watching, discussing, and making films together all semester."
+)
+
+roles_by_email = {
+  "demo-owner@example.test" => :owner,
+  "maya.member@example.test" => :officer,
+  "theo.member@example.test" => :coordinator,
+  "nina.member@example.test" => :member
+}
+
+roles_by_email.each do |email_address, role|
+  membership = Membership.find_or_initialize_by(
+    user: demo_users.fetch(email_address),
+    organization: organization
+  )
+  membership.update!(role: role)
+end
+
+puts "Seeded Buckeye Film Society. Sign in as demo-owner@example.test with tabled-demo-password."
