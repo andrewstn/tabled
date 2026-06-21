@@ -23,8 +23,31 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="min-h-screen bg-paper text-ink antialiased">
+    <header class="border-b border-rule bg-paper-deep/80">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+        <%= link_to root_path, class: "flex items-center gap-3 font-semibold tracking-tight" do %>
+          <span class="grid size-9 place-items-center rounded-md bg-moss text-lg text-white shadow-sm">T</span>
+          <span class="text-xl">Tabled</span>
+        <% end %>
+        <% if authenticated? %>
+          <div class="flex items-center gap-4 text-sm">
+            <span class="hidden text-ink-soft sm:inline"><%= current_user.name %></span>
+            <%= button_to "Sign out", session_path, method: :delete, class: "button-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </header>
+
+    <% if flash.any? %>
+      <div class="mx-auto max-w-3xl px-5 pt-5">
+        <% flash.each do |type, message| %>
+          <div class="rounded-lg border px-4 py-3 text-sm <%= type == "alert" ? "border-brick/30 bg-brick/10 text-brick" : "border-moss/30 bg-moss/10 text-moss-dark" %>"><%= message %></div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <main class="mx-auto flex min-h-[calc(100vh-74px)] max-w-6xl items-start justify-center px-5 py-12 sm:py-20">
       <%= yield %>
     </main>
   </body>

@@ -1,0 +1,9 @@
+owner:
+  name: Alex Morgan
+  email_address: alex@example.com
+  password_digest: <%= BCrypt::Password.create("password1234") %>
+
+member:
+  name: Jordan Lee
+  email_address: jordan@example.com
+  password_digest: <%= BCrypt::Password.create("password1234") %>
