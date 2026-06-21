@@ -1,9 +1,9 @@
 <% content_for :title, "Start an organization · Tabled" %>
 
 <div class="paper-panel w-full max-w-2xl p-7 sm:p-10">
-  <p class="eyebrow">Organization record</p>
+  <p class="eyebrow">New organization</p>
   <h1 class="auth-title">Add an organization</h1>
-  <p class="auth-copy">Enter the name and short description members should see. You’ll be recorded as the organization owner.</p>
+  <p class="auth-copy">Enter the name and short description members should see. You’ll start as the organization owner.</p>
 
   <%= form_with model: @organization, class: "mt-8 space-y-6" do |form| %>
     <%= render "shared/form_errors", record: @organization %>
@@ -18,7 +18,7 @@
     </div>
     <div class="flex flex-wrap items-center gap-4">
       <%= form.submit "Create organization", class: "button-primary" %>
-      <%= link_to "Back to organization index", root_path, class: "text-link" %>
+      <%= link_to "Back to organizations", root_path, class: "text-link" %>
     </div>
   <% end %>
 </div>

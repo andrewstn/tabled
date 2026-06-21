@@ -3,14 +3,14 @@
 <section class="binder-page w-full max-w-4xl">
   <div class="document-meta">
     <span>Member: <%= current_user.name %></span>
-    <span>Organization index</span>
+    <span>Your organizations</span>
   </div>
   <div class="p-6 sm:p-9">
-    <p class="eyebrow">Workspace index</p>
+    <p class="eyebrow">This semester</p>
     <h1 class="mt-2 text-3xl font-semibold">Welcome, <%= current_user.name %>.</h1>
 
     <% if current_user.organizations.any? %>
-      <p class="mt-2 text-sm text-ink-soft">Choose the organization file you want to work in.</p>
+      <p class="mt-2 text-sm text-ink-soft">Choose an organization to work in.</p>
       <div class="ruled-list mt-7 border-t border-rule">
         <% current_user.organizations.order(:name).each do |organization| %>
           <%= link_to organization_path(organization), class: "flex min-h-[2.15rem] items-center justify-between gap-5 px-2 py-2 hover:bg-olive-pale/50" do %>

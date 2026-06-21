@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
     return if authenticated?
 
     session[:return_to_after_authenticating] = request.fullpath if request.get? || request.head?
-    redirect_to new_session_path, alert: "Sign in to open your organization records."
+    redirect_to new_session_path, alert: "Sign in to open your organizations."
   end
 
   def start_new_session_for(user)
