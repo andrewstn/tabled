@@ -35,8 +35,12 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
   test "connects sign-in and account creation paths" do
     get new_session_path
     assert_select "aside[aria-label='About member access'] a[href=?]", new_user_path, text: /Create your account/
+    assert_select "input[aria-describedby='signin-email-hint']"
 
     get new_user_path
     assert_select "aside[aria-label='About Tabled accounts'] a[href=?]", new_session_path, text: /member sign-in/
+    assert_select "input[aria-describedby='account-name-hint']"
+    assert_select "input[aria-describedby='account-email-hint']"
+    assert_select "input[aria-describedby='account-password-hint']"
   end
 end

@@ -1,11 +1,7 @@
-<% content_for :title, "Join · Tabled" %>
+<% content_for :title, "Create account · Tabled" %>
 
 <section class="auth-sheet">
-  <div class="document-meta">
-    <span>Tabled</span>
-    <span>Current semester</span>
-    <span>New account</span>
-  </div>
+  <%= render "shared/auth_meta", context: "New account" %>
 
   <div class="md:grid md:grid-cols-[15rem_1fr]">
     <aside class="auth-note" aria-label="About Tabled accounts">
@@ -18,25 +14,28 @@
     </aside>
 
     <div class="auth-form">
-      <p class="eyebrow">New to Tabled?</p>
-      <h1 class="auth-title">Create your account</h1>
-      <p class="auth-copy">Add the details your organizations will use for rosters and member lists.</p>
+      <%= render "shared/auth_heading",
+        eyebrow: "New to Tabled?",
+        title: "Create your account",
+        description: "Add the details your organizations will use for rosters and member lists." %>
 
       <%= form_with model: @user, class: "mt-8 max-w-xl space-y-6" do |form| %>
         <%= render "shared/form_errors", record: @user %>
         <div>
           <%= form.label :name, "Full name", class: "form-label" %>
-          <%= form.text_field :name, required: true, autofocus: true, autocomplete: "name", class: "form-input" %>
+          <%= form.text_field :name, required: true, autofocus: true, autocomplete: "name", aria: { describedby: "account-name-hint" }, class: "form-input" %>
+          <p id="account-name-hint" class="mt-1.5 text-xs text-ink-soft">Use the name club members know you by.</p>
         </div>
         <div>
           <%= form.label :email_address, "Member email", class: "form-label" %>
-          <%= form.email_field :email_address, required: true, autocomplete: "email", class: "form-input" %>
+          <%= form.email_field :email_address, required: true, autocomplete: "email", aria: { describedby: "account-email-hint" }, class: "form-input" %>
+          <p id="account-email-hint" class="mt-1.5 text-xs text-ink-soft">Use an address you check during the semester.</p>
         </div>
         <div class="grid gap-5 sm:grid-cols-2">
           <div>
             <%= form.label :password, "Password", class: "form-label" %>
-            <%= form.password_field :password, required: true, minlength: 12, autocomplete: "new-password", class: "form-input" %>
-            <p class="mt-1 text-xs text-ink-soft">12 characters minimum</p>
+            <%= form.password_field :password, required: true, minlength: 12, autocomplete: "new-password", aria: { describedby: "account-password-hint" }, class: "form-input" %>
+            <p id="account-password-hint" class="mt-1.5 text-xs text-ink-soft">12 characters minimum.</p>
           </div>
           <div>
             <%= form.label :password_confirmation, "Confirm password", class: "form-label" %>

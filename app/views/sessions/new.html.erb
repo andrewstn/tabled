@@ -1,10 +1,7 @@
 <% content_for :title, "Sign in · Tabled" %>
 
 <section class="auth-sheet">
-  <div class="document-meta">
-    <span>Tabled</span>
-    <span>Current semester</span>
-  </div>
+  <%= render "shared/auth_meta", context: "Member access" %>
 
   <div class="md:grid md:grid-cols-[15rem_1fr]">
     <aside class="auth-note" aria-label="About member access">
@@ -22,14 +19,16 @@
     </aside>
 
     <div class="auth-form">
-      <p class="eyebrow">Your organizations</p>
-      <h1 class="auth-title">Member sign-in</h1>
-      <p class="auth-copy">Open your organization workspace for rosters, meetings, announcements, and the work between them.</p>
+      <%= render "shared/auth_heading",
+        eyebrow: "Your organizations",
+        title: "Member sign-in",
+        description: "Open your organization workspace for rosters, meetings, announcements, and the work between them." %>
 
       <%= form_with url: session_path, class: "mt-8 max-w-xl space-y-6" do |form| %>
         <div>
           <%= form.label :email_address, "Member email", class: "form-label" %>
-          <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email", value: params[:email_address], class: "form-input" %>
+          <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email", value: params[:email_address], aria: { describedby: "signin-email-hint" }, class: "form-input" %>
+          <p id="signin-email-hint" class="mt-1.5 text-xs text-ink-soft">Use the email your organization knows you by.</p>
         </div>
         <div>
           <%= form.label :password, class: "form-label" %>
