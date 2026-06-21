@@ -1,6 +1,7 @@
 class Event < ApplicationRecord
   belongs_to :organization
   belongs_to :created_by, class_name: "User", inverse_of: :created_events
+  has_many :rsvps, dependent: :destroy
 
   validates :title, presence: true, length: { maximum: 160 }
   validates :description, length: { maximum: 5_000 }
@@ -19,6 +20,18 @@ class Event < ApplicationRecord
 
   def past?
     starts_at.present? && starts_at < Time.current
+  end
+
+  def attending_count
+    rsvps.attending.count
+  end
+
+  def full?
+    capacity.present? && attending_count >= capacity
+  end
+
+  def rsvp_deadline_passed?
+    rsvp_deadline.present? && rsvp_deadline < Time.current
   end
 
   private

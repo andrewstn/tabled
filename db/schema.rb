@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_21_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_21_141000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -73,6 +73,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_140000) do
     t.index ["slug"], name: "index_organizations_on_slug", unique: true
   end
 
+  create_table "rsvps", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "event_id", null: false
+    t.bigint "membership_id", null: false
+    t.text "note"
+    t.string "status", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id", "membership_id"], name: "index_rsvps_on_event_id_and_membership_id", unique: true
+    t.index ["event_id"], name: "index_rsvps_on_event_id"
+    t.index ["membership_id"], name: "index_rsvps_on_membership_id"
+    t.check_constraint "status::text = ANY (ARRAY['attending'::character varying, 'maybe'::character varying, 'not_attending'::character varying]::text[])", name: "rsvps_status_check"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_address", null: false
@@ -88,4 +101,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_140000) do
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "memberships", "organizations"
   add_foreign_key "memberships", "users"
+  add_foreign_key "rsvps", "events"
+  add_foreign_key "rsvps", "memberships"
 end

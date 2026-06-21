@@ -1,0 +1,10 @@
+owner_attending_film_night:
+  event: upcoming_film_night
+  membership: film_owner
+  status: attending
+  note: I can help set up the projector.
+
+member_maybe_film_night:
+  event: upcoming_film_night
+  membership: film_member
+  status: maybe
