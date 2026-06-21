@@ -11,7 +11,7 @@ class OrganizationsController < ApplicationController
     creator = OrganizationCreator.new(owner: current_user, attributes: organization_params)
 
     if creator.create
-      redirect_to organization_path(creator.organization), notice: "The table is set. Welcome to #{creator.organization.name}."
+      redirect_to organization_path(creator.organization), notice: "#{creator.organization.name} was added to your organization files."
     else
       @organization = creator.organization
       render :new, status: :unprocessable_entity

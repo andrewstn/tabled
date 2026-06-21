@@ -12,7 +12,13 @@
       <div>
         <p class="eyebrow">Organization workspace</p>
         <h1 class="mt-2 text-3xl font-semibold sm:text-4xl"><%= @organization.name %></h1>
-        <p class="mt-3 max-w-3xl leading-7 text-ink-soft"><%= @organization.description.presence || "No organization note has been added yet." %></p>
+        <% if @organization.description.present? %>
+          <p class="mt-3 max-w-3xl leading-7 text-ink-soft"><%= @organization.description %></p>
+        <% elsif OrganizationPolicy.new(current_user, @organization).manage? %>
+          <p class="mt-3 max-w-3xl leading-7 text-ink-soft">No description is on file. <%= link_to "Add one in organization details", edit_organization_path(@organization), class: "text-link" %>.</p>
+        <% else %>
+          <p class="mt-3 max-w-3xl leading-7 text-ink-soft">No description is on file. An owner or officer can add one in organization details.</p>
+        <% end %>
       </div>
       <div class="flex items-center gap-3">
         <% if OrganizationPolicy.new(current_user, @organization).manage? %>
@@ -51,8 +57,8 @@
         <p class="eyebrow">Events</p>
         <h2 class="mt-1 text-2xl font-semibold">Upcoming gatherings</h2>
         <div class="mt-5 border-l-4 border-amber bg-amber-pale/45 px-4 py-3">
-          <p class="font-bold">No gatherings are listed.</p>
-          <p class="mt-1 text-sm text-ink-soft">Planned meetings and events will appear here once event tools are added.</p>
+          <p class="font-bold">No meetings or events are listed.</p>
+          <p class="mt-1 text-sm text-ink-soft">Event planning comes in a later milestone; this section will keep the next gathering easy to find.</p>
         </div>
       </section>
 
@@ -60,7 +66,7 @@
         <p class="eyebrow">Attendance</p>
         <h2 class="mt-1 text-2xl font-semibold">Recent roll call</h2>
         <div class="ruled-list mt-5 min-h-20 border-t border-rule py-2 text-sm text-ink-soft">
-          <p class="px-2 py-1">No attendance sheets have been recorded.</p>
+          <p class="px-2 py-1">No roll calls are on file. Attendance records will begin with the first event check-in.</p>
         </div>
       </section>
     </div>
@@ -70,20 +76,20 @@
         <p class="eyebrow text-amber">Announcements</p>
         <h2 class="mt-1 text-2xl font-semibold">Bulletin</h2>
         <div class="mt-4 border border-rule bg-[#fff8de] p-4 shadow-[2px_2px_0_rgba(166,111,45,0.16)]">
-          <p class="text-sm leading-6 text-ink-soft">No notices are posted.</p>
+          <p class="text-sm leading-6 text-ink-soft">The board is clear. Announcements will be pinned here when posting is available.</p>
         </div>
       </section>
 
       <section class="border-b border-rule p-6">
         <p class="eyebrow text-brick">Officer notes</p>
         <h2 class="mt-1 text-xl font-semibold">What needs attention</h2>
-        <p class="mt-3 text-sm leading-6 text-ink-soft">Nothing has been flagged for follow-up.</p>
+        <p class="mt-3 text-sm leading-6 text-ink-soft">Nothing needs follow-up right now. Member and event reminders will collect here.</p>
       </section>
 
       <section class="p-6">
         <p class="eyebrow">Log book</p>
         <h2 class="mt-1 text-xl font-semibold">Recent activity</h2>
-        <p class="mt-3 text-sm leading-6 text-ink-soft">Organization changes will be recorded here in a future milestone.</p>
+        <p class="mt-3 text-sm leading-6 text-ink-soft">There is no activity to report yet. Changes to members, events, and notices will form the semester record.</p>
       </section>
     </aside>
   </div>

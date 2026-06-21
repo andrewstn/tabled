@@ -2,8 +2,8 @@
 
 <div class="paper-panel w-full max-w-2xl p-7 sm:p-10">
   <p class="eyebrow">Organization settings</p>
-  <h1 class="auth-title">Keep the table familiar.</h1>
-  <p class="auth-copy">Update the name and note members see when they arrive. The workspace address stays put.</p>
+  <h1 class="auth-title">Organization details</h1>
+  <p class="auth-copy">Update the name and description shown to members. The organization’s web address will not change.</p>
 
   <%= form_with model: @organization, class: "mt-8 space-y-6" do |form| %>
     <%= render "shared/form_errors", record: @organization %>
@@ -12,12 +12,12 @@
       <%= form.text_field :name, required: true, class: "form-input" %>
     </div>
     <div>
-      <%= form.label :description, "A short note about the group", class: "form-label" %>
+      <%= form.label :description, "Organization description", class: "form-label" %>
       <%= form.text_area :description, rows: 5, maxlength: 1000, class: "form-input resize-y" %>
     </div>
     <div class="flex flex-wrap items-center gap-4">
       <%= form.submit "Save organization details", class: "button-primary" %>
-      <%= link_to "Back to the workspace", organization_path(@organization), class: "text-link" %>
+      <%= link_to "Cancel", organization_path(@organization), class: "text-link" %>
     </div>
   <% end %>
 </div>

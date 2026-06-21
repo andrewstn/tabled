@@ -11,7 +11,7 @@ class UsersController < ApplicationController
 
     if @user.save
       start_new_session_for(@user)
-      redirect_to root_path, notice: "Your place at the table is ready."
+      redirect_to root_path, notice: "Your member account is ready."
     else
       render :new, status: :unprocessable_entity
     end
