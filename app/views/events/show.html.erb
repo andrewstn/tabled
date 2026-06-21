@@ -77,9 +77,27 @@
         </div>
         <% if @rsvp %>
           <p class="mt-5">You answered <span class="role-tag"><%= @rsvp.status.humanize %></span></p>
-          <% if @rsvp.note.present? %><p class="mt-3 text-sm leading-6 text-ink-soft"><%= @rsvp.note %></p><% end %>
         <% else %>
-          <p class="mt-5 text-sm leading-6 text-ink-soft">You have not answered yet. RSVP choices will appear here.</p>
+          <p class="mt-5 text-sm leading-6 text-ink-soft">Let the organizers know whether to save you a place.</p>
+        <% end %>
+
+        <% rsvps_closed = @event.rsvp_deadline_passed? && !@event_policy.override_rsvp_limits? %>
+        <% if rsvps_closed %>
+          <p class="mt-4 font-bold text-brick">RSVPs are closed.</p>
+        <% else %>
+          <%= form_with model: (@rsvp || @event.rsvps.new), url: organization_event_rsvp_path(@organization, @event), method: @rsvp ? :patch : :post, class: "mt-5" do |form| %>
+            <fieldset>
+              <legend class="sr-only">Choose your RSVP for <%= @event.title %></legend>
+              <div class="flex flex-wrap gap-3">
+                <%= form.button "I’m attending", name: "rsvp[status]", value: "attending", class: "button-primary", disabled: @event.full? && !@rsvp&.attending? && !@event_policy.override_rsvp_limits? %>
+                <%= form.button "Maybe", name: "rsvp[status]", value: "maybe", class: "button-secondary" %>
+                <%= form.button "I can’t make it", name: "rsvp[status]", value: "not_attending", class: "button-secondary" %>
+              </div>
+            </fieldset>
+          <% end %>
+          <% if @event.full? && !@rsvp&.attending? && !@event_policy.override_rsvp_limits? %>
+            <p class="mt-3 text-sm font-bold text-brick">This gathering is full, but you can still answer maybe or not attending.</p>
+          <% end %>
         <% end %>
       </section>
     </div>
