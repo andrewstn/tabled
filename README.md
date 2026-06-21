@@ -1,24 +1,34 @@
-# README
+# Tabled
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Tabled is a production-minded Ruby on Rails application for student organizations and small teams to manage members, roles, events, attendance, announcements, and internal operations.
 
-Things you may want to cover:
+The project is designed to demonstrate production Rails development through multi-tenant organization workspaces, role-based authorization, invitation-based onboarding, event attendance workflows, background jobs, email delivery, audit logging, CSV import/export, tests, CI, and deployment.
 
-* Ruby version
+## Stack
 
-* System dependencies
+- Ruby on Rails
+- PostgreSQL
+- Hotwire / Turbo
+- Stimulus
+- Tailwind CSS
 
-* Configuration
+## Current scope
 
-* Database creation
+Milestone 1 focuses on the organization foundation:
 
-* Database initialization
+- Authentication
+- Organizations
+- Memberships
+- Roles
+- Organization-scoped access
+- Organization dashboard
+- Local seed data
 
-* How to run the test suite
+## Local setup
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+```bash
+bundle install
+bin/rails db:create
+bin/rails db:migrate
+bin/rails db:seed
+bin/dev
