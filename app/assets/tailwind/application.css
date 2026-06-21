@@ -1,35 +1,44 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #f7f1e5;
-  --color-paper-deep: #eee4d3;
-  --color-ink: #292b27;
-  --color-ink-soft: #65665e;
-  --color-rule: #d8cdb9;
-  --color-moss: #64735b;
-  --color-moss-dark: #43503d;
-  --color-amber: #b37a36;
-  --color-brick: #984f3f;
+  --color-paper: #f1eadb;
+  --color-paper-deep: #e3d8c4;
+  --color-sheet: #fffdf6;
+  --color-ink: #302e29;
+  --color-ink-soft: #6d685e;
+  --color-rule: #c9bda9;
+  --color-moss: #667052;
+  --color-moss-dark: #48503b;
+  --color-olive-pale: #dfe1cd;
+  --color-amber: #a66f2d;
+  --color-amber-pale: #f2dfb9;
+  --color-brick: #955443;
+  --color-brick-pale: #ead0c7;
 }
 
 @layer base {
-  body {
-    background-image: radial-gradient(circle at 1px 1px, rgb(70 62 48 / 0.035) 1px, transparent 0);
-    background-size: 18px 18px;
+  button, input, textarea { font: inherit; }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Times New Roman", serif;
   }
 
-  button, input, textarea { font: inherit; }
+  ::selection { @apply bg-amber-pale text-ink; }
 }
 
 @layer components {
-  .paper-panel { @apply rounded-xl border border-rule bg-[#fffaf0] shadow-[0_10px_30px_rgba(70,55,30,0.08)]; }
-  .auth-card { @apply w-full max-w-lg rounded-xl border border-rule bg-[#fffaf0] p-7 shadow-[0_10px_30px_rgba(70,55,30,0.08)] sm:p-10; }
-  .eyebrow { @apply text-xs font-bold uppercase tracking-[0.18em] text-moss; }
-  .auth-title { @apply mt-3 text-3xl font-semibold tracking-tight text-ink sm:text-4xl; }
-  .auth-copy { @apply mt-3 leading-7 text-ink-soft; }
-  .form-label { @apply mb-2 block text-sm font-semibold text-ink; }
-  .form-input { @apply w-full rounded-lg border border-rule bg-[#fffcf5] px-3.5 py-3 text-ink shadow-inner outline-none transition placeholder:text-ink-soft/60 focus:border-moss focus:ring-3 focus:ring-moss/15; }
-  .button-primary { @apply cursor-pointer rounded-lg border border-moss-dark bg-moss px-4 py-3 font-semibold text-white shadow-[0_2px_0_#43503d] transition hover:bg-moss-dark active:translate-y-px active:shadow-none; }
-  .button-secondary { @apply cursor-pointer rounded-md border border-rule bg-[#fffaf0] px-3 py-2 font-semibold text-ink shadow-sm hover:border-moss/60; }
-  .text-link { @apply font-semibold text-moss-dark underline decoration-moss/40 underline-offset-4 hover:decoration-moss; }
+  .paper-panel { @apply border border-rule bg-sheet shadow-[3px_4px_0_rgba(93,77,50,0.10)]; }
+  .auth-card { @apply w-full max-w-2xl border border-rule bg-sheet p-7 shadow-[3px_4px_0_rgba(93,77,50,0.10)] sm:p-10; }
+  .eyebrow { @apply text-[0.7rem] font-bold uppercase tracking-[0.14em] text-moss-dark; }
+  .auth-title { @apply mt-2 text-3xl font-semibold leading-tight text-ink; }
+  .auth-copy { @apply mt-2 max-w-xl leading-7 text-ink-soft; }
+  .form-label { @apply mb-1.5 block text-sm font-bold text-ink; }
+  .form-input { @apply w-full border border-rule bg-sheet px-3 py-2.5 text-ink outline-none transition placeholder:text-ink-soft/50 focus:border-moss-dark focus:shadow-[inset_4px_0_0_#667052]; }
+  .button-primary { @apply inline-flex cursor-pointer items-center justify-center border border-moss-dark bg-moss px-4 py-2.5 text-sm font-bold text-white shadow-[2px_2px_0_#48503b] transition hover:bg-moss-dark active:translate-x-px active:translate-y-px active:shadow-none; }
+  .button-secondary { @apply inline-flex cursor-pointer items-center justify-center border border-rule bg-sheet px-3 py-2 text-sm font-bold text-ink shadow-[1px_1px_0_#c9bda9] hover:border-moss; }
+  .text-link { @apply font-bold text-moss-dark underline decoration-moss/50 underline-offset-4 hover:decoration-moss-dark; }
+  .binder-page { @apply border-l-[6px] border-l-moss border-y border-r border-rule bg-sheet shadow-[3px_4px_0_rgba(93,77,50,0.10)]; }
+  .section-heading { @apply border-b border-rule pb-2 text-xl font-semibold text-ink; }
+  .desk-label { @apply inline-block border border-rule bg-paper-deep px-2 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-ink-soft; }
+  .ruled-list { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 2.15rem, rgb(201 189 169 / 0.55) 2.15rem, rgb(201 189 169 / 0.55) calc(2.15rem + 1px)); }
 }

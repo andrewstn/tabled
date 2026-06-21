@@ -23,12 +23,12 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-paper text-ink antialiased">
-    <header class="border-b border-rule bg-paper-deep/90">
-      <div class="mx-auto flex max-w-6xl items-center justify-between gap-5 px-5 py-4">
-        <%= link_to root_path, class: "flex items-center gap-3 font-semibold tracking-tight" do %>
-          <span class="grid size-9 place-items-center rounded-md bg-moss text-lg text-white shadow-sm">T</span>
-          <span class="text-xl">Tabled</span>
+  <body class="min-h-screen bg-paper font-sans text-ink antialiased">
+    <header class="border-b-2 border-ink/20 bg-paper-deep">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-5 px-5 py-3">
+        <%= link_to root_path, class: "flex items-baseline gap-2" do %>
+          <span class="font-serif text-2xl font-bold tracking-tight">Tabled</span>
+          <span class="hidden text-[0.65rem] font-bold uppercase tracking-[0.14em] text-ink-soft sm:inline">organization book</span>
         <% end %>
         <% if authenticated? %>
           <div class="flex items-center gap-3 text-sm">
@@ -38,11 +38,11 @@
         <% end %>
       </div>
       <% if authenticated? && current_user.organizations.any? %>
-        <nav aria-label="Your organizations" class="border-t border-rule/70 bg-[#f7f1e5]/70">
+        <nav aria-label="Your organizations" class="border-t border-rule bg-paper">
           <div class="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-5 py-2 text-sm">
             <span class="mr-1 shrink-0 font-semibold text-ink-soft">Your tables</span>
             <% current_user.organizations.order(:name).each do |organization| %>
-              <%= link_to organization.name, organization_path(organization), class: "shrink-0 rounded-md px-3 py-1.5 font-medium #{"bg-moss text-white" if @organization == organization} #{"hover:bg-paper-deep" unless @organization == organization}" %>
+              <%= link_to organization.name, organization_path(organization), class: "shrink-0 border-b-2 px-2 py-1.5 font-medium #{"border-moss-dark text-moss-dark" if @organization == organization} #{"border-transparent hover:border-rule" unless @organization == organization}" %>
             <% end %>
             <%= link_to "+ New organization", new_organization_path, class: "shrink-0 px-2 py-1.5 font-semibold text-moss-dark" %>
           </div>
@@ -53,12 +53,12 @@
     <% if flash.any? %>
       <div class="mx-auto max-w-3xl px-5 pt-5">
         <% flash.each do |type, message| %>
-          <div class="rounded-lg border px-4 py-3 text-sm <%= type == "alert" ? "border-brick/30 bg-brick/10 text-brick" : "border-moss/30 bg-moss/10 text-moss-dark" %>"><%= message %></div>
+          <div class="border-l-4 px-4 py-3 text-sm <%= type == "alert" ? "border-brick bg-brick-pale text-brick" : "border-moss bg-olive-pale text-moss-dark" %>"><%= message %></div>
         <% end %>
       </div>
     <% end %>
 
-    <main class="mx-auto flex min-h-[calc(100vh-74px)] max-w-6xl items-start justify-center px-5 py-10 sm:py-14">
+    <main class="mx-auto flex min-h-[calc(100vh-74px)] max-w-6xl items-start justify-center px-5 py-8 sm:py-10">
       <%= yield %>
     </main>
   </body>
