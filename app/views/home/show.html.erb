@@ -2,24 +2,26 @@
 
 <section class="binder-page w-full max-w-4xl">
   <div class="document-meta">
-    <span>Member: <%= current_user.name %></span>
-    <span>Your organizations</span>
+    <span>Signed in as <%= current_user.name %></span>
     <span><%= current_semester_label %></span>
   </div>
   <div class="p-6 sm:p-9">
-    <p class="eyebrow">This semester</p>
-    <h1 class="mt-2 text-3xl font-semibold">Welcome, <%= current_user.name %>.</h1>
+    <p class="eyebrow">Welcome, <%= current_user.name %></p>
+    <h1 class="mt-2 text-3xl font-semibold">Your organizations</h1>
 
     <% if current_user.organizations.any? %>
       <p class="mt-2 text-sm text-ink-soft">Choose an organization to work in.</p>
-      <div class="ruled-list mt-7 border-t border-rule">
+      <nav aria-label="Organization workspaces" class="mt-7 border-t border-rule">
         <% current_user.organizations.order(:name).each do |organization| %>
-          <%= link_to organization_path(organization), class: "flex min-h-[2.15rem] items-center justify-between gap-5 px-2 py-2 hover:bg-olive-pale/50" do %>
+          <%= link_to organization_path(organization), class: "organization-row" do %>
             <span class="font-bold"><%= organization.name %></span>
-            <span class="text-xs font-bold uppercase tracking-wider text-ink-soft"><%= current_user.memberships.find_by(organization: organization).role %></span>
+            <span class="flex items-center gap-3">
+              <span class="role-tag"><%= current_user.memberships.find_by(organization: organization).role.humanize %></span>
+              <span aria-hidden="true" class="text-moss-dark">→</span>
+            </span>
           <% end %>
         <% end %>
-      </div>
+      </nav>
       <div class="mt-7 border-t border-rule pt-5">
         <%= link_to "+ Add another organization", new_organization_path, class: "text-link text-sm" %>
       </div>

@@ -29,6 +29,7 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "nav[aria-label='Your organizations']" do
       assert_select "a[href=?]", organization_path(organizations(:film_society))
       assert_select "a[href=?]", organization_path(organizations(:garden_club))
+      assert_select "a[aria-current='page'][href=?]", organization_path(organizations(:film_society))
     end
   end
 

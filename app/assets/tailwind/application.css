@@ -39,8 +39,8 @@
   .form-label { @apply mb-1.5 block text-sm font-semibold text-ink; }
   .form-input { @apply w-full border border-rule bg-sheet px-3 py-2.5 text-ink outline-none transition placeholder:text-ink-soft/50 focus:border-moss-dark focus:outline-2 focus:outline-offset-2 focus:outline-moss/40; }
   .button-primary { @apply inline-flex cursor-pointer items-center justify-center border border-moss-dark bg-moss px-4 py-2.5 text-sm font-bold text-white shadow-[1px_1px_0_#48503b] transition hover:bg-moss-dark focus:outline-2 focus:outline-offset-2 focus:outline-moss active:translate-x-px active:translate-y-px active:shadow-none; }
-  .button-secondary { @apply inline-flex cursor-pointer items-center justify-center border border-rule bg-sheet px-3 py-2 text-sm font-bold text-ink shadow-[1px_1px_0_#c9bda9] hover:border-moss; }
-  .text-link { @apply font-bold text-moss-dark underline decoration-moss/50 underline-offset-4 hover:decoration-moss-dark; }
+  .button-secondary { @apply inline-flex cursor-pointer items-center justify-center border border-rule bg-sheet px-3 py-2 text-sm font-bold text-ink shadow-[1px_1px_0_#c9bda9] hover:border-moss focus:outline-2 focus:outline-offset-2 focus:outline-moss/50; }
+  .text-link { @apply font-bold text-moss-dark underline decoration-moss/50 underline-offset-4 hover:decoration-moss-dark focus:outline-2 focus:outline-offset-2 focus:outline-moss/50; }
   .binder-page { @apply border-l-4 border-l-moss border-y border-r border-rule bg-sheet shadow-[2px_3px_0_rgba(93,77,50,0.09)]; }
   .section-heading { @apply border-b border-rule pb-2 text-xl font-semibold text-ink; }
   .desk-label { @apply inline-block border-b-2 border-amber bg-amber-pale/35 px-2 py-1 text-xs font-bold tracking-[0.02em] text-ink-soft; }
@@ -56,4 +56,5 @@
   .workspace-section-heading { @apply flex flex-wrap items-end justify-between gap-3 border-b border-rule pb-2; }
   .role-tag { @apply inline-flex items-center border border-moss/35 bg-olive-pale/55 px-2.5 py-1 text-xs font-bold text-moss-dark; }
   .member-row { @apply flex min-h-[2.15rem] items-center justify-between gap-4 px-2 py-1.5 text-sm; }
+  .organization-row { @apply flex min-h-12 items-center justify-between gap-4 border-b border-rule/70 px-2 py-2.5 hover:bg-olive-pale/45 focus:outline-2 focus:outline-offset-2 focus:outline-moss/50; }
 }
