@@ -2,25 +2,24 @@
 
 <section class="auth-sheet">
   <div class="document-meta">
-    <span>Tabled member access</span>
+    <span>Tabled</span>
     <span>Current semester</span>
-    <span>Form A-1</span>
   </div>
 
   <div class="md:grid md:grid-cols-[15rem_1fr]">
     <aside class="auth-note">
-      <p class="desk-label">Member record</p>
-      <p class="mt-5 text-sm leading-6 text-ink-soft">Use the email you joined your organization with.</p>
+      <p class="desk-label">For members and officers</p>
+      <p class="mt-5 text-sm leading-6 text-ink-soft">Use the email your organization knows you by.</p>
       <div class="mt-8 border-t border-rule pt-4 text-xs leading-5 text-ink-soft">
         <p class="font-bold text-ink">Need an account?</p>
-        <p class="mt-1">Create one first, then set up or join your organization.</p>
+        <p class="mt-1">Create an account before setting up your first organization.</p>
       </div>
     </aside>
 
     <div class="auth-form">
-      <p class="eyebrow">Organization records</p>
+      <p class="eyebrow">Your organizations</p>
       <h1 class="auth-title">Member sign-in</h1>
-      <p class="auth-copy">Enter your account details to open your organization workspace.</p>
+      <p class="auth-copy">Open your organization workspace for rosters, meetings, announcements, and the work between them.</p>
 
       <%= form_with url: session_path, class: "mt-8 max-w-xl space-y-6" do |form| %>
         <div>
