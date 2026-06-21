@@ -1,0 +1,46 @@
+<%= form_with model: [ organization, event ], class: "mt-8 space-y-6" do |form| %>
+  <%= render "shared/form_errors", record: event %>
+
+  <div>
+    <%= form.label :title, "Gathering title", class: "form-label" %>
+    <%= form.text_field :title, required: true, maxlength: 160, autofocus: true, class: "form-input" %>
+  </div>
+
+  <div>
+    <%= form.label :description, "Notes for members", class: "form-label" %>
+    <%= form.text_area :description, rows: 5, maxlength: 5000, class: "form-input resize-y" %>
+    <p class="mt-1.5 text-xs text-ink-soft">Share what members should bring, expect, or prepare.</p>
+  </div>
+
+  <div>
+    <%= form.label :location, "Where will this happen?", class: "form-label" %>
+    <%= form.text_field :location, maxlength: 255, class: "form-input", placeholder: "Student Union, room 214" %>
+  </div>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <%= form.label :starts_at, "When does it start?", class: "form-label" %>
+      <%= form.datetime_local_field :starts_at, required: true, class: "form-input" %>
+    </div>
+    <div>
+      <%= form.label :ends_at, "When does it end?", class: "form-label" %>
+      <%= form.datetime_local_field :ends_at, class: "form-input" %>
+    </div>
+  </div>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <%= form.label :capacity, "Capacity", class: "form-label" %>
+      <%= form.number_field :capacity, min: 1, step: 1, class: "form-input", placeholder: "Leave blank if there is no limit" %>
+    </div>
+    <div>
+      <%= form.label :rsvp_deadline, "When should RSVPs close?", class: "form-label" %>
+      <%= form.datetime_local_field :rsvp_deadline, class: "form-input" %>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-4 border-t border-rule pt-5">
+    <%= form.submit event.persisted? ? "Save gathering" : "Add gathering", class: "button-primary" %>
+    <%= link_to "Cancel", event.persisted? ? organization_event_path(organization, event) : organization_events_path(organization), class: "text-link" %>
+  </div>
+<% end %>

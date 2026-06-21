@@ -59,6 +59,94 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "owner can create a gathering" do
+    sign_in_as(users(:owner))
+
+    assert_difference("Event.count") do
+      post organization_events_path(organizations(:film_society)), params: {
+        event: { title: "Camera Workshop", starts_at: 1.week.from_now, location: "Media lab" }
+      }
+    end
+
+    event = Event.order(:created_at).last
+    assert_redirected_to organization_event_path(organizations(:film_society), event)
+    assert_equal users(:owner), event.created_by
+  end
+
+  test "officer can create a gathering" do
+    memberships(:film_member).update!(role: :officer)
+    sign_in_as(users(:member))
+
+    assert_difference("Event.count") do
+      post organization_events_path(organizations(:film_society)), params: {
+        event: { title: "Editing night", starts_at: 1.week.from_now }
+      }
+    end
+  end
+
+  test "coordinator can create and edit a gathering" do
+    memberships(:film_member).update!(role: :coordinator)
+    sign_in_as(users(:member))
+
+    assert_difference("Event.count") do
+      post organization_events_path(organizations(:film_society)), params: {
+        event: { title: "Location scout", starts_at: 1.week.from_now }
+      }
+    end
+    event = Event.order(:created_at).last
+
+    patch organization_event_path(organizations(:film_society), event), params: {
+      event: { title: "Campus location scout" }
+    }
+
+    assert_redirected_to organization_event_path(organizations(:film_society), event)
+    assert_equal "Campus location scout", event.reload.title
+  end
+
+  test "member cannot create a gathering" do
+    sign_in_as(users(:member))
+
+    assert_no_difference("Event.count") do
+      post organization_events_path(organizations(:film_society)), params: {
+        event: { title: "Unapproved gathering", starts_at: 1.week.from_now }
+      }
+    end
+
+    assert_response :forbidden
+  end
+
+  test "coordinator cannot delete a gathering" do
+    memberships(:film_member).update!(role: :coordinator)
+    sign_in_as(users(:member))
+
+    assert_no_difference("Event.count") do
+      delete organization_event_path(organizations(:film_society), events(:upcoming_film_night))
+    end
+
+    assert_response :forbidden
+  end
+
+  test "owner can delete a gathering" do
+    sign_in_as(users(:owner))
+
+    assert_difference("Event.count", -1) do
+      delete organization_event_path(organizations(:film_society), events(:past_planning_table))
+    end
+
+    assert_redirected_to organization_events_path(organizations(:film_society))
+  end
+
+  test "invalid gathering renders helpful errors" do
+    sign_in_as(users(:owner))
+
+    post organization_events_path(organizations(:film_society)), params: {
+      event: { title: "", starts_at: "" }
+    }
+
+    assert_response :unprocessable_entity
+    assert_select "[role='alert']", text: /Title can't be blank/
+  end
+
   private
 
   def sign_in_as(user)

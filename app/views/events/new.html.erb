@@ -1,0 +1,15 @@
+<% content_for :title, "Add gathering · #{@organization.name} · Tabled" %>
+
+<section class="binder-page w-full max-w-3xl">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span><%= link_to "Gatherings", organization_events_path(@organization), class: "text-link" %></span>
+    <span>Current semester · <%= current_semester_label %></span>
+  </div>
+  <div class="p-6 sm:p-9">
+    <p class="eyebrow">Organization calendar</p>
+    <h1 class="mt-2 text-3xl font-semibold">Add gathering</h1>
+    <p class="mt-2 max-w-xl text-sm leading-6 text-ink-soft">Put the next meeting, workshop, or club night on the calendar.</p>
+    <%= render "form", organization: @organization, event: @event %>
+  </div>
+</section>
