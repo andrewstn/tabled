@@ -1,0 +1,24 @@
+pending_member:
+  organization: film_society
+  invited_by: owner
+  email: prospective.member@example.com
+  role: member
+  token_digest: <%= Digest::SHA256.hexdigest("pending-member-token") %>
+  expires_at: <%= 5.days.from_now %>
+
+expired_member:
+  organization: garden_club
+  invited_by: owner
+  email: expired.member@example.com
+  role: member
+  token_digest: <%= Digest::SHA256.hexdigest("expired-member-token") %>
+  expires_at: <%= 1.day.ago %>
+
+revoked_member:
+  organization: garden_club
+  invited_by: owner
+  email: revoked.member@example.com
+  role: coordinator
+  token_digest: <%= Digest::SHA256.hexdigest("revoked-member-token") %>
+  revoked_at: <%= 1.hour.ago %>
+  expires_at: <%= 5.days.from_now %>
