@@ -28,7 +28,7 @@
       <div class="mx-auto flex max-w-6xl items-center justify-between gap-5 px-5 py-3">
         <%= link_to root_path, class: "flex items-baseline gap-2" do %>
           <span class="font-serif text-2xl font-bold tracking-tight">Tabled</span>
-          <span class="hidden text-[0.65rem] font-bold uppercase tracking-[0.14em] text-ink-soft sm:inline">organization book</span>
+          <span class="hidden text-xs font-semibold text-ink-soft sm:inline">for student organizations</span>
         <% end %>
         <% if authenticated? %>
           <div class="flex items-center gap-4 text-sm">
@@ -40,7 +40,7 @@
       <% if authenticated? && current_user.organizations.any? %>
         <nav aria-label="Your organizations" class="border-t border-rule bg-paper">
           <div class="mx-auto flex max-w-6xl items-end gap-1 overflow-x-auto px-5 pt-2 text-sm">
-            <span class="mr-3 shrink-0 pb-2 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-soft">Organization file</span>
+            <span class="mr-3 shrink-0 pb-2 text-xs font-semibold text-ink-soft">Your organizations</span>
             <% current_user.organizations.order(:name).each do |organization| %>
               <%= link_to organization.name, organization_path(organization), class: "shrink-0 border-x border-t px-3 py-2 font-bold #{"border-rule bg-sheet text-ink" if @organization == organization} #{"border-transparent text-ink-soft hover:border-rule" unless @organization == organization}" %>
             <% end %>

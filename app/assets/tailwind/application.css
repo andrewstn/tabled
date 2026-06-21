@@ -27,22 +27,22 @@
 }
 
 @layer components {
-  .paper-panel { @apply border border-rule bg-sheet shadow-[3px_4px_0_rgba(93,77,50,0.10)]; }
-  .auth-card { @apply w-full max-w-2xl border border-rule bg-sheet p-7 shadow-[3px_4px_0_rgba(93,77,50,0.10)] sm:p-10; }
-  .auth-sheet { @apply w-full max-w-5xl overflow-hidden border-l-[6px] border-l-moss border-y border-r border-rule bg-sheet shadow-[3px_4px_0_rgba(93,77,50,0.10)]; }
-  .auth-note { @apply border-b border-rule bg-paper-deep/55 p-6 md:border-r md:border-b-0 md:p-8; }
+  .paper-panel { @apply border border-rule bg-sheet shadow-[2px_3px_0_rgba(93,77,50,0.09)]; }
+  .auth-card { @apply w-full max-w-2xl border border-rule bg-sheet p-7 shadow-[2px_3px_0_rgba(93,77,50,0.09)] sm:p-10; }
+  .auth-sheet { @apply w-full max-w-5xl overflow-hidden border-l-4 border-l-moss border-y border-r border-rule bg-sheet shadow-[2px_3px_0_rgba(93,77,50,0.09)]; }
+  .auth-note { @apply border-b border-rule bg-amber-pale/25 p-6 md:border-r md:border-b-0 md:p-8; }
   .auth-form { @apply p-6 sm:p-8 md:p-10; }
-  .document-meta { @apply flex flex-wrap gap-x-6 gap-y-1 border-b border-rule bg-paper-deep/45 px-6 py-2 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-soft; }
-  .eyebrow { @apply text-[0.7rem] font-bold uppercase tracking-[0.14em] text-moss-dark; }
+  .document-meta { @apply flex flex-wrap gap-x-6 gap-y-1 border-b border-rule bg-paper-deep/35 px-6 py-2.5 text-xs font-semibold tracking-[0.025em] text-ink-soft; }
+  .eyebrow { @apply text-xs font-bold tracking-[0.035em] text-moss-dark; }
   .auth-title { @apply mt-2 text-3xl font-semibold leading-tight text-ink; }
   .auth-copy { @apply mt-2 max-w-xl leading-7 text-ink-soft; }
-  .form-label { @apply mb-1.5 block text-sm font-bold text-ink; }
-  .form-input { @apply w-full border border-rule bg-sheet px-3 py-2.5 text-ink outline-none transition placeholder:text-ink-soft/50 focus:border-moss-dark focus:shadow-[inset_4px_0_0_#667052]; }
-  .button-primary { @apply inline-flex cursor-pointer items-center justify-center border border-moss-dark bg-moss px-4 py-2.5 text-sm font-bold text-white shadow-[2px_2px_0_#48503b] transition hover:bg-moss-dark active:translate-x-px active:translate-y-px active:shadow-none; }
+  .form-label { @apply mb-1.5 block text-sm font-semibold text-ink; }
+  .form-input { @apply w-full border border-rule bg-sheet px-3 py-2.5 text-ink outline-none transition placeholder:text-ink-soft/50 focus:border-moss-dark focus:outline-2 focus:outline-offset-2 focus:outline-moss/40; }
+  .button-primary { @apply inline-flex cursor-pointer items-center justify-center border border-moss-dark bg-moss px-4 py-2.5 text-sm font-bold text-white shadow-[1px_1px_0_#48503b] transition hover:bg-moss-dark focus:outline-2 focus:outline-offset-2 focus:outline-moss active:translate-x-px active:translate-y-px active:shadow-none; }
   .button-secondary { @apply inline-flex cursor-pointer items-center justify-center border border-rule bg-sheet px-3 py-2 text-sm font-bold text-ink shadow-[1px_1px_0_#c9bda9] hover:border-moss; }
   .text-link { @apply font-bold text-moss-dark underline decoration-moss/50 underline-offset-4 hover:decoration-moss-dark; }
-  .binder-page { @apply border-l-[6px] border-l-moss border-y border-r border-rule bg-sheet shadow-[3px_4px_0_rgba(93,77,50,0.10)]; }
+  .binder-page { @apply border-l-4 border-l-moss border-y border-r border-rule bg-sheet shadow-[2px_3px_0_rgba(93,77,50,0.09)]; }
   .section-heading { @apply border-b border-rule pb-2 text-xl font-semibold text-ink; }
-  .desk-label { @apply inline-block border border-rule bg-paper-deep px-2 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-ink-soft; }
+  .desk-label { @apply inline-block border-b-2 border-amber bg-amber-pale/35 px-2 py-1 text-xs font-bold tracking-[0.02em] text-ink-soft; }
   .ruled-list { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 2.15rem, rgb(201 189 169 / 0.55) 2.15rem, rgb(201 189 169 / 0.55) calc(2.15rem + 1px)); }
 }
