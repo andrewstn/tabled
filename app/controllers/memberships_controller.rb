@@ -1,10 +1,24 @@
 class MembershipsController < ApplicationController
   before_action :set_organization
   before_action :require_organization_membership
+  before_action :set_membership, only: :update
 
   def index
     @current_membership = current_user.memberships.find_by!(organization: @organization)
     @memberships = @organization.memberships.includes(:user).order(:role, "users.name")
+    @can_manage_members = OrganizationPolicy.new(current_user, @organization).manage?
+  end
+
+  def update
+    new_role = membership_params[:role]
+    policy = MembershipPolicy.new(current_user, @organization, @membership)
+    return head :forbidden unless policy.update_role?(new_role)
+
+    if MembershipRoleUpdater.new(membership: @membership, role: new_role).update
+      redirect_to organization_members_path(@organization), notice: "#{@membership.user.name} is now #{@membership.role.humanize.downcase}."
+    else
+      redirect_to organization_members_path(@organization), alert: @membership.errors.full_messages.to_sentence
+    end
   end
 
   private
@@ -15,5 +29,13 @@ class MembershipsController < ApplicationController
 
   def require_organization_membership
     raise ActiveRecord::RecordNotFound unless OrganizationPolicy.new(current_user, @organization).show?
+  end
+
+  def set_membership
+    @membership = @organization.memberships.find(params[:id])
+  end
+
+  def membership_params
+    params.expect(membership: [ :role ])
   end
 end

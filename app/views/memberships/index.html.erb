@@ -21,6 +21,7 @@
           <th scope="col" class="px-3 py-3 font-bold">Role</th>
           <th scope="col" class="px-3 py-3 font-bold">Joined</th>
           <th scope="col" class="px-3 py-3 font-bold">Status</th>
+          <% if @can_manage_members %><th scope="col" class="px-3 py-3 font-bold">Manage role</th><% end %>
         </tr>
       </thead>
       <tbody class="divide-y divide-rule/70">
@@ -31,6 +32,20 @@
             <td class="px-3 py-4"><span class="role-tag"><%= membership.role.humanize %></span></td>
             <td class="px-3 py-4 text-ink-soft"><%= membership.created_at.to_date.to_fs(:long) %></td>
             <td class="px-3 py-4 text-ink-soft">Current</td>
+            <% if @can_manage_members %>
+              <td class="px-3 py-4">
+                <% policy = MembershipPolicy.new(current_user, @organization, membership) %>
+                <% if policy.permitted_roles.any? %>
+                  <%= form_with model: membership, url: organization_member_path(@organization, membership), class: "flex items-center gap-2" do |form| %>
+                    <%= form.label :role, "Role for #{membership.user.name}", class: "sr-only" %>
+                    <%= form.select :role, options_for_select(policy.permitted_roles.map { |role| [ role.humanize, role ] }, membership.role), {}, class: "border border-rule bg-sheet px-2 py-1.5 text-sm focus:outline-2 focus:outline-offset-2 focus:outline-moss/50" %>
+                    <%= form.submit "Update", class: "button-secondary" %>
+                  <% end %>
+                <% else %>
+                  <span class="text-xs text-ink-soft">Managed by an owner</span>
+                <% end %>
+              </td>
+            <% end %>
           </tr>
         <% end %>
       </tbody>
