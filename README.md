@@ -1,6 +1,6 @@
 # Tabled
 
-Tabled is a production-minded Ruby on Rails application where student organizations and small teams manage the practical work of a semester: members, officers, events, attendance, announcements, and internal operations.
+Tabled is a production-minded Ruby on Rails application for the practical work of a student organization semester: members, officers, meetings, attendance, announcements, and internal operations.
 
 ## Stack
 
@@ -44,7 +44,7 @@ bin/brakeman --no-pager
 
 ## Current scope
 
-Milestone 1 establishes the multi-tenant organization foundation:
+Milestone 1 is complete and establishes the multi-tenant organization foundation:
 
 - Account signup and session authentication
 - Organizations with stable, human-readable URLs
@@ -54,10 +54,10 @@ Milestone 1 establishes the multi-tenant organization foundation:
 - Membership-scoped access and manager-only settings
 - Idempotent local demo data
 
-Invitations, the member directory, events, RSVPs, check-ins, announcements, and activity history belong to later milestones.
+Dashboard sections for gatherings, attendance, announcements, and activity are intentional empty states for now. Invitations, the full member directory, events, RSVPs, check-ins, announcements, and activity history belong to later milestones.
 
 ## Product and visual direction
 
-Tabled should feel like a shared meeting table, club office, campus bulletin board, and well-kept organization binder. The interface uses warm paper surfaces, moss and amber accents, readable type, tactile controls, and specific campus language. Keep future work operational and human; avoid sterile SaaS dashboards, generic metric cards, glass effects, AI-style gradients, and vague productivity copy.
+Tabled should feel like a shared meeting table, club office, campus bulletin board, and well-used organization binder. The interface uses warm paper surfaces, moss and amber accents, readable type, tactile controls, and specific campus language. Keep future work active, practical, and human—not archival or bureaucratic—and avoid generic SaaS cards, glass effects, AI-style gradients, and vague productivity copy.
 
 See [docs/project_brief.md](docs/project_brief.md) for the broader product brief.
