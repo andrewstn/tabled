@@ -7,12 +7,17 @@
   </div>
 
   <div class="md:grid md:grid-cols-[15rem_1fr]">
-    <aside class="auth-note">
-      <p class="desk-label">For members and officers</p>
-      <p class="mt-5 text-sm leading-6 text-ink-soft">Use the email your organization knows you by.</p>
-      <div class="mt-8 border-t border-rule pt-4 text-xs leading-5 text-ink-soft">
-        <p class="font-bold text-ink">Need an account?</p>
-        <p class="mt-1">Create an account before setting up your first organization.</p>
+    <aside class="auth-note" aria-label="About member access">
+      <p class="desk-label">Shared club workspace</p>
+      <p class="mt-5 text-sm leading-6 text-ink-soft">Officers and members sign in here to keep up with the semester.</p>
+      <ul class="mt-5 space-y-2 border-l-2 border-amber/60 pl-4 text-sm text-ink-soft">
+        <li>Member rosters and roles</li>
+        <li>Meetings and attendance</li>
+        <li>Announcements and follow-up</li>
+      </ul>
+      <div class="mt-8 border-t border-rule pt-4 text-sm leading-6 text-ink-soft">
+        <p class="font-bold text-ink">New to Tabled?</p>
+        <%= link_to "Create your account →", new_user_path, class: "text-link mt-1 inline-block" %>
       </div>
     </aside>
 
@@ -30,9 +35,8 @@
           <%= form.label :password, class: "form-label" %>
           <%= form.password_field :password, required: true, autocomplete: "current-password", class: "form-input" %>
         </div>
-        <div class="flex flex-wrap items-center gap-4 border-t border-rule pt-5">
+        <div class="border-t border-rule pt-5">
           <%= form.submit "Sign in", class: "button-primary" %>
-          <p class="text-sm text-ink-soft">New here? <%= link_to "Create your account", new_user_path, class: "text-link" %></p>
         </div>
       <% end %>
     </div>

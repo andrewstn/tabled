@@ -31,4 +31,12 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_select "[role='alert']", text: "That email and password did not match."
   end
+
+  test "connects sign-in and account creation paths" do
+    get new_session_path
+    assert_select "aside[aria-label='About member access'] a[href=?]", new_user_path, text: /Create your account/
+
+    get new_user_path
+    assert_select "aside[aria-label='About Tabled accounts'] a[href=?]", new_session_path, text: /member sign-in/
+  end
 end
