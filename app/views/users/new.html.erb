@@ -1,30 +1,53 @@
 <% content_for :title, "Join · Tabled" %>
 
-<div class="auth-card">
-  <p class="eyebrow">Take a seat</p>
-  <h1 class="auth-title">Make your place at the table.</h1>
-  <p class="auth-copy">Start with your own account. Your organization workspace comes next.</p>
+<section class="auth-sheet">
+  <div class="document-meta">
+    <span>Tabled member access</span>
+    <span>New member record</span>
+    <span>Form A-2</span>
+  </div>
 
-  <%= form_with model: @user, class: "mt-8 space-y-5" do |form| %>
-    <%= render "shared/form_errors", record: @user %>
-    <div>
-      <%= form.label :name, "Your name", class: "form-label" %>
-      <%= form.text_field :name, required: true, autofocus: true, autocomplete: "name", class: "form-input" %>
-    </div>
-    <div>
-      <%= form.label :email_address, "Email address", class: "form-label" %>
-      <%= form.email_field :email_address, required: true, autocomplete: "email", class: "form-input" %>
-    </div>
-    <div>
-      <%= form.label :password, "Password (12 characters minimum)", class: "form-label" %>
-      <%= form.password_field :password, required: true, minlength: 12, autocomplete: "new-password", class: "form-input" %>
-    </div>
-    <div>
-      <%= form.label :password_confirmation, class: "form-label" %>
-      <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", class: "form-input" %>
-    </div>
-    <%= form.submit "Create my account", class: "button-primary w-full" %>
-  <% end %>
+  <div class="md:grid md:grid-cols-[15rem_1fr]">
+    <aside class="auth-note">
+      <p class="desk-label">Account details</p>
+      <p class="mt-5 text-sm leading-6 text-ink-soft">This account follows you across every organization you belong to.</p>
+      <dl class="mt-8 space-y-3 border-t border-rule pt-4 text-xs text-ink-soft">
+        <div><dt class="font-bold text-ink">Name</dt><dd>Use the name members know you by.</dd></div>
+        <div><dt class="font-bold text-ink">Email</dt><dd>Use an address you check during the semester.</dd></div>
+      </dl>
+    </aside>
 
-  <p class="mt-6 text-sm text-ink-soft">Already have a seat? <%= link_to "Sign in", new_session_path, class: "text-link" %></p>
-</div>
+    <div class="auth-form">
+      <p class="eyebrow">Member record</p>
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-copy">Add your details now. You can start or join an organization afterward.</p>
+
+      <%= form_with model: @user, class: "mt-8 max-w-xl space-y-6" do |form| %>
+        <%= render "shared/form_errors", record: @user %>
+        <div>
+          <%= form.label :name, "Full name", class: "form-label" %>
+          <%= form.text_field :name, required: true, autofocus: true, autocomplete: "name", class: "form-input" %>
+        </div>
+        <div>
+          <%= form.label :email_address, "Member email", class: "form-label" %>
+          <%= form.email_field :email_address, required: true, autocomplete: "email", class: "form-input" %>
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <%= form.label :password, "Password", class: "form-label" %>
+            <%= form.password_field :password, required: true, minlength: 12, autocomplete: "new-password", class: "form-input" %>
+            <p class="mt-1 text-xs text-ink-soft">12 characters minimum</p>
+          </div>
+          <div>
+            <%= form.label :password_confirmation, "Confirm password", class: "form-label" %>
+            <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", class: "form-input" %>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-4 border-t border-rule pt-5">
+          <%= form.submit "Create account", class: "button-primary" %>
+          <p class="text-sm text-ink-soft">Already registered? <%= link_to "Sign in", new_session_path, class: "text-link" %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

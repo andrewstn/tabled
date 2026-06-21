@@ -29,6 +29,10 @@
 @layer components {
   .paper-panel { @apply border border-rule bg-sheet shadow-[3px_4px_0_rgba(93,77,50,0.10)]; }
   .auth-card { @apply w-full max-w-2xl border border-rule bg-sheet p-7 shadow-[3px_4px_0_rgba(93,77,50,0.10)] sm:p-10; }
+  .auth-sheet { @apply w-full max-w-5xl overflow-hidden border-l-[6px] border-l-moss border-y border-r border-rule bg-sheet shadow-[3px_4px_0_rgba(93,77,50,0.10)]; }
+  .auth-note { @apply border-b border-rule bg-paper-deep/55 p-6 md:border-r md:border-b-0 md:p-8; }
+  .auth-form { @apply p-6 sm:p-8 md:p-10; }
+  .document-meta { @apply flex flex-wrap gap-x-6 gap-y-1 border-b border-rule bg-paper-deep/45 px-6 py-2 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-soft; }
   .eyebrow { @apply text-[0.7rem] font-bold uppercase tracking-[0.14em] text-moss-dark; }
   .auth-title { @apply mt-2 text-3xl font-semibold leading-tight text-ink; }
   .auth-copy { @apply mt-2 max-w-xl leading-7 text-ink-soft; }

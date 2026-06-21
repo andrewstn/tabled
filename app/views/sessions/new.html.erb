@@ -1,21 +1,41 @@
 <% content_for :title, "Sign in · Tabled" %>
 
-<div class="auth-card">
-  <p class="eyebrow">Welcome back</p>
-  <h1 class="auth-title">Pull up your chair.</h1>
-  <p class="auth-copy">Sign in to get back to your organization’s semester.</p>
+<section class="auth-sheet">
+  <div class="document-meta">
+    <span>Tabled member access</span>
+    <span>Current semester</span>
+    <span>Form A-1</span>
+  </div>
 
-  <%= form_with url: session_path, class: "mt-8 space-y-5" do |form| %>
-    <div>
-      <%= form.label :email_address, "Email address", class: "form-label" %>
-      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email", value: params[:email_address], class: "form-input" %>
-    </div>
-    <div>
-      <%= form.label :password, class: "form-label" %>
-      <%= form.password_field :password, required: true, autocomplete: "current-password", class: "form-input" %>
-    </div>
-    <%= form.submit "Sign in", class: "button-primary w-full" %>
-  <% end %>
+  <div class="md:grid md:grid-cols-[15rem_1fr]">
+    <aside class="auth-note">
+      <p class="desk-label">Member record</p>
+      <p class="mt-5 text-sm leading-6 text-ink-soft">Use the email you joined your organization with.</p>
+      <div class="mt-8 border-t border-rule pt-4 text-xs leading-5 text-ink-soft">
+        <p class="font-bold text-ink">Need an account?</p>
+        <p class="mt-1">Create one first, then set up or join your organization.</p>
+      </div>
+    </aside>
 
-  <p class="mt-6 text-sm text-ink-soft">New around here? <%= link_to "Make your account", new_user_path, class: "text-link" %></p>
-</div>
+    <div class="auth-form">
+      <p class="eyebrow">Organization records</p>
+      <h1 class="auth-title">Member sign-in</h1>
+      <p class="auth-copy">Enter your account details to open your organization workspace.</p>
+
+      <%= form_with url: session_path, class: "mt-8 max-w-xl space-y-6" do |form| %>
+        <div>
+          <%= form.label :email_address, "Member email", class: "form-label" %>
+          <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email", value: params[:email_address], class: "form-input" %>
+        </div>
+        <div>
+          <%= form.label :password, class: "form-label" %>
+          <%= form.password_field :password, required: true, autocomplete: "current-password", class: "form-input" %>
+        </div>
+        <div class="flex flex-wrap items-center gap-4 border-t border-rule pt-5">
+          <%= form.submit "Sign in", class: "button-primary" %>
+          <p class="text-sm text-ink-soft">New here? <%= link_to "Create your account", new_user_path, class: "text-link" %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
