@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     resources :members, controller: "memberships", only: %i[index update destroy]
     resources :invitations, only: %i[index new create destroy]
   end
+  resources :invitation_acceptances, path: "invitations", param: :token, only: %i[show update]
 
   root "home#show"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

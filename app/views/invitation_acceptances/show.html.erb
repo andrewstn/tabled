@@ -1,0 +1,36 @@
+<% content_for :title, "Invitation to #{@invitation.organization.name} · Tabled" %>
+
+<section class="binder-page w-full max-w-3xl">
+  <div class="document-meta">
+    <span>Tabled invitation</span>
+    <span>Expires <%= @invitation.expires_at.to_date.to_fs(:long) %></span>
+  </div>
+
+  <div class="p-6 sm:p-9">
+    <p class="eyebrow">You’re invited</p>
+    <h1 class="mt-2 text-3xl font-semibold">Join <%= @invitation.organization.name %></h1>
+    <p class="mt-3 max-w-xl leading-7 text-ink-soft"><%= @invitation.invited_by.name %> invited <%= @invitation.email %> to join as <%= @invitation.role.humanize.downcase %>.</p>
+
+    <div class="mt-8 border-y border-rule py-6">
+      <% if @invitation.expired? %>
+        <p class="font-bold text-brick">This invitation has expired.</p>
+        <p class="mt-1 text-sm text-ink-soft">Ask an owner or officer for a new invitation.</p>
+      <% elsif @invitation.revoked? %>
+        <p class="font-bold text-brick">This invitation is no longer active.</p>
+      <% elsif @invitation.accepted? %>
+        <p class="font-bold text-moss-dark">This invitation has already been accepted.</p>
+      <% elsif authenticated? && current_user.email_address.casecmp?(@invitation.email) %>
+        <%= button_to "Join #{@invitation.organization.name}", invitation_acceptance_path(params[:token]), method: :patch, class: "button-primary" %>
+      <% elsif authenticated? %>
+        <p class="font-bold">This invitation is for <%= @invitation.email %>.</p>
+        <p class="mt-1 text-sm text-ink-soft">Sign out and use that email address to accept it.</p>
+      <% elsif @invited_user %>
+        <p class="font-bold">You already have a Tabled account.</p>
+        <%= link_to "Sign in to accept", new_session_path, class: "button-primary mt-4" %>
+      <% else %>
+        <p class="font-bold">Create your Tabled account to join.</p>
+        <%= link_to "Create account", new_user_path(invitation_token: params[:token]), class: "button-primary mt-4" %>
+      <% end %>
+    </div>
+  </div>
+</section>

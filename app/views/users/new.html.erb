@@ -20,6 +20,7 @@
         description: "Add the details your organizations will use for rosters and member lists." %>
 
       <%= form_with model: @user, class: "mt-8 max-w-xl space-y-6" do |form| %>
+        <%= hidden_field_tag :invitation_token, params[:invitation_token] if @invitation %>
         <%= render "shared/form_errors", record: @user %>
         <div>
           <%= form.label :name, "Full name", class: "form-label" %>

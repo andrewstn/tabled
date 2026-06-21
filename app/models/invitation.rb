@@ -20,7 +20,7 @@ class Invitation < ApplicationRecord
     }
   validates :token_digest, presence: true, uniqueness: true
   validates :expires_at, presence: true
-  validate :email_is_not_a_current_member
+  validate :email_is_not_a_current_member, on: :create
 
   before_validation :generate_token, on: :create
   before_validation :set_expiration, on: :create
