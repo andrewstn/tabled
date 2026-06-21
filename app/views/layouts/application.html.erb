@@ -51,9 +51,11 @@
     </header>
 
     <% if flash.any? %>
-      <div class="mx-auto max-w-3xl px-5 pt-5">
+      <div class="mx-auto max-w-6xl px-5 pt-5">
         <% flash.each do |type, message| %>
-          <div class="border-l-4 px-4 py-3 text-sm <%= type == "alert" ? "border-brick bg-brick-pale text-brick" : "border-moss bg-olive-pale text-moss-dark" %>"><%= message %></div>
+          <div class="flash-note <%= type == "alert" ? "flash-alert" : "flash-notice" %>" role="<%= type == "alert" ? "alert" : "status" %>">
+            <%= message %>
+          </div>
         <% end %>
       </div>
     <% end %>

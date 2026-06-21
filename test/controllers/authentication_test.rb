@@ -24,4 +24,11 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to new_session_path
   end
+
+  test "shows an accessible note when sign-in fails" do
+    post session_path, params: { email_address: users(:owner).email_address, password: "incorrect-password" }
+
+    assert_response :unprocessable_entity
+    assert_select "[role='alert']", text: "That email and password did not match."
+  end
 end

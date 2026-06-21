@@ -45,4 +45,11 @@
   .section-heading { @apply border-b border-rule pb-2 text-xl font-semibold text-ink; }
   .desk-label { @apply inline-block border-b-2 border-amber bg-amber-pale/35 px-2 py-1 text-xs font-bold tracking-[0.02em] text-ink-soft; }
   .ruled-list { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 2.15rem, rgb(201 189 169 / 0.55) 2.15rem, rgb(201 189 169 / 0.55) calc(2.15rem + 1px)); }
+  .flash-note { @apply relative max-w-xl border bg-sheet px-4 py-3 text-sm shadow-[2px_2px_0_rgba(93,77,50,0.10)]; }
+  .flash-note::before { content: ""; @apply absolute -top-1 left-5 size-2 rounded-full; }
+  .flash-alert { @apply border-brick/60 text-brick; }
+  .flash-alert::before { @apply bg-brick; }
+  .flash-notice { @apply border-moss/60 text-moss-dark; }
+  .flash-notice::before { @apply bg-moss; }
+  .form-note { @apply border-l-2 border-brick bg-brick-pale/45 px-4 py-3 text-sm text-brick; }
 }

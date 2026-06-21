@@ -1,6 +1,6 @@
 <% if record.errors.any? %>
-  <div class="border-l-4 border-brick bg-brick-pale px-4 py-3 text-sm text-brick" role="alert">
-    <p class="font-semibold">A few things need another look:</p>
+  <div class="form-note" role="alert">
+    <p class="font-semibold">Please check these details:</p>
     <ul class="mt-1 list-disc pl-5">
       <% record.errors.full_messages.each do |message| %>
         <li><%= message %></li>
