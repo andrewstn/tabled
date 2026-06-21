@@ -4,7 +4,7 @@
   <div class="document-meta">
     <span>Club workspace</span>
     <span><%= @membership.role.humanize %> access</span>
-    <span>Current semester</span>
+    <span>Current semester · <%= current_semester_label %></span>
   </div>
 
   <header class="border-b-2 border-ink/20 px-6 py-6 sm:px-9">
@@ -37,7 +37,7 @@
             <p class="eyebrow">Members</p>
             <h2 class="mt-1 text-2xl font-semibold">Around the table</h2>
           </div>
-          <p class="text-sm font-bold text-ink-soft"><%= pluralize(@organization.memberships.count, "member") %></p>
+          <p class="text-sm font-bold text-ink-soft"><%= pluralize(@organization.memberships.count, "member") %> around the table</p>
         </div>
 
         <div class="mt-5">
