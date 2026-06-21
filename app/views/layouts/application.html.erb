@@ -24,19 +24,30 @@
   </head>
 
   <body class="min-h-screen bg-paper text-ink antialiased">
-    <header class="border-b border-rule bg-paper-deep/80">
-      <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+    <header class="border-b border-rule bg-paper-deep/90">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-5 px-5 py-4">
         <%= link_to root_path, class: "flex items-center gap-3 font-semibold tracking-tight" do %>
           <span class="grid size-9 place-items-center rounded-md bg-moss text-lg text-white shadow-sm">T</span>
           <span class="text-xl">Tabled</span>
         <% end %>
         <% if authenticated? %>
-          <div class="flex items-center gap-4 text-sm">
+          <div class="flex items-center gap-3 text-sm">
             <span class="hidden text-ink-soft sm:inline"><%= current_user.name %></span>
             <%= button_to "Sign out", session_path, method: :delete, class: "button-secondary" %>
           </div>
         <% end %>
       </div>
+      <% if authenticated? && current_user.organizations.any? %>
+        <nav aria-label="Your organizations" class="border-t border-rule/70 bg-[#f7f1e5]/70">
+          <div class="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-5 py-2 text-sm">
+            <span class="mr-1 shrink-0 font-semibold text-ink-soft">Your tables</span>
+            <% current_user.organizations.order(:name).each do |organization| %>
+              <%= link_to organization.name, organization_path(organization), class: "shrink-0 rounded-md px-3 py-1.5 font-medium #{"bg-moss text-white" if @organization == organization} #{"hover:bg-paper-deep" unless @organization == organization}" %>
+            <% end %>
+            <%= link_to "+ New organization", new_organization_path, class: "shrink-0 px-2 py-1.5 font-semibold text-moss-dark" %>
+          </div>
+        </nav>
+      <% end %>
     </header>
 
     <% if flash.any? %>
@@ -47,7 +58,7 @@
       </div>
     <% end %>
 
-    <main class="mx-auto flex min-h-[calc(100vh-74px)] max-w-6xl items-start justify-center px-5 py-12 sm:py-20">
+    <main class="mx-auto flex min-h-[calc(100vh-74px)] max-w-6xl items-start justify-center px-5 py-10 sm:py-14">
       <%= yield %>
     </main>
   </body>
