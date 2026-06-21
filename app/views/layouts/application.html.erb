@@ -31,20 +31,20 @@
           <span class="hidden text-[0.65rem] font-bold uppercase tracking-[0.14em] text-ink-soft sm:inline">organization book</span>
         <% end %>
         <% if authenticated? %>
-          <div class="flex items-center gap-3 text-sm">
-            <span class="hidden text-ink-soft sm:inline"><%= current_user.name %></span>
-            <%= button_to "Sign out", session_path, method: :delete, class: "button-secondary" %>
+          <div class="flex items-center gap-4 text-sm">
+            <span class="hidden border-b border-rule pb-0.5 text-ink-soft sm:inline"><%= current_user.name %></span>
+            <%= button_to "Sign out", session_path, method: :delete, class: "cursor-pointer font-bold text-moss-dark underline decoration-moss/40 underline-offset-4" %>
           </div>
         <% end %>
       </div>
       <% if authenticated? && current_user.organizations.any? %>
         <nav aria-label="Your organizations" class="border-t border-rule bg-paper">
-          <div class="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-5 py-2 text-sm">
-            <span class="mr-1 shrink-0 font-semibold text-ink-soft">Your tables</span>
+          <div class="mx-auto flex max-w-6xl items-end gap-1 overflow-x-auto px-5 pt-2 text-sm">
+            <span class="mr-3 shrink-0 pb-2 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-soft">Organization file</span>
             <% current_user.organizations.order(:name).each do |organization| %>
-              <%= link_to organization.name, organization_path(organization), class: "shrink-0 border-b-2 px-2 py-1.5 font-medium #{"border-moss-dark text-moss-dark" if @organization == organization} #{"border-transparent hover:border-rule" unless @organization == organization}" %>
+              <%= link_to organization.name, organization_path(organization), class: "shrink-0 border-x border-t px-3 py-2 font-bold #{"border-rule bg-sheet text-ink" if @organization == organization} #{"border-transparent text-ink-soft hover:border-rule" unless @organization == organization}" %>
             <% end %>
-            <%= link_to "+ New organization", new_organization_path, class: "shrink-0 px-2 py-1.5 font-semibold text-moss-dark" %>
+            <%= link_to "+ Add organization", new_organization_path, class: "ml-2 shrink-0 pb-2 font-bold text-moss-dark" %>
           </div>
         </nav>
       <% end %>
