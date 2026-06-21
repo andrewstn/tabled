@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
   def require_authentication
     return if authenticated?
 
-    session[:return_to_after_authenticating] = request.fullpath if request.get?
+    session[:return_to_after_authenticating] = request.fullpath if request.get? || request.head?
     redirect_to new_session_path, alert: "Sign in to pull up a chair."
   end
 
