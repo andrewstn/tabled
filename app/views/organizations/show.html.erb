@@ -1,0 +1,7 @@
+<% content_for :title, "#{@organization.name} · Tabled" %>
+
+<section class="paper-panel w-full p-8 sm:p-12">
+  <p class="eyebrow"><%= @membership.role.humanize %> · organization workspace</p>
+  <h1 class="mt-3 text-4xl font-semibold tracking-tight"><%= @organization.name %></h1>
+  <p class="mt-4 max-w-2xl text-lg leading-8 text-ink-soft"><%= @organization.description.presence || "Your group has a place at the table. Add a short description whenever you’re ready." %></p>
+</section>

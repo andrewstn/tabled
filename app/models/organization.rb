@@ -6,4 +6,8 @@ class Organization < ApplicationRecord
   validates :slug, presence: true, uniqueness: true,
     format: { with: /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/, message: "may only contain lowercase letters, numbers, and hyphens" }
   validates :description, length: { maximum: 1_000 }
+
+  def to_param
+    slug
+  end
 end

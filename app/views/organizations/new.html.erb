@@ -1,0 +1,24 @@
+<% content_for :title, "Start an organization · Tabled" %>
+
+<div class="paper-panel w-full max-w-2xl p-7 sm:p-10">
+  <p class="eyebrow">Set the table</p>
+  <h1 class="auth-title">Start your organization’s workspace.</h1>
+  <p class="auth-copy">Give your group a familiar home for the semester. You’ll begin as the owner and can bring officers and members in next.</p>
+
+  <%= form_with model: @organization, class: "mt-8 space-y-6" do |form| %>
+    <%= render "shared/form_errors", record: @organization %>
+    <div>
+      <%= form.label :name, "Organization name", class: "form-label" %>
+      <%= form.text_field :name, required: true, autofocus: true, placeholder: "Buckeye Film Society", class: "form-input" %>
+      <p class="mt-2 text-sm text-ink-soft">Use the name members know from flyers and meetings.</p>
+    </div>
+    <div>
+      <%= form.label :description, "A short note about the group", class: "form-label" %>
+      <%= form.text_area :description, rows: 5, maxlength: 1000, placeholder: "What brings everyone around the table?", class: "form-input resize-y" %>
+    </div>
+    <div class="flex flex-wrap items-center gap-4">
+      <%= form.submit "Set up our workspace", class: "button-primary" %>
+      <%= link_to "Not yet", root_path, class: "text-link" %>
+    </div>
+  <% end %>
+</div>

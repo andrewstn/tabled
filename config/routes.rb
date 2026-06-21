@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resource :session, only: %i[new create destroy]
   resources :users, only: %i[new create]
+  resources :organizations, param: :slug, only: %i[new create show]
 
   root "home#show"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
