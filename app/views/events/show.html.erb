@@ -111,7 +111,33 @@
         <% if @event.full? %><p class="form-note mt-4">This gathering is full.</p><% end %>
         <% if @event.rsvp_deadline_passed? %><p class="mt-4 text-sm font-bold text-brick">RSVPs are closed.</p><% end %>
         <% if @event_policy.view_roster? %>
-          <p class="mt-5 border-t border-rule pt-4 text-sm text-ink-soft">Organizer access includes the full event roster.</p>
+          <dl class="mt-5 grid grid-cols-3 gap-2 border-y border-rule py-4 text-center">
+            <% [["Attending", "attending"], ["Maybe", "maybe"], ["Not attending", "not_attending"]].each do |label, status| %>
+              <div>
+                <dt class="text-xs font-bold text-ink-soft"><%= label %></dt>
+                <dd class="mt-1 font-serif text-2xl font-semibold"><%= @rsvps_by_status.fetch(status, []).size %></dd>
+              </div>
+            <% end %>
+          </dl>
+
+          <div class="mt-6" aria-labelledby="event-roster">
+            <h2 id="event-roster" class="text-xl font-semibold">Event roster</h2>
+            <% [["Attending", "attending"], ["Maybe", "maybe"], ["Not attending", "not_attending"]].each do |label, status| %>
+              <section class="mt-5" aria-labelledby="roster-<%= status %>">
+                <h3 id="roster-<%= status %>" class="text-sm font-bold text-moss-dark"><%= label %></h3>
+                <% responses = @rsvps_by_status.fetch(status, []) %>
+                <% if responses.any? %>
+                  <ul class="mt-2 divide-y divide-rule/70 border-y border-rule text-sm">
+                    <% responses.sort_by { |response| response.membership.user.name.downcase }.each do |response| %>
+                      <li class="py-2"><%= response.membership.user.name %></li>
+                    <% end %>
+                  </ul>
+                <% else %>
+                  <p class="mt-2 text-sm text-ink-soft">No responses yet.</p>
+                <% end %>
+              </section>
+            <% end %>
+          </div>
         <% end %>
       </section>
     </aside>

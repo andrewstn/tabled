@@ -42,7 +42,21 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     get organization_event_path(organizations(:film_society), events(:upcoming_film_night))
 
     assert_response :success
-    assert_select "p", text: /Organizer access includes the full event roster/
+    assert_select "h2", "Event roster"
+    assert_select "li", text: users(:owner).name
+    assert_select "li", text: users(:member).name
+    assert_select "dt", text: "Attending"
+    assert_select "dd", text: "1"
+  end
+
+  test "ordinary member cannot view the event roster" do
+    sign_in_as(users(:member))
+
+    get organization_event_path(organizations(:film_society), events(:upcoming_film_night))
+
+    assert_response :success
+    assert_select "h2", { text: "Event roster", count: 0 }
+    assert_select "li", { text: users(:owner).name, count: 0 }
   end
 
   test "non-member cannot view an organization gathering" do

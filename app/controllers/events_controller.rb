@@ -17,6 +17,7 @@ class EventsController < ApplicationController
     @membership = current_user.memberships.find_by!(organization: @organization)
     @rsvp = @event.rsvps.find_by(membership: @membership)
     @event_policy = EventPolicy.new(current_user, @organization, @event)
+    @rsvps_by_status = @event.rsvps.group_by(&:status) if @event_policy.view_roster?
   end
 
   def new
