@@ -1,6 +1,9 @@
 class User < ApplicationRecord
   has_secure_password
 
+  has_many :memberships, dependent: :destroy
+  has_many :organizations, through: :memberships
+
   normalizes :email_address, with: ->(email) { email.strip.downcase }
 
   validates :name, presence: true, length: { maximum: 100 }

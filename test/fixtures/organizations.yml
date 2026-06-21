@@ -1,0 +1,9 @@
+film_society:
+  name: Buckeye Film Society
+  slug: buckeye-film-society
+  description: A place for campus film lovers to watch, discuss, and make movies together.
+
+garden_club:
+  name: Community Garden Club
+  slug: community-garden-club
+  description: Growing food and friendships just off the quad.

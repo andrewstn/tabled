@@ -1,0 +1,9 @@
+film_owner:
+  user: owner
+  organization: film_society
+  role: owner
+
+film_member:
+  user: member
+  organization: film_society
+  role: member
