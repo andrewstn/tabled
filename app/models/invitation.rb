@@ -20,6 +20,7 @@ class Invitation < ApplicationRecord
     }
   validates :token_digest, presence: true, uniqueness: true
   validates :expires_at, presence: true
+  validate :email_is_not_a_current_member
 
   before_validation :generate_token, on: :create
   before_validation :set_expiration, on: :create
@@ -50,6 +51,14 @@ class Invitation < ApplicationRecord
     revoked_at.present?
   end
 
+  def status
+    return "Accepted" if accepted?
+    return "Revoked" if revoked?
+    return "Expired" if expired?
+
+    "Pending"
+  end
+
   private
 
   def generate_token
@@ -59,5 +68,13 @@ class Invitation < ApplicationRecord
 
   def set_expiration
     self.expires_at ||= DEFAULT_EXPIRATION.from_now
+  end
+
+  def email_is_not_a_current_member
+    return if organization.blank? || email.blank?
+
+    if organization.users.where("lower(email_address) = ?", email.downcase).exists?
+      errors.add(:email, "is already on the member roster")
+    end
   end
 end

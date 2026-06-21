@@ -1,0 +1,54 @@
+<% content_for :title, "Invitations · #{@organization.name} · Tabled" %>
+
+<article class="binder-page w-full">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span>Current semester · <%= current_semester_label %></span>
+  </div>
+
+  <header class="flex flex-wrap items-end justify-between gap-5 border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <div>
+      <p class="eyebrow">Member onboarding</p>
+      <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Pending invitations</h1>
+      <p class="mt-2 text-sm leading-6 text-ink-soft">Invitations help officers build the semester roster.</p>
+    </div>
+    <%= link_to "Invite a member", new_organization_invitation_path(@organization), class: "button-primary" %>
+  </header>
+
+  <div class="overflow-x-auto p-5 sm:p-8">
+    <table class="w-full min-w-[52rem] border-collapse text-left text-sm">
+      <thead>
+        <tr class="border-b-2 border-ink/20 text-xs text-ink-soft">
+          <th scope="col" class="px-3 py-3 font-bold">Email</th>
+          <th scope="col" class="px-3 py-3 font-bold">Role</th>
+          <th scope="col" class="px-3 py-3 font-bold">Invited by</th>
+          <th scope="col" class="px-3 py-3 font-bold">Sent</th>
+          <th scope="col" class="px-3 py-3 font-bold">Expires</th>
+          <th scope="col" class="px-3 py-3 font-bold">Status</th>
+          <th scope="col" class="px-3 py-3 font-bold">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-rule/70">
+        <% @invitations.each do |invitation| %>
+          <tr>
+            <th scope="row" class="px-3 py-4 font-bold"><%= invitation.email %></th>
+            <td class="px-3 py-4"><span class="role-tag"><%= invitation.role.humanize %></span></td>
+            <td class="px-3 py-4 text-ink-soft"><%= invitation.invited_by.name %></td>
+            <td class="px-3 py-4 text-ink-soft"><%= invitation.created_at.to_date.to_fs(:long) %></td>
+            <td class="px-3 py-4 text-ink-soft"><%= invitation.expires_at.to_date.to_fs(:long) %></td>
+            <td class="px-3 py-4 text-ink-soft"><%= invitation.status %></td>
+            <td class="px-3 py-4">
+              <% if invitation.pending? %>
+                <%= button_to "Revoke", organization_invitation_path(@organization, invitation), method: :delete,
+                  class: "text-xs font-bold text-brick underline decoration-brick/40 underline-offset-4",
+                  form: { data: { turbo_confirm: "Revoke the invitation for #{invitation.email}?" } } %>
+              <% else %>
+                <span class="text-xs text-ink-soft">—</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</article>

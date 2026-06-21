@@ -1,0 +1,31 @@
+<% content_for :title, "Invite a member · #{@organization.name} · Tabled" %>
+
+<section class="binder-page w-full max-w-3xl">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span>Current semester · <%= current_semester_label %></span>
+  </div>
+
+  <div class="p-6 sm:p-9">
+    <p class="eyebrow">Member onboarding</p>
+    <h1 class="mt-2 text-3xl font-semibold">Invite a member</h1>
+    <p class="mt-2 max-w-xl text-sm leading-6 text-ink-soft">Bring someone into the organization workspace and choose their starting role.</p>
+
+    <%= form_with model: [ @organization, @invitation ], class: "mt-8 max-w-xl space-y-6" do |form| %>
+      <%= render "shared/form_errors", record: @invitation %>
+      <div>
+        <%= form.label :email, "Email address", class: "form-label" %>
+        <%= form.email_field :email, required: true, autofocus: true, autocomplete: "email", class: "form-input" %>
+        <p class="mt-1.5 text-xs text-ink-soft">Use the address they’ll use for their Tabled account.</p>
+      </div>
+      <div>
+        <%= form.label :role, "Starting role", class: "form-label" %>
+        <%= form.select :role, options_for_select(@permitted_roles.map { |role| [ role.humanize, role ] }, @invitation.role || "member"), {}, class: "form-input" %>
+      </div>
+      <div class="flex flex-wrap items-center gap-4 border-t border-rule pt-5">
+        <%= form.submit "Prepare invitation", class: "button-primary" %>
+        <%= link_to "Back to invitations", organization_invitations_path(@organization), class: "text-link" %>
+      </div>
+    <% end %>
+  </div>
+</section>
