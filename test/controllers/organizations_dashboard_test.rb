@@ -21,6 +21,7 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "p", text: "Nothing needs follow-up right now."
     assert_select "p", text: "No notes in the log book yet."
     assert_select "a[href=?]", organization_members_path(organizations(:film_society)), text: /Member roster/
+    assert_select "a[href=?]", organization_events_path(organizations(:film_society)), text: "Gatherings"
     assert_select "a[href=?]", new_organization_invitation_path(organizations(:film_society)), count: 0
   end
 

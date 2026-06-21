@@ -1,0 +1,81 @@
+<% content_for :title, "Gatherings · #{@organization.name} · Tabled" %>
+
+<article class="binder-page w-full">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span>Gatherings</span>
+    <span>Current semester · <%= current_semester_label %></span>
+  </div>
+
+  <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <p class="eyebrow">Organization calendar</p>
+    <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Gatherings</h1>
+    <p class="mt-3 max-w-2xl leading-7 text-ink-soft">Meetings, workshops, and the time your organization spends together.</p>
+  </header>
+
+  <section class="workspace-section" aria-labelledby="upcoming-gatherings">
+    <div class="workspace-section-heading">
+      <p class="eyebrow">On the calendar</p>
+      <h2 id="upcoming-gatherings" class="mt-1 text-2xl font-semibold">Upcoming gatherings</h2>
+    </div>
+
+    <% if @upcoming_events.any? %>
+      <div class="mt-5 divide-y divide-rule border-y border-rule">
+        <% @upcoming_events.each do |event| %>
+          <article class="event-row">
+            <time class="event-date" datetime="<%= event.starts_at.iso8601 %>">
+              <span class="text-xs font-bold text-moss-dark"><%= event.starts_at.strftime("%b") %></span>
+              <span class="font-serif text-2xl font-semibold leading-none"><%= event.starts_at.day %></span>
+            </time>
+            <div class="min-w-0 flex-1">
+              <h3 class="text-lg font-semibold"><%= event.title %></h3>
+              <p class="mt-1 text-sm text-ink-soft">
+                <%= event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %>
+                <% if event.location.present? %> · <%= event.location %><% end %>
+              </p>
+              <p class="mt-2 text-xs font-semibold text-ink-soft">
+                <%= pluralize(event.attending_count, "member") %> attending
+                <% if event.capacity.present? %> · <%= event.capacity %> spots total<% end %>
+                <% if event.rsvp_deadline_passed? %> · RSVPs closed<% end %>
+              </p>
+            </div>
+            <% if (rsvp = @rsvps_by_event_id[event.id]) %>
+              <span class="role-tag"><%= rsvp.status.humanize %></span>
+            <% end %>
+          </article>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="mt-5 border-l-4 border-amber bg-amber-pale/35 px-4 py-3">
+        <p class="font-bold">No gatherings yet.</p>
+        <p class="mt-1 text-sm text-ink-soft">Add the first meeting when your calendar is ready.</p>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="workspace-section border-t border-rule" aria-labelledby="past-gatherings">
+    <div class="workspace-section-heading">
+      <p class="eyebrow">Earlier this semester</p>
+      <h2 id="past-gatherings" class="mt-1 text-2xl font-semibold">Past gatherings</h2>
+    </div>
+
+    <% if @past_events.any? %>
+      <div class="mt-5 divide-y divide-rule border-y border-rule">
+        <% @past_events.each do |event| %>
+          <article class="event-row">
+            <time class="event-date opacity-75" datetime="<%= event.starts_at.iso8601 %>">
+              <span class="text-xs font-bold text-moss-dark"><%= event.starts_at.strftime("%b") %></span>
+              <span class="font-serif text-2xl font-semibold leading-none"><%= event.starts_at.day %></span>
+            </time>
+            <div class="min-w-0 flex-1">
+              <h3 class="text-lg font-semibold"><%= event.title %></h3>
+              <p class="mt-1 text-sm text-ink-soft"><%= event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %><% if event.location.present? %> · <%= event.location %><% end %></p>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="mt-5 text-sm leading-6 text-ink-soft">Past meetings will stay here as the semester fills in.</p>
+    <% end %>
+  </section>
+</article>
