@@ -1,0 +1,19 @@
+upcoming_film_night:
+  organization: film_society
+  created_by: owner
+  title: First Friday Film Night
+  description: Bring a favorite short film and something to share.
+  location: Student Union screening room
+  starts_at: <%= 2.days.from_now %>
+  ends_at: <%= 2.days.from_now + 2.hours %>
+  capacity: 30
+  rsvp_deadline: <%= 1.day.from_now %>
+
+past_planning_table:
+  organization: film_society
+  created_by: owner
+  title: Short Film Planning Table
+  description: A working session for the semester short film.
+  location: Library group room 3
+  starts_at: <%= 3.days.ago %>
+  ends_at: <%= 3.days.ago + 1.hour %>

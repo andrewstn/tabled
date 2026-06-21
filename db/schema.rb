@@ -10,9 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_21_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_21_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "events", force: :cascade do |t|
+    t.integer "capacity"
+    t.datetime "created_at", null: false
+    t.bigint "created_by_id", null: false
+    t.text "description"
+    t.datetime "ends_at"
+    t.string "location"
+    t.bigint "organization_id", null: false
+    t.datetime "rsvp_deadline"
+    t.datetime "starts_at", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_events_on_created_by_id"
+    t.index ["organization_id", "starts_at"], name: "index_events_on_organization_id_and_starts_at"
+    t.index ["organization_id"], name: "index_events_on_organization_id"
+    t.check_constraint "capacity IS NULL OR capacity > 0", name: "events_positive_capacity"
+    t.check_constraint "ends_at IS NULL OR ends_at > starts_at", name: "events_end_after_start"
+    t.check_constraint "rsvp_deadline IS NULL OR rsvp_deadline <= starts_at", name: "events_deadline_before_start"
+  end
 
   create_table "invitations", force: :cascade do |t|
     t.datetime "accepted_at"
@@ -62,6 +82,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_130000) do
     t.index "lower((email_address)::text)", name: "index_users_on_lower_email_address", unique: true
   end
 
+  add_foreign_key "events", "organizations"
+  add_foreign_key "events", "users", column: "created_by_id"
   add_foreign_key "invitations", "organizations"
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "memberships", "organizations"
