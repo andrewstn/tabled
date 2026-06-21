@@ -3,6 +3,7 @@
 <section class="binder-page w-full max-w-3xl">
   <div class="document-meta">
     <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span><%= link_to "Member roster", organization_members_path(@organization), class: "text-link" %></span>
     <span>Current semester · <%= current_semester_label %></span>
   </div>
 
@@ -23,7 +24,7 @@
         <%= form.select :role, options_for_select(@permitted_roles.map { |role| [ role.humanize, role ] }, @invitation.role || "member"), {}, class: "form-input" %>
       </div>
       <div class="flex flex-wrap items-center gap-4 border-t border-rule pt-5">
-        <%= form.submit "Prepare invitation", class: "button-primary" %>
+        <%= form.submit "Send invitation", class: "button-primary" %>
         <%= link_to "Back to invitations", organization_invitations_path(@organization), class: "text-link" %>
       </div>
     <% end %>

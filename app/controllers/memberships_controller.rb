@@ -7,6 +7,7 @@ class MembershipsController < ApplicationController
     @current_membership = current_user.memberships.find_by!(organization: @organization)
     @memberships = @organization.memberships.includes(:user).order(:role, "users.name")
     @can_manage_members = OrganizationPolicy.new(current_user, @organization).manage?
+    @pending_invitation_count = @organization.invitations.pending.count if @can_manage_members
   end
 
   def update

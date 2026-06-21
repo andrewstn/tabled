@@ -91,6 +91,16 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
     assert_not invitations(:pending_member).reload.revoked?
   end
 
+  test "invitation list has a useful empty state" do
+    organizations(:film_society).invitations.destroy_all
+    sign_in_as(users(:owner))
+
+    get organization_invitations_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "p", text: "No invitations yet."
+  end
+
   private
 
   def sign_in_as(user)

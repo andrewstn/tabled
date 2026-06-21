@@ -24,7 +24,7 @@ class InvitationsController < ApplicationController
 
     if issuer.create
       InvitationMailer.with(invitation: issuer.invitation, token: issuer.invitation.token).invite.deliver_now
-      redirect_to organization_invitations_path(@organization), notice: "Invitation prepared for #{issuer.invitation.email}."
+      redirect_to organization_invitations_path(@organization), notice: "Invitation sent to #{issuer.invitation.email}."
     else
       @invitation = issuer.invitation
       set_permitted_roles

@@ -20,6 +20,17 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /The board is clear/
     assert_select "p", text: "Nothing needs follow-up right now."
     assert_select "p", text: "No notes in the log book yet."
+    assert_select "a[href=?]", organization_members_path(organizations(:film_society)), text: /Member roster/
+    assert_select "a[href=?]", new_organization_invitation_path(organizations(:film_society)), count: 0
+  end
+
+  test "owner sees member onboarding actions backed by pending invitations" do
+    sign_in_as(users(:owner))
+
+    get organization_path(organizations(:film_society))
+
+    assert_select "a[href=?]", new_organization_invitation_path(organizations(:film_society)), text: "Invite member"
+    assert_select "a[href=?]", organization_invitations_path(organizations(:film_society)), text: "Pending invitations (1)"
   end
 
   test "navigation lets a user switch organizations" do

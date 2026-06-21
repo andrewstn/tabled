@@ -3,6 +3,7 @@
 <article class="binder-page w-full">
   <div class="document-meta">
     <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span><%= link_to "Member roster", organization_members_path(@organization), class: "text-link" %></span>
     <span>Current semester · <%= current_semester_label %></span>
   </div>
 
@@ -15,8 +16,15 @@
     <%= link_to "Invite a member", new_organization_invitation_path(@organization), class: "button-primary" %>
   </header>
 
-  <div class="overflow-x-auto p-5 sm:p-8">
-    <table class="w-full min-w-[52rem] border-collapse text-left text-sm">
+  <div class="p-5 sm:p-8">
+    <% if @invitations.empty? %>
+      <div class="border-y border-rule py-6">
+        <p class="font-bold">No invitations yet.</p>
+        <p class="mt-1 text-sm text-ink-soft">Invite the first member when you’re ready to build the semester roster.</p>
+      </div>
+    <% else %>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[52rem] border-collapse text-left text-sm">
       <thead>
         <tr class="border-b-2 border-ink/20 text-xs text-ink-soft">
           <th scope="col" class="px-3 py-3 font-bold">Email</th>
@@ -49,6 +57,8 @@
           </tr>
         <% end %>
       </tbody>
-    </table>
+        </table>
+      </div>
+    <% end %>
   </div>
 </article>

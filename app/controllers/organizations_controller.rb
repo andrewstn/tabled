@@ -20,6 +20,8 @@ class OrganizationsController < ApplicationController
 
   def show
     @membership = current_user.memberships.find_by!(organization: @organization)
+    @can_manage_members = organization_policy.manage?
+    @pending_invitation_count = @organization.invitations.pending.count if @can_manage_members
   end
 
   def edit
