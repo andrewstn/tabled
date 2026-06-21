@@ -33,19 +33,16 @@
     <div class="divide-y divide-rule lg:border-r lg:border-rule">
       <section class="workspace-section">
         <div class="workspace-section-heading">
-          <div>
-            <p class="eyebrow">Members</p>
-            <h2 class="mt-1 text-2xl font-semibold">Around the table</h2>
-          </div>
-          <p class="text-sm font-bold text-ink-soft"><%= pluralize(@organization.memberships.count, "member") %> around the table</p>
+          <p class="eyebrow">Members</p>
+          <h2 class="mt-1 text-2xl font-semibold">Around the table</h2>
         </div>
 
-        <div class="mt-5">
+        <div class="mt-7">
           <h3 class="text-sm font-bold text-ink-soft">Member roster</h3>
-          <div class="ruled-list mt-2 border-t border-rule">
+          <div class="mt-3 divide-y divide-rule/70 border-y border-rule">
             <% @organization.memberships.includes(:user).order(:role).each do |membership| %>
               <div class="member-row">
-                <span class="font-semibold"><%= membership.user.name %></span>
+                <span class="min-w-0 font-semibold"><%= membership.user.name %></span>
                 <span class="role-tag"><%= membership.role.humanize %></span>
               </div>
             <% end %>

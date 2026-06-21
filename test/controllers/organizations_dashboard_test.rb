@@ -14,6 +14,8 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: "Recent roll call"
     assert_select "h2", text: "Bulletin"
     assert_select "h2", text: "What needs attention"
+    assert_select "p", text: /members around the table/, count: 0
+    assert_select ".member-row .role-tag", count: 2
     assert_select "p", text: "No gatherings yet."
     assert_select "p", text: /The board is clear/
     assert_select "p", text: "Nothing needs follow-up right now."

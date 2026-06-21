@@ -53,8 +53,8 @@
   .flash-notice::before { @apply bg-moss; }
   .form-note { @apply border-l-2 border-brick bg-brick-pale/45 px-4 py-3 text-sm text-brick; }
   .workspace-section { @apply p-5 sm:p-8; }
-  .workspace-section-heading { @apply flex flex-wrap items-end justify-between gap-3 border-b border-rule pb-2; }
-  .role-tag { @apply inline-flex items-center border border-moss/35 bg-olive-pale/55 px-2.5 py-1 text-xs font-bold text-moss-dark; }
-  .member-row { @apply flex min-h-[2.15rem] items-center justify-between gap-4 px-2 py-1.5 text-sm; }
+  .workspace-section-heading { @apply border-b border-rule pb-4; }
+  .role-tag { @apply relative inline-flex shrink-0 items-center whitespace-nowrap border border-moss/35 bg-olive-pale px-2.5 py-1 text-xs font-bold leading-5 text-moss-dark; }
+  .member-row { @apply flex min-h-14 items-center justify-between gap-5 px-3 py-3 text-sm; }
   .organization-row { @apply flex min-h-12 items-center justify-between gap-4 border-b border-rule/70 px-2 py-2.5 hover:bg-olive-pale/45 focus:outline-2 focus:outline-offset-2 focus:outline-moss/50; }
 }
