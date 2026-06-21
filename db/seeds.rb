@@ -51,5 +51,74 @@ pending_invitations.each do |email_address, role|
   invitation.save!
 end
 
-puts "Seeded Buckeye Film Society with four members and two pending invitations."
+event_attributes = {
+  "First Friday Film Night" => {
+    description: "Bring a favorite short film and something small to share around the table.",
+    location: "Student Union screening room",
+    starts_at: 5.days.from_now.change(hour: 19, min: 0),
+    ends_at: 5.days.from_now.change(hour: 21, min: 0),
+    capacity: 24,
+    rsvp_deadline: 4.days.from_now.change(hour: 18, min: 0)
+  },
+  "Camera Workshop" => {
+    description: "A hands-on afternoon with the club cameras. No previous experience needed.",
+    location: "Media lab 204",
+    starts_at: 12.days.from_now.change(hour: 15, min: 30),
+    ends_at: 12.days.from_now.change(hour: 17, min: 0),
+    capacity: 12,
+    rsvp_deadline: 10.days.from_now.change(hour: 20, min: 0)
+  },
+  "Short Film Planning Table" => {
+    description: "A working session to choose crews and sketch the next short film.",
+    location: "Library group room 3",
+    starts_at: 8.days.ago.change(hour: 18, min: 0),
+    ends_at: 8.days.ago.change(hour: 19, min: 30)
+  },
+  "End-of-Semester Screening" => {
+    description: "The semester wrap-up screening for members, friends, and collaborators.",
+    location: "Hale Hall auditorium",
+    starts_at: 22.days.ago.change(hour: 19, min: 0),
+    ends_at: 22.days.ago.change(hour: 21, min: 30)
+  }
+}
+
+events = event_attributes.to_h do |title, attributes|
+  event = organization.events.find_or_initialize_by(title: title)
+  event.update!(attributes.merge(created_by: demo_users.fetch("demo-owner@example.test")))
+  [ title, event ]
+end
+
+rsvp_statuses = {
+  "First Friday Film Night" => {
+    "demo-owner@example.test" => :attending,
+    "maya.member@example.test" => :attending,
+    "theo.member@example.test" => :maybe,
+    "nina.member@example.test" => :not_attending
+  },
+  "Camera Workshop" => {
+    "demo-owner@example.test" => :attending,
+    "maya.member@example.test" => :maybe,
+    "nina.member@example.test" => :attending
+  },
+  "Short Film Planning Table" => {
+    "demo-owner@example.test" => :attending,
+    "maya.member@example.test" => :attending,
+    "theo.member@example.test" => :attending
+  },
+  "End-of-Semester Screening" => {
+    "demo-owner@example.test" => :attending,
+    "maya.member@example.test" => :attending,
+    "theo.member@example.test" => :maybe,
+    "nina.member@example.test" => :attending
+  }
+}
+
+rsvp_statuses.each do |event_title, statuses_by_email|
+  statuses_by_email.each do |email_address, status|
+    membership = Membership.find_by!(organization: organization, user: demo_users.fetch(email_address))
+    events.fetch(event_title).rsvps.find_or_initialize_by(membership: membership).update!(status: status)
+  end
+end
+
+puts "Seeded Buckeye Film Society with four members, two pending invitations, four gatherings, and demo RSVPs."
 puts "Sign in as demo-owner@example.test with tabled-demo-password."

@@ -25,7 +25,7 @@ Open [http://localhost:3000](http://localhost:3000). The seed data includes an o
 - Email: `demo-owner@example.test`
 - Password: `tabled-demo-password`
 
-The seed is idempotent and also creates officer, coordinator, and member accounts plus two pending invitations for Buckeye Film Society.
+The seed is idempotent and also creates officer, coordinator, and member accounts, two pending invitations, four gatherings, and a mix of demo RSVPs for Buckeye Film Society.
 
 Invitation emails stay local in development and are written beneath `tmp/mails`.
 
@@ -52,7 +52,7 @@ bin/brakeman --no-pager
 
 ## Current scope
 
-Milestones 1 and 2 establish the multi-tenant organization and member-onboarding foundation:
+Milestones 1 through 3 establish the multi-tenant organization workspace and its active semester calendar:
 
 - Account signup and session authentication
 - Organizations with stable, human-readable URLs
@@ -65,9 +65,15 @@ Milestones 1 and 2 establish the multi-tenant organization and member-onboarding
 - Expiring, revocable invitations with secure token digests
 - Invitation acceptance for existing users and new account signup
 - Development-safe invitation email delivery
+- Organization-scoped upcoming and past gatherings
+- Owner/officer event management, with coordinator create/edit access
+- Member RSVP choices for attending, maybe, and not attending
+- Capacity and RSVP-deadline enforcement with organizer overrides
+- Private organizer event rosters and response summaries
+- Real upcoming gathering data on the organization dashboard
 - Idempotent local demo data
 
-Dashboard sections for gatherings, attendance, announcements, and activity are intentional empty states for now. Events, RSVPs, check-ins, organization announcements, and activity history belong to later milestones.
+Attendance and check-ins, recurring events, calendar integrations, announcements, and activity history are intentionally outside the current scope. Dashboard placeholders for those later areas remain in place.
 
 ## Product and visual direction
 
