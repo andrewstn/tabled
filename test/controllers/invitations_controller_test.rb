@@ -4,9 +4,11 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
   test "owner can invite a member with normalized email" do
     sign_in_as(users(:owner))
 
-    assert_difference("Invitation.count") do
-      post organization_invitations_path(organizations(:film_society)),
-        params: { invitation: { email: " NEW.PERSON@Example.com ", role: "member" } }
+    assert_emails 1 do
+      assert_difference("Invitation.count") do
+        post organization_invitations_path(organizations(:film_society)),
+          params: { invitation: { email: " NEW.PERSON@Example.com ", role: "member" } }
+      end
     end
 
     invitation = Invitation.order(:created_at).last

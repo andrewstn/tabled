@@ -1,0 +1,8 @@
+You’re invited to <%= @invitation.organization.name %>
+
+<%= @invitation.invited_by.name %> invited you to join <%= @invitation.organization.name %> as <%= @invitation.role.humanize.downcase %>.
+
+Accept the invitation to join the organization workspace and take your place on the semester roster:
+<%= @acceptance_url %>
+
+This invitation expires on <%= @invitation.expires_at.to_date.to_fs(:long) %>.
