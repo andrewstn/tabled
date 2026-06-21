@@ -8,7 +8,12 @@
         <h1 class="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl"><%= @organization.name %></h1>
         <p class="mt-4 max-w-3xl text-lg leading-8 text-ink-soft"><%= @organization.description.presence || "Your group has a place at the table. Add a short description whenever you’re ready." %></p>
       </div>
-      <span class="rounded-md border border-rule bg-paper-deep px-3 py-2 text-sm font-semibold text-ink-soft"><%= @membership.role.humanize %></span>
+      <div class="flex items-center gap-3">
+        <% if OrganizationPolicy.new(current_user, @organization).manage? %>
+          <%= link_to "Organization settings", edit_organization_path(@organization), class: "button-secondary" %>
+        <% end %>
+        <span class="rounded-md border border-rule bg-paper-deep px-3 py-2 text-sm font-semibold text-ink-soft"><%= @membership.role.humanize %></span>
+      </div>
     </div>
   </header>
 
