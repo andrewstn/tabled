@@ -14,6 +14,10 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: "Recent roll call"
     assert_select "h2", text: "Bulletin"
     assert_select "h2", text: "What needs attention"
+    assert_select "p", text: "No gatherings yet."
+    assert_select "p", text: /The board is clear/
+    assert_select "p", text: "Nothing needs follow-up right now."
+    assert_select "p", text: "No notes in the log book yet."
   end
 
   test "navigation lets a user switch organizations" do
