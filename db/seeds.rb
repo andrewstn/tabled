@@ -33,4 +33,23 @@ roles_by_email.each do |email_address, role|
   membership.update!(role: role)
 end
 
-puts "Seeded Buckeye Film Society. Sign in as demo-owner@example.test with tabled-demo-password."
+pending_invitations = {
+  "prospective.member@example.com" => :member,
+  "new.officer@example.com" => :officer
+}
+
+pending_invitations.each do |email_address, role|
+  invitation = organization.invitations.unresolved
+    .where("lower(email) = ?", email_address)
+    .first_or_initialize
+  invitation.assign_attributes(
+    invited_by: demo_users.fetch("demo-owner@example.test"),
+    email: email_address,
+    role: role,
+    expires_at: 14.days.from_now
+  )
+  invitation.save!
+end
+
+puts "Seeded Buckeye Film Society with four members and two pending invitations."
+puts "Sign in as demo-owner@example.test with tabled-demo-password."

@@ -25,7 +25,9 @@ Open [http://localhost:3000](http://localhost:3000). The seed data includes an o
 - Email: `demo-owner@example.test`
 - Password: `tabled-demo-password`
 
-The seed is idempotent and also creates officer, coordinator, and member accounts for Buckeye Film Society.
+The seed is idempotent and also creates officer, coordinator, and member accounts plus two pending invitations for Buckeye Film Society.
+
+Invitation emails stay local in development and are written beneath `tmp/mails`.
 
 ## Tests and checks
 
@@ -33,6 +35,12 @@ Run the full test suite:
 
 ```bash
 bin/rails test
+```
+
+Run browser-backed system tests with:
+
+```bash
+bin/rails test:system
 ```
 
 Run style and security checks with:
@@ -44,7 +52,7 @@ bin/brakeman --no-pager
 
 ## Current scope
 
-Milestone 1 is complete and establishes the multi-tenant organization foundation:
+Milestones 1 and 2 establish the multi-tenant organization and member-onboarding foundation:
 
 - Account signup and session authentication
 - Organizations with stable, human-readable URLs
@@ -52,9 +60,14 @@ Milestone 1 is complete and establishes the multi-tenant organization foundation
 - Transactional organization creation
 - Organization dashboards and workspace switching
 - Membership-scoped access and manager-only settings
+- A member directory with joined dates and roles
+- Owner/officer role management and member removal
+- Expiring, revocable invitations with secure token digests
+- Invitation acceptance for existing users and new account signup
+- Development-safe invitation email delivery
 - Idempotent local demo data
 
-Dashboard sections for gatherings, attendance, announcements, and activity are intentional empty states for now. Invitations, the full member directory, events, RSVPs, check-ins, announcements, and activity history belong to later milestones.
+Dashboard sections for gatherings, attendance, announcements, and activity are intentional empty states for now. Events, RSVPs, check-ins, organization announcements, and activity history belong to later milestones.
 
 ## Product and visual direction
 
