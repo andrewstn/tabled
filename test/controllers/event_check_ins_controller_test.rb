@@ -50,7 +50,7 @@ class EventCheckInsControllerTest < ActionDispatch::IntegrationTest
 
     post organization_event_check_in_path(organizations(:film_society), @event), params: { check_in_code: @code }
 
-    assert_equal "Check-in is not open yet.", flash[:alert]
+    assert_equal "Check-in not started. Your organizer will share a code when the gathering begins.", flash[:alert]
   end
 
   test "member cannot check in after window closes" do
@@ -59,7 +59,20 @@ class EventCheckInsControllerTest < ActionDispatch::IntegrationTest
 
     post organization_event_check_in_path(organizations(:film_society), @event), params: { check_in_code: @code }
 
-    assert_equal "Check-in has closed.", flash[:alert]
+    assert_equal "Check-in has closed for this gathering.", flash[:alert]
+  end
+
+  test "member already checked in gets a specific confirmation" do
+    record = @event.attendance_records.create!(membership: memberships(:film_member), status: :present, checked_in_at: 2.minutes.ago)
+    original_check_in = record.checked_in_at
+    sign_in_as(users(:member))
+
+    assert_no_changes -> { record.reload.updated_at } do
+      post organization_event_check_in_path(organizations(:film_society), @event), params: { check_in_code: @code }
+    end
+
+    assert_equal original_check_in, record.reload.checked_in_at
+    assert_equal "You’re already checked in.", flash[:notice]
   end
 
   test "member cannot check in to another organization event" do

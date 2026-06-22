@@ -12,6 +12,10 @@ class EventCheckInsController < ApplicationController
     end
 
     existing_record = @event.attendance_records.find_by(membership: @membership)
+    if existing_record&.present?
+      return redirect_to organization_event_path(@organization, @event), notice: "You’re already checked in."
+    end
+
     marker = AttendanceMarker.new(
       event: @event,
       membership: @membership,
@@ -41,9 +45,9 @@ class EventCheckInsController < ApplicationController
 
   def check_in_window_message
     if @event.check_in_opens_at.blank? || @event.check_in_opens_at > Time.current
-      "Check-in is not open yet."
+      "Check-in not started. Your organizer will share a code when the gathering begins."
     else
-      "Check-in has closed."
+      "Check-in has closed for this gathering."
     end
   end
 end

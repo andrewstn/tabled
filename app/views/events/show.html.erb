@@ -132,9 +132,9 @@
             <%= form.submit "Check in", class: "button-primary" %>
           <% end %>
         <% elsif @event.check_in_state == :closed %>
-          <p class="mt-5 text-sm font-bold text-brick">Check-in has closed.</p>
+          <p class="mt-5 text-sm font-bold text-brick">Check-in has closed for this gathering.</p>
         <% else %>
-          <p class="mt-5 text-sm text-ink-soft">Check-in is not open yet.</p>
+          <p class="mt-5 text-sm text-ink-soft"><strong class="text-ink">Check-in not started.</strong> Your organizer will share a code when the gathering begins.</p>
         <% end %>
       </section>
     </div>

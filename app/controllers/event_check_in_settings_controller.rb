@@ -7,10 +7,10 @@ class EventCheckInSettingsController < ApplicationController
     when "open"
       code = @event.regenerate_check_in_code
       @event.update!(check_in_opens_at: Time.current, check_in_closes_at: duration_minutes.minutes.from_now)
-      redirect_with_code(code, "Member check-in is open.")
+      redirect_with_code(code, "Check-in is open.")
     when "close"
       @event.update!(check_in_closes_at: Time.current)
-      redirect_to organization_event_path(@organization, @event), notice: "Member check-in is closed."
+      redirect_to organization_event_path(@organization, @event), notice: "Check-in has closed for this gathering."
     when "regenerate"
       code = @event.regenerate_check_in_code
       @event.save!
