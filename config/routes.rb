@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     end
   end
   resources :invitation_acceptances, path: "invitations", param: :token, only: %i[show update]
+  get "join/:token", to: "organization_join_acceptances#show", as: :organization_join
 
   root "home#show"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
