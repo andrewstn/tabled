@@ -18,14 +18,17 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select ".member-row .role-tag", count: 2
     assert_select "h3", text: events(:upcoming_film_night).title
     assert_select ".event-row .role-tag", text: "Maybe"
-    assert_select "p", text: /The board is clear/
+    assert_select "h3", text: announcements(:pinned_all_members).title
+    assert_select "p", text: "Pinned"
     assert_select "p", text: "Nothing needs follow-up right now."
     assert_select "p", text: "No notes in the log book yet."
     assert_select "h3", text: events(:past_planning_table).title
     assert_select "p", text: /2 members present or late/
     assert_select "a[href=?]", organization_members_path(organizations(:film_society)), text: /Member roster/
     assert_select "a[href=?]", organization_events_path(organizations(:film_society)), text: "Gatherings"
+    assert_select "a[href=?]", organization_announcements_path(organizations(:film_society)), text: "Bulletin"
     assert_select "a[href=?]", new_organization_invitation_path(organizations(:film_society)), count: 0
+    assert_select "a[href=?]", new_organization_announcement_path(organizations(:film_society)), count: 0
   end
 
   test "owner sees member onboarding actions backed by pending invitations" do
@@ -36,6 +39,18 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", new_organization_invitation_path(organizations(:film_society)), text: "Invite member"
     assert_select "a[href=?]", organization_invitations_path(organizations(:film_society)), text: "Pending invitations (1)"
     assert_select "a[href=?]", new_organization_event_path(organizations(:film_society)), text: "Add gathering"
+    assert_select "a[href=?]", new_organization_announcement_path(organizations(:film_society)), text: "Post announcement"
+    assert_select "span", text: "1 draft"
+  end
+
+  test "dashboard shows bulletin empty state from real data" do
+    organizations(:film_society).announcements.destroy_all
+    sign_in_as(users(:member))
+
+    get organization_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "p", text: "The board is clear."
   end
 
   test "dashboard shows real attendance follow ups for organizers" do
