@@ -49,6 +49,7 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select "dd", text: "1"
     assert_select "a[href=?]", organization_event_attendance_path(organizations(:film_society), events(:upcoming_film_night)), text: "Attendance sheet"
     assert_select "h2", text: /Check-in not started/
+    assert_select "[aria-label='Organizer tools']", count: 1
   end
 
   test "ordinary member cannot view the event roster" do
@@ -60,6 +61,7 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", { text: "Event roster", count: 0 }
     assert_select "li", { text: users(:owner).name, count: 0 }
     assert_select "a[href=?]", organization_event_attendance_path(organizations(:film_society), events(:upcoming_film_night)), count: 0
+    assert_select "[aria-label='Organizer tools']", count: 0
   end
 
   test "member sees open check in form and their attendance status" do

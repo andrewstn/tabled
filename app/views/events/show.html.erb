@@ -15,10 +15,17 @@
         <p class="mt-3 text-sm text-ink-soft">Hosted by <%= @event.created_by.name %></p>
       </div>
       <% if @event_policy.update? || @event_policy.destroy? %>
-        <div class="flex flex-wrap items-center gap-4">
-          <% if @event_policy.manage_attendance? %><%= link_to "Attendance sheet", organization_event_attendance_path(@organization, @event), class: "text-link text-sm" %><% end %>
-          <% if @event_policy.update? %><%= link_to "Edit gathering", edit_organization_event_path(@organization, @event), class: "text-link text-sm" %><% end %>
-          <% if @event_policy.destroy? %><%= button_to "Remove gathering", organization_event_path(@organization, @event), method: :delete, class: "cursor-pointer text-sm font-bold text-brick underline decoration-brick/40 underline-offset-4", form: { data: { turbo_confirm: "Remove #{@event.title} from the calendar?" } } %><% end %>
+        <div aria-label="Organizer tools">
+          <p class="eyebrow text-right">Organizer tools</p>
+          <div class="mt-2 flex flex-wrap items-center justify-end gap-2">
+            <% if @event_policy.manage_attendance? %><%= link_to "Attendance sheet", organization_event_attendance_path(@organization, @event), class: "button-secondary" %><% end %>
+            <% if @event_policy.update? %><%= link_to "Edit gathering", edit_organization_event_path(@organization, @event), class: "button-secondary" %><% end %>
+            <% if @event_policy.destroy? %>
+              <div class="ml-1 border-l border-rule pl-3">
+                <%= button_to "Remove gathering", organization_event_path(@organization, @event), method: :delete, class: "cursor-pointer text-sm font-bold text-brick underline decoration-brick/40 underline-offset-4", form: { data: { turbo_confirm: "Remove #{@event.title} from the calendar?" } } %>
+              </div>
+            <% end %>
+          </div>
         </div>
       <% end %>
     </div>
@@ -204,7 +211,8 @@
             </div>
           <% end %>
 
-          <div class="mt-5 flex flex-wrap gap-2">
+          <p class="eyebrow mt-5">Organizer tools</p>
+          <div class="mt-2 flex flex-wrap gap-2">
             <% if @event.check_in_open? %>
               <%= button_to "Close check-in", organization_event_check_in_settings_path(@organization, @event), method: :patch, params: { operation: "close" }, class: "button-secondary" %>
               <%= button_to "New code", organization_event_check_in_settings_path(@organization, @event), method: :patch, params: { operation: "regenerate" }, class: "button-secondary" %>
