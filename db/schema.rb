@@ -10,9 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_21_141000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_22_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "attendance_records", force: :cascade do |t|
+    t.datetime "checked_in_at"
+    t.datetime "created_at", null: false
+    t.bigint "event_id", null: false
+    t.bigint "marked_by_id"
+    t.bigint "membership_id", null: false
+    t.text "note"
+    t.string "status", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id", "membership_id"], name: "index_attendance_records_on_event_id_and_membership_id", unique: true
+    t.index ["event_id"], name: "index_attendance_records_on_event_id"
+    t.index ["marked_by_id"], name: "index_attendance_records_on_marked_by_id"
+    t.index ["membership_id", "created_at"], name: "index_attendance_records_on_membership_id_and_created_at"
+    t.index ["membership_id"], name: "index_attendance_records_on_membership_id"
+    t.check_constraint "status::text = ANY (ARRAY['present'::character varying, 'late'::character varying, 'excused'::character varying, 'absent'::character varying]::text[])", name: "attendance_records_status_check"
+  end
 
   create_table "events", force: :cascade do |t|
     t.integer "capacity"
@@ -95,6 +112,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_141000) do
     t.index "lower((email_address)::text)", name: "index_users_on_lower_email_address", unique: true
   end
 
+  add_foreign_key "attendance_records", "events"
+  add_foreign_key "attendance_records", "memberships"
+  add_foreign_key "attendance_records", "users", column: "marked_by_id"
   add_foreign_key "events", "organizations"
   add_foreign_key "events", "users", column: "created_by_id"
   add_foreign_key "invitations", "organizations"

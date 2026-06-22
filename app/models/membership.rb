@@ -4,6 +4,7 @@ class Membership < ApplicationRecord
   belongs_to :user
   belongs_to :organization
   has_many :rsvps, dependent: :destroy
+  has_many :attendance_records, dependent: :destroy
 
   enum :role, ROLES.index_by(&:itself), validate: true
 

@@ -2,6 +2,7 @@ class Event < ApplicationRecord
   belongs_to :organization
   belongs_to :created_by, class_name: "User", inverse_of: :created_events
   has_many :rsvps, dependent: :destroy
+  has_many :attendance_records, dependent: :destroy
 
   validates :title, presence: true, length: { maximum: 160 }
   validates :description, length: { maximum: 5_000 }

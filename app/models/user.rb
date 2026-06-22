@@ -7,6 +7,8 @@ class User < ApplicationRecord
     inverse_of: :invited_by, dependent: :restrict_with_error
   has_many :created_events, class_name: "Event", foreign_key: :created_by_id,
     inverse_of: :created_by, dependent: :restrict_with_error
+  has_many :marked_attendance_records, class_name: "AttendanceRecord", foreign_key: :marked_by_id,
+    inverse_of: :marked_by, dependent: :nullify
 
   normalizes :email_address, with: ->(email) { email.strip.downcase }
 

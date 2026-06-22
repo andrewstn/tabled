@@ -1,0 +1,14 @@
+owner_present_planning_table:
+  event: past_planning_table
+  membership: film_owner
+  marked_by: owner
+  status: present
+  checked_in_at: <%= 3.days.ago + 5.minutes %>
+  note: Helped set up the room.
+
+member_late_planning_table:
+  event: past_planning_table
+  membership: film_member
+  marked_by: owner
+  status: late
+  checked_in_at: <%= 3.days.ago + 15.minutes %>
