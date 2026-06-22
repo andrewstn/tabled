@@ -1,0 +1,30 @@
+<% content_for :title, "#{@announcement.title} · #{@organization.name} · Tabled" %>
+
+<article class="binder-page w-full max-w-4xl">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span><%= link_to "Bulletin", organization_announcements_path(@organization), class: "text-link" %></span>
+    <span><%= @announcement.published? ? "Posted" : "Draft" %></span>
+  </div>
+
+  <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <% if @announcement.pinned? %><p class="eyebrow text-amber">Pinned to the bulletin</p><% end %>
+    <% if @announcement.draft? %><p class="eyebrow text-brick">Draft announcement</p><% end %>
+    <h1 class="mt-2 text-3xl font-semibold sm:text-4xl"><%= @announcement.title %></h1>
+    <p class="mt-3 text-sm text-ink-soft">
+      <% if @announcement.published? %>
+        Posted by <%= @announcement.author.name %> on <%= @announcement.published_at.to_date.to_fs(:long) %>
+      <% else %>
+        Written by <%= @announcement.author.name %> · not yet posted
+      <% end %>
+    </p>
+  </header>
+
+  <section class="workspace-section" aria-labelledby="announcement-body">
+    <div class="workspace-section-heading">
+      <p class="eyebrow">Shared with</p>
+      <h2 id="announcement-body" class="mt-1 text-lg font-semibold"><%= @announcement.audience_label %></h2>
+    </div>
+    <div class="mt-6 whitespace-pre-line text-base leading-8 text-ink"><%= @announcement.body %></div>
+  </section>
+</article>

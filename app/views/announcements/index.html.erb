@@ -28,7 +28,7 @@
         <% @published_announcements.each do |announcement| %>
           <article class="border border-rule bg-sheet p-5 shadow-[2px_2px_0_rgba(62,54,43,0.10)] <%= "border-t-4 border-t-amber" if announcement.pinned? %>">
             <% if announcement.pinned? %><p class="eyebrow text-amber">Pinned</p><% end %>
-            <h3 class="<%= announcement.pinned? ? "mt-2" : "" %> text-xl font-semibold"><%= announcement.title %></h3>
+            <h3 class="<%= announcement.pinned? ? "mt-2" : "" %> text-xl font-semibold"><%= link_to announcement.title, organization_announcement_path(@organization, announcement), class: "text-link" %></h3>
             <p class="mt-3 line-clamp-4 whitespace-pre-line text-sm leading-6 text-ink-soft"><%= announcement.body %></p>
             <p class="mt-4 border-t border-rule pt-3 text-xs text-ink-soft">Posted by <%= announcement.author.name %> · <%= announcement.published_at.to_date.to_fs(:long) %> · <%= announcement.audience_label %></p>
           </article>
@@ -52,7 +52,7 @@
         <div class="mt-5 divide-y divide-rule border-y border-rule">
           <% @draft_announcements.each do |announcement| %>
             <article class="py-4">
-              <h3 class="font-semibold"><%= announcement.title %></h3>
+              <h3 class="font-semibold"><%= link_to announcement.title, organization_announcement_path(@organization, announcement), class: "text-link" %></h3>
               <p class="mt-1 text-xs text-ink-soft">Draft · <%= announcement.audience_label %> · updated <%= announcement.updated_at.to_date.to_fs(:long) %></p>
             </article>
           <% end %>

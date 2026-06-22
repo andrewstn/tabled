@@ -32,6 +32,35 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "member can view a published all-member announcement" do
+    sign_in_as(users(:member))
+
+    get organization_announcement_path(organizations(:film_society), announcements(:pinned_all_members))
+
+    assert_response :success
+    assert_select "h1", announcements(:pinned_all_members).title
+    assert_select "h2", "All members"
+    assert_select "p", text: /Posted by #{Regexp.escape(users(:owner).name)}/
+  end
+
+  test "member cannot view a draft announcement" do
+    sign_in_as(users(:member))
+
+    get organization_announcement_path(organizations(:film_society), announcements(:officer_notes))
+
+    assert_response :not_found
+  end
+
+  test "owner can view a draft announcement" do
+    sign_in_as(users(:owner))
+
+    get organization_announcement_path(organizations(:film_society), announcements(:officer_notes))
+
+    assert_response :success
+    assert_select "p", text: "Draft announcement"
+    assert_select "h2", "Officers"
+  end
+
   private
 
   def sign_in_as(user)
