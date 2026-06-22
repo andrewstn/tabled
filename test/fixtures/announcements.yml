@@ -1,0 +1,28 @@
+pinned_all_members:
+  organization: film_society
+  author: owner
+  title: First Friday Film Night details
+  body: Meet in the screening room a few minutes before seven. Bring a favorite short film if you have one.
+  audience: all_members
+  status: published
+  pinned: true
+  published_at: <%= 2.hours.ago %>
+
+officer_notes:
+  organization: film_society
+  author: owner
+  title: Officer planning notes
+  body: Draft agenda for the next officer table.
+  audience: officers
+  status: draft
+  pinned: false
+
+recent_all_members:
+  organization: film_society
+  author: owner
+  title: Camera Workshop sign-ups
+  body: Camera workshop spots are open for next week.
+  audience: all_members
+  status: published
+  pinned: false
+  published_at: <%= 1.hour.ago %>

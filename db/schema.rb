@@ -10,9 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_22_091000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_22_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "announcements", force: :cascade do |t|
+    t.string "audience", null: false
+    t.bigint "author_id", null: false
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "emailed_at"
+    t.bigint "organization_id", null: false
+    t.boolean "pinned", default: false, null: false
+    t.datetime "published_at"
+    t.string "status", default: "draft", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_announcements_on_author_id"
+    t.index ["organization_id", "status", "pinned", "published_at"], name: "index_announcements_for_bulletin"
+    t.index ["organization_id"], name: "index_announcements_on_organization_id"
+    t.check_constraint "audience::text = ANY (ARRAY['all_members'::character varying, 'officers'::character varying]::text[])", name: "announcements_audience_check"
+    t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'published'::character varying]::text[])", name: "announcements_status_check"
+  end
 
   create_table "attendance_records", force: :cascade do |t|
     t.datetime "checked_in_at"
@@ -117,6 +136,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_091000) do
     t.index "lower((email_address)::text)", name: "index_users_on_lower_email_address", unique: true
   end
 
+  add_foreign_key "announcements", "organizations"
+  add_foreign_key "announcements", "users", column: "author_id"
   add_foreign_key "attendance_records", "events"
   add_foreign_key "attendance_records", "memberships"
   add_foreign_key "attendance_records", "users", column: "marked_by_id"

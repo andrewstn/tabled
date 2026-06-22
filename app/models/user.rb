@@ -9,6 +9,8 @@ class User < ApplicationRecord
     inverse_of: :created_by, dependent: :restrict_with_error
   has_many :marked_attendance_records, class_name: "AttendanceRecord", foreign_key: :marked_by_id,
     inverse_of: :marked_by, dependent: :nullify
+  has_many :authored_announcements, class_name: "Announcement", foreign_key: :author_id,
+    inverse_of: :author, dependent: :restrict_with_error
 
   normalizes :email_address, with: ->(email) { email.strip.downcase }
 
