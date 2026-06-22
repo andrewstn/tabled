@@ -179,9 +179,9 @@
       </section>
 
       <% unless @event_policy.view_roster? %>
-        <section class="border-t border-rule p-5 sm:p-6" aria-labelledby="member-attendees">
+        <section id="member-attendees" class="border-t border-rule p-5 sm:p-6" aria-labelledby="member-attendees-heading">
           <p class="eyebrow text-moss-dark">Around the table</p>
-          <h2 id="member-attendees" class="mt-1 text-xl font-semibold">Who’s coming</h2>
+          <h2 id="member-attendees-heading" class="mt-1 text-xl font-semibold">Who’s coming</h2>
           <% if @visible_attending_rsvps.any? %>
             <ul class="mt-4 divide-y divide-rule/70 border-y border-rule text-sm">
               <% @visible_attending_rsvps.each do |response| %>
@@ -196,9 +196,9 @@
           <% end %>
         </section>
 
-        <section class="border-t border-rule p-5 sm:p-6" aria-labelledby="member-event-status">
+        <section id="member-event-status" class="border-t border-rule p-5 sm:p-6" aria-labelledby="member-event-status-heading">
           <p class="eyebrow text-amber">Your record</p>
-          <h2 id="member-event-status" class="mt-1 text-xl font-semibold">Your place</h2>
+          <h2 id="member-event-status-heading" class="mt-1 text-xl font-semibold">Your place</h2>
           <dl class="mt-4 space-y-4 text-sm">
             <div>
               <dt class="font-bold text-moss-dark">RSVP</dt>
@@ -222,9 +222,9 @@
           </dl>
         </section>
 
-        <section class="border-t border-rule p-5 sm:p-6" aria-labelledby="member-check-in-guidance">
+        <section id="member-check-in-guidance" class="border-t border-rule p-5 sm:p-6" aria-labelledby="member-check-in-guidance-heading">
           <p class="eyebrow text-brick">At the gathering</p>
-          <h2 id="member-check-in-guidance" class="mt-1 text-xl font-semibold">Check-in</h2>
+          <h2 id="member-check-in-guidance-heading" class="mt-1 text-xl font-semibold">Check-in</h2>
           <% if @attendance_record&.present? || @attendance_record&.late? %>
             <p class="mt-3 text-sm font-bold text-moss-dark">You’re checked in.</p>
           <% elsif @event.check_in_open? %>

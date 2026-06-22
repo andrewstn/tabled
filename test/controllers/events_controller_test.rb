@@ -34,6 +34,27 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", "Your RSVP"
     assert_select ".role-tag", text: "Maybe"
     assert_select "p", text: /Organizer access includes/, count: 0
+    assert_select "h2", "Who’s coming"
+    assert_select "h2", "Your place"
+    assert_select "#member-event-status dd", text: "Maybe"
+    assert_select "#member-event-status dd", text: "You haven’t checked in yet."
+    assert_select "#member-check-in-guidance", text: /Your organizer will share a code/
+  end
+
+  test "member attendee list is limited and reports additional members" do
+    event = events(:upcoming_film_night)
+    8.times do |index|
+      user = User.create!(name: "Attending Member #{index}", email_address: "attendee-#{index}@example.test", password: "password1234")
+      membership = Membership.create!(organization: organizations(:film_society), user: user, role: :member)
+      event.rsvps.create!(membership: membership, status: :attending)
+    end
+    sign_in_as(users(:member))
+
+    get organization_event_path(organizations(:film_society), event)
+
+    assert_response :success
+    assert_select "#member-attendees li", count: 6
+    assert_select "#member-attendees p", text: "and 3 more members"
   end
 
   test "organizer sees RSVP roster context" do
@@ -50,9 +71,13 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", organization_event_attendance_path(organizations(:film_society), events(:upcoming_film_night)), text: "Attendance sheet"
     assert_select "h2", text: /Check-in not started/
     assert_select "[aria-label='Organizer tools']", count: 1
+    assert_select "#member-attendees", count: 0
+    assert_select "#member-event-status", count: 0
+    assert_select "#member-check-in-guidance", count: 0
   end
 
   test "ordinary member cannot view the event roster" do
+    events(:upcoming_film_night).attendance_records.create!(membership: memberships(:film_owner), status: :absent)
     sign_in_as(users(:member))
 
     get organization_event_path(organizations(:film_society), events(:upcoming_film_night))
@@ -61,6 +86,10 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", { text: "Event roster", count: 0 }
     assert_select "a[href=?]", organization_event_attendance_path(organizations(:film_society), events(:upcoming_film_night)), count: 0
     assert_select "[aria-label='Organizer tools']", count: 0
+    assert_select "a[href=?]", edit_organization_event_path(organizations(:film_society), events(:upcoming_film_night)), count: 0
+    assert_select "form[action=?]", organization_event_path(organizations(:film_society), events(:upcoming_film_night)), count: 0
+    assert_select "a[href$='.csv']", count: 0
+    assert_select ".role-tag", text: "Absent", count: 0
   end
 
   test "member sees open check in form and their attendance status" do
@@ -76,6 +105,23 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", "Member check-in"
     assert_select "input[name='check_in_code']"
     assert_select ".role-tag", text: "Late"
+    assert_select "#member-event-status dd", text: "Late"
+    assert_select "#member-event-status dd", text: /Checked in/
+    assert_select "#member-check-in-guidance", text: /You’re checked in/
+  end
+
+  test "member sidebar shows open and closed check in guidance" do
+    event = events(:upcoming_film_night)
+    event.regenerate_check_in_code
+    event.update!(check_in_opens_at: 1.minute.ago, check_in_closes_at: 1.hour.from_now)
+    sign_in_as(users(:member))
+
+    get organization_event_path(organizations(:film_society), event)
+    assert_select "#member-check-in-guidance", text: /Enter the shared code/
+
+    event.update!(check_in_opens_at: 2.hours.ago, check_in_closes_at: 1.hour.ago)
+    get organization_event_path(organizations(:film_society), event)
+    assert_select "#member-check-in-guidance", text: /Check-in has closed for this gathering/
   end
 
   test "attendance sidebar shows a simple empty state before check in" do
