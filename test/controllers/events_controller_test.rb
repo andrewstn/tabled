@@ -59,7 +59,6 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h2", { text: "Event roster", count: 0 }
-    assert_select "li", { text: users(:owner).name, count: 0 }
     assert_select "a[href=?]", organization_event_attendance_path(organizations(:film_society), events(:upcoming_film_night)), count: 0
     assert_select "[aria-label='Organizer tools']", count: 0
   end

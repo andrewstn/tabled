@@ -20,6 +20,11 @@ class EventsController < ApplicationController
     @event_policy = EventPolicy.new(current_user, @organization, @event)
     @rsvps_by_status = @event.rsvps.group_by(&:status) if @event_policy.view_roster?
     @attendance_counts = @event.attendance_records.group(:status).count if @event_policy.manage_attendance?
+    unless @event_policy.view_roster?
+      attending_rsvps = @event.rsvps.select(&:attending?).sort_by { |response| response.membership.user.name.downcase }
+      @visible_attending_rsvps = attending_rsvps.first(6)
+      @additional_attendee_count = attending_rsvps.size - @visible_attending_rsvps.size
+    end
   end
 
   def new
