@@ -16,6 +16,7 @@
       <div class="flex flex-wrap gap-3 text-sm">
         <%= link_to "Invite member", new_organization_invitation_path(@organization), class: "button-primary" %>
         <%= link_to "Pending invitations (#{@pending_invitation_count})", organization_invitations_path(@organization), class: "button-secondary" %>
+        <%= link_to "Recruitment links (#{@active_join_link_count})", organization_join_links_path(@organization), class: "button-secondary" %>
       </div>
     <% end %>
   </header>

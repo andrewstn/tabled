@@ -16,7 +16,10 @@ class MembershipsController < ApplicationController
     @paginator = Paginator.new(memberships, page: params[:page])
     @memberships = @paginator.records
     @can_manage_members = OrganizationPolicy.new(current_user, @organization).manage?
-    @pending_invitation_count = @organization.invitations.pending.count if @can_manage_members
+    if @can_manage_members
+      @pending_invitation_count = @organization.invitations.pending.count
+      @active_join_link_count = @organization.organization_join_links.available.count
+    end
   end
 
   def show

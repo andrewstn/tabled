@@ -20,6 +20,24 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "organizer sees recruitment links from the roster" do
+    OrganizationJoinLink.create!(organization: organizations(:film_society), created_by: users(:owner), label: "Fair table", role: :member)
+    OrganizationJoinLink.create!(organization: organizations(:film_society), created_by: users(:owner), label: "Old table", role: :member, active: false)
+    sign_in_as(users(:owner))
+
+    get organization_members_path(organizations(:film_society))
+
+    assert_select "a[href=?]", organization_join_links_path(organizations(:film_society)), text: "Recruitment links (1)"
+  end
+
+  test "ordinary member does not see recruitment link management" do
+    sign_in_as(users(:member))
+
+    get organization_members_path(organizations(:film_society))
+
+    assert_select "a[href=?]", organization_join_links_path(organizations(:film_society)), count: 0
+  end
+
   test "member roster paginates organization members" do
     28.times { |index| create_member(name: "Scale Member #{index}", email: "scale-#{index}@example.test") }
     sign_in_as(users(:member))
