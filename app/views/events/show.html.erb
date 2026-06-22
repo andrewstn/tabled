@@ -174,7 +174,27 @@
       <% if @event_policy.manage_attendance? %>
         <section class="border-t border-rule p-5 sm:p-6">
           <p class="eyebrow text-brick">Attendance</p>
-          <h2 class="mt-1 text-xl font-semibold">Check-in: <%= @event.check_in_state.to_s.humanize %></h2>
+          <h2 class="mt-1 text-xl font-semibold">
+            <% if @event.check_in_open? %>
+              Check-in is open
+            <% elsif @event.check_in_state == :closed %>
+              Check-in has closed
+            <% else %>
+              Check-in not started
+            <% end %>
+          </h2>
+
+          <% if @attendance_counts.any? %>
+            <% checked_in_count = @attendance_counts.fetch("present", 0) + @attendance_counts.fetch("late", 0) %>
+            <% if @event.check_in_open? %><p class="mt-3 text-sm text-ink-soft"><%= pluralize(checked_in_count, "member") %> checked in.</p><% end %>
+            <p class="mt-3 text-sm leading-6 text-ink-soft">
+              <% AttendanceRecord::STATUSES.each_with_index do |status, index| %><%= " · " unless index.zero? %><strong class="text-ink"><%= status.humanize %></strong> <%= @attendance_counts.fetch(status, 0) %><% end %>
+            </p>
+          <% elsif @event.check_in_open? %>
+            <p class="mt-3 text-sm text-ink-soft">No members have checked in yet.</p>
+          <% else %>
+            <p class="mt-3 text-sm text-ink-soft">Attendance has not been recorded yet.</p>
+          <% end %>
 
           <% if flash[:check_in_code] %>
             <div class="mt-4 border-2 border-amber bg-amber-pale/45 p-4 text-center">
@@ -183,12 +203,6 @@
               <p class="mt-2 text-xs text-ink-soft">It will not be shown again. Regenerate it if needed.</p>
             </div>
           <% end %>
-
-          <dl class="mt-4 grid grid-cols-2 gap-2 text-sm">
-            <% AttendanceRecord::STATUSES.each do |status| %>
-              <div><dt class="font-bold text-ink-soft"><%= status.humanize %></dt><dd><%= @attendance_counts.fetch(status, 0) %></dd></div>
-            <% end %>
-          </dl>
 
           <div class="mt-5 flex flex-wrap gap-2">
             <% if @event.check_in_open? %>
