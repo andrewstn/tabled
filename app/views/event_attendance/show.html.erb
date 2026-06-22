@@ -1,0 +1,42 @@
+<% content_for :title, "Attendance · #{@event.title} · Tabled" %>
+
+<article class="binder-page w-full">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span><%= link_to @event.title, organization_event_path(@organization, @event), class: "text-link" %></span>
+    <span>Attendance sheet</span>
+  </div>
+
+  <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <p class="eyebrow"><%= @event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %></p>
+    <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Attendance sheet</h1>
+    <p class="mt-3 max-w-2xl leading-7 text-ink-soft">Mark who made it to <%= @event.title %>.</p>
+  </header>
+
+  <section class="workspace-section" aria-labelledby="attendance-roster">
+    <div class="workspace-section-heading">
+      <p class="eyebrow">Around the table</p>
+      <h2 id="attendance-roster" class="mt-1 text-2xl font-semibold">Event roster</h2>
+    </div>
+
+    <% if @attendance_by_membership_id.empty? %>
+      <p class="mt-5 border-l-4 border-amber bg-amber-pale/35 px-4 py-3 text-sm text-ink-soft">No attendance has been recorded yet. Use the roster below to mark attendance.</p>
+    <% end %>
+
+    <div class="mt-6 divide-y divide-rule border-y border-rule">
+      <% @memberships.each do |membership| %>
+        <% rsvp = @rsvps_by_membership_id[membership.id] %>
+        <% attendance = @attendance_by_membership_id[membership.id] %>
+        <article class="member-row items-start py-4">
+          <div class="min-w-0 flex-1">
+            <h3 class="font-semibold"><%= membership.user.name %></h3>
+            <p class="mt-1 text-xs text-ink-soft"><%= membership.role.humanize %> · RSVP: <%= rsvp&.status&.humanize || "No response" %></p>
+            <% if attendance&.checked_in_at %><p class="mt-1 text-xs text-ink-soft">Checked in <%= attendance.checked_in_at.strftime("%-I:%M %p") %></p><% end %>
+            <% if attendance&.note.present? %><p class="mt-2 text-sm text-ink-soft"><%= attendance.note %></p><% end %>
+          </div>
+          <span class="role-tag"><%= attendance&.status&.humanize || "Not marked" %></span>
+        </article>
+      <% end %>
+    </div>
+  </section>
+</article>

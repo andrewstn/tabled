@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     resources :invitations, only: %i[index new create destroy]
     resources :events do
       resource :rsvp, only: %i[create update]
+      resource :attendance, only: :show, controller: "event_attendance"
     end
   end
   resources :invitation_acceptances, path: "invitations", param: :token, only: %i[show update]

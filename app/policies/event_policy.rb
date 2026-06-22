@@ -32,6 +32,10 @@ class EventPolicy
     organizer? && event_in_organization?
   end
 
+  def manage_attendance?
+    organizer? && event_in_organization?
+  end
+
   private
 
   def organizer?
