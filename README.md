@@ -25,7 +25,9 @@ Open [http://localhost:3000](http://localhost:3000). The seed data includes an o
 - Email: `demo-owner@example.test`
 - Password: `tabled-demo-password`
 
-The seed is idempotent and also creates officer, coordinator, and member accounts, two pending invitations, four gatherings, a mix of demo RSVPs, a closed check-in window, attendance records, two published bulletin posts, and an officer draft for Buckeye Film Society. One past gathering remains unmarked to demonstrate the officer follow-up workflow.
+The seed is idempotent and also creates a 32-person roster, two pending invitations, four gatherings, varied RSVP and attendance records, two published bulletin posts, an officer draft, and active and closed recruitment links for Buckeye Film Society. The larger roster makes pagination and attendance filters visible immediately.
+
+To try recruitment locally, sign in as the demo owner, open **Member roster → Recruitment links**, and copy the active Autumn Involvement Fair URL. Open that URL in a private browser window to follow the sign-up and join flow. Reusable links always add members; they cannot grant elevated roles. QR generation is intentionally not included yet.
 
 Invitation and optional announcement emails stay local in development and are written beneath `tmp/mails`.
 
@@ -52,7 +54,7 @@ bin/brakeman --no-pager
 
 ## Current scope
 
-Milestones 1 through 5 establish the multi-tenant organization workspace, active semester calendar, event sign-in record, and organization bulletin:
+Milestones 1 through 6 establish the multi-tenant organization workspace, active semester calendar, event sign-in record, organization bulletin, and practical large-roster recruitment workflow:
 
 - Account signup and session authentication
 - Organizations with stable, human-readable URLs
@@ -82,9 +84,14 @@ Milestones 1 through 5 establish the multi-tenant organization workspace, active
 - Owner/officer announcement drafting, publishing, editing, and removal
 - Optional audience-scoped announcement email delivery
 - Real bulletin content on the organization dashboard
+- Database-backed member roster search and role filtering
+- RSVP and attendance-status filtering for attendance sheets
+- Stable, query-preserving pagination for roster and attendance workflows
+- Reusable member-only recruitment links with expiration, use limits, and organizer controls
+- Public join pages with sign-in and account-creation return paths
 - Idempotent local demo data
 
-Event-attendee announcement targeting, comments, reactions, attachments, notification preferences, production email providers, recurring events, QR codes, geolocation, complex analytics, calendar integrations, and activity history are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
+Event-attendee announcement targeting, comments, reactions, attachments, notification preferences, production email providers, recurring events, QR-code generation, geolocation, complex analytics, calendar integrations, and activity history are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
 
 ## Product and visual direction
 

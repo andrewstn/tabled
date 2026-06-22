@@ -33,6 +33,19 @@ roles_by_email.each do |email_address, role|
   membership.update!(role: role)
 end
 
+scale_memberships = 28.times.map do |index|
+  email_address = format("film.member.%02d@example.test", index + 1)
+  user = User.find_or_initialize_by(email_address: email_address)
+  user.name = format("Film Society Member %02d", index + 1)
+  user.password = "tabled-demo-password" if user.new_record?
+  user.save!
+
+  organization.memberships.find_or_initialize_by(user: user).tap do |membership|
+    membership.role = index.in?([ 6, 18 ]) ? :coordinator : :member
+    membership.save!
+  end
+end
+
 pending_invitations = {
   "prospective.member@example.com" => :member,
   "new.officer@example.com" => :officer
@@ -150,6 +163,22 @@ attendance_statuses.each do |email_address, attributes|
   )
 end
 
+scale_memberships.each_with_index do |membership, index|
+  unless (index % 4) == 3
+    rsvp_status = %i[attending maybe not_attending][index % 3]
+    planning_event.rsvps.find_or_initialize_by(membership: membership).update!(status: rsvp_status)
+  end
+
+  next if (index % 5) == 4
+
+  attendance_status = %i[present late excused absent][index % 4]
+  planning_event.attendance_records.find_or_initialize_by(membership: membership).update!(
+    status: attendance_status,
+    checked_in_at: attendance_status.in?(%i[present late]) ? planning_event.starts_at + index.minutes : nil,
+    marked_by: demo_users.fetch("demo-owner@example.test")
+  )
+end
+
 announcement_attributes = {
   "First Friday Film Night details" => {
     body: "Meet in the Student Union screening room a few minutes before seven. Bring a favorite short film and something small to share if you can.",
@@ -178,5 +207,23 @@ announcement_attributes.each do |title, attributes|
   announcement.update!(attributes.merge(author: demo_users.fetch("demo-owner@example.test")))
 end
 
-puts "Seeded Buckeye Film Society with members, invitations, gatherings, RSVPs, attendance, and announcements."
+active_join_link = organization.organization_join_links.find_or_initialize_by(label: "Autumn Involvement Fair")
+active_join_link.update!(
+  created_by: demo_users.fetch("demo-owner@example.test"),
+  role: :member,
+  active: true,
+  expires_at: 90.days.from_now,
+  max_uses: 100
+)
+
+expired_join_link = organization.organization_join_links.find_or_initialize_by(label: "General recruitment table — closed")
+expired_join_link.update!(
+  created_by: demo_users.fetch("demo-owner@example.test"),
+  role: :member,
+  active: false,
+  expires_at: 1.day.ago,
+  max_uses: nil
+)
+
+puts "Seeded Buckeye Film Society with a 32-person roster, varied attendance, and recruitment links."
 puts "Sign in as demo-owner@example.test with tabled-demo-password."
