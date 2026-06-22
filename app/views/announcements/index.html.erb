@@ -1,0 +1,65 @@
+<% content_for :title, "Bulletin · #{@organization.name} · Tabled" %>
+
+<article class="binder-page w-full">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span>Organization bulletin</span>
+    <span>Current semester · <%= current_semester_label %></span>
+  </div>
+
+  <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <div class="flex flex-wrap items-end justify-between gap-5">
+      <div>
+        <p class="eyebrow">Announcements</p>
+        <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Bulletin</h1>
+        <p class="mt-3 max-w-2xl leading-7 text-ink-soft">Notes, reminders, and details shared with the organization this semester.</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="workspace-section" aria-labelledby="published-announcements">
+    <div class="workspace-section-heading">
+      <p class="eyebrow">Pinned and posted</p>
+      <h2 id="published-announcements" class="mt-1 text-2xl font-semibold">Announcements</h2>
+    </div>
+
+    <% if @published_announcements.any? %>
+      <div id="published-bulletin" class="mt-6 grid gap-5 md:grid-cols-2">
+        <% @published_announcements.each do |announcement| %>
+          <article class="border border-rule bg-sheet p-5 shadow-[2px_2px_0_rgba(62,54,43,0.10)] <%= "border-t-4 border-t-amber" if announcement.pinned? %>">
+            <% if announcement.pinned? %><p class="eyebrow text-amber">Pinned</p><% end %>
+            <h3 class="<%= announcement.pinned? ? "mt-2" : "" %> text-xl font-semibold"><%= announcement.title %></h3>
+            <p class="mt-3 line-clamp-4 whitespace-pre-line text-sm leading-6 text-ink-soft"><%= announcement.body %></p>
+            <p class="mt-4 border-t border-rule pt-3 text-xs text-ink-soft">Posted by <%= announcement.author.name %> · <%= announcement.published_at.to_date.to_fs(:long) %> · <%= announcement.audience_label %></p>
+          </article>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="mt-5 border-l-4 border-amber bg-amber-pale/35 px-4 py-3">
+        <p class="font-bold">The board is clear.</p>
+        <p class="mt-1 text-sm text-ink-soft">Announcements will be pinned here when officers have something to share.</p>
+      </div>
+    <% end %>
+  </section>
+
+  <% if @draft_announcements %>
+    <section class="workspace-section border-t border-rule" aria-labelledby="draft-announcements">
+      <div class="workspace-section-heading">
+        <p class="eyebrow text-brick">Officer desk</p>
+        <h2 id="draft-announcements" class="mt-1 text-2xl font-semibold">Drafts</h2>
+      </div>
+      <% if @draft_announcements.any? %>
+        <div class="mt-5 divide-y divide-rule border-y border-rule">
+          <% @draft_announcements.each do |announcement| %>
+            <article class="py-4">
+              <h3 class="font-semibold"><%= announcement.title %></h3>
+              <p class="mt-1 text-xs text-ink-soft">Draft · <%= announcement.audience_label %> · updated <%= announcement.updated_at.to_date.to_fs(:long) %></p>
+            </article>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="mt-5 text-sm text-ink-soft">No drafts are waiting on the officer desk.</p>
+      <% end %>
+    </section>
+  <% end %>
+</article>
