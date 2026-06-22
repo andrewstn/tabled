@@ -13,7 +13,7 @@ class EventAttendanceControllerTest < ActionDispatch::IntegrationTest
     assert_select "h3", users(:member).name
     assert_select ".role-tag", text: "Late"
     assert_select "legend", text: "Mark attendance"
-    assert_select "#attendance-member-#{memberships(:film_member).id}"
+    assert_select "turbo-frame#attendance-member-#{memberships(:film_member).id}", count: 1
   end
 
   test "officer can view attendance sheet" do
