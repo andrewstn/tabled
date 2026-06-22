@@ -1,0 +1,18 @@
+<% if paginator.total_count.positive? %>
+  <nav class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-rule pt-4 text-sm" aria-label="Pagination">
+    <p class="text-ink-soft">Showing <%= paginator.first_item %>–<%= paginator.last_item %> of <%= paginator.total_count %></p>
+    <div class="flex items-center gap-2">
+      <% if paginator.previous_page %>
+        <%= link_to "Previous", pagination_url(paginator.previous_page), class: "button-secondary" %>
+      <% else %>
+        <span class="border border-rule px-3 py-2 font-bold text-ink-soft/50" aria-disabled="true">Previous</span>
+      <% end %>
+      <span class="px-2 text-xs font-bold text-ink-soft">Page <%= paginator.page %> of <%= paginator.total_pages %></span>
+      <% if paginator.next_page %>
+        <%= link_to "Next", pagination_url(paginator.next_page), class: "button-secondary" %>
+      <% else %>
+        <span class="border border-rule px-3 py-2 font-bold text-ink-soft/50" aria-disabled="true">Next</span>
+      <% end %>
+    </div>
+  </nav>
+<% end %>

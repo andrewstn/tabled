@@ -8,4 +8,8 @@ module ApplicationHelper
 
     "#{term} #{date.year}"
   end
+
+  def pagination_url(page)
+    url_for(request.path_parameters.merge(request.query_parameters).merge(page: page))
+  end
 end
