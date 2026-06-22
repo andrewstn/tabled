@@ -13,6 +13,7 @@ class EventAttendanceControllerTest < ActionDispatch::IntegrationTest
     assert_select "h3", users(:member).name
     assert_select ".role-tag", text: "Late"
     assert_select "legend", text: "Mark attendance"
+    assert_select "#attendance-member-#{memberships(:film_member).id}"
   end
 
   test "officer can view attendance sheet" do
@@ -54,6 +55,11 @@ class EventAttendanceControllerTest < ActionDispatch::IntegrationTest
     assert_predicate record, :present?
     assert_equal users(:owner), record.marked_by
     assert_not_nil record.checked_in_at
+    assert_redirected_to organization_event_attendance_path(
+      organizations(:film_society),
+      event,
+      anchor: "attendance-member-#{memberships(:film_member).id}"
+    )
 
     assert_no_difference("AttendanceRecord.count") do
       patch organization_event_attendance_record_path(organizations(:film_society), event, memberships(:film_member)), params: {

@@ -32,7 +32,7 @@
       <% @memberships.each do |membership| %>
         <% rsvp = @rsvps_by_membership_id[membership.id] %>
         <% attendance = @attendance_by_membership_id[membership.id] %>
-        <article class="member-row items-start py-4">
+        <article id="attendance-member-<%= membership.id %>" class="member-row scroll-mt-4 items-start py-4">
           <div class="min-w-0 flex-1">
             <h3 class="font-semibold"><%= membership.user.name %></h3>
             <p class="mt-1 text-xs text-ink-soft"><%= membership.user.email_address %> · <%= membership.role.humanize %></p>

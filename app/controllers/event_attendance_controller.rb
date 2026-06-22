@@ -32,9 +32,9 @@ class EventAttendanceController < ApplicationController
     )
 
     if marker.save
-      redirect_to organization_event_attendance_path(@organization, @event), notice: "Saved to the event record."
+      redirect_to attendance_sheet_path(membership), notice: "Saved to the event record."
     else
-      redirect_to organization_event_attendance_path(@organization, @event), alert: marker.attendance_record.errors.full_messages.to_sentence
+      redirect_to attendance_sheet_path(membership), alert: marker.attendance_record.errors.full_messages.to_sentence
     end
   end
 
@@ -82,5 +82,13 @@ class EventAttendanceController < ApplicationController
 
   def safe_csv_cell(value)
     value.to_s.match?(/\A[=+\-@]/) ? "'#{value}" : value
+  end
+
+  def attendance_sheet_path(membership)
+    organization_event_attendance_path(
+      @organization,
+      @event,
+      anchor: "attendance-member-#{membership.id}"
+    )
   end
 end
