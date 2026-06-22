@@ -8,3 +8,8 @@ member_maybe_film_night:
   event: upcoming_film_night
   membership: film_member
   status: maybe
+
+member_maybe_planning_table:
+  event: past_planning_table
+  membership: film_member
+  status: maybe

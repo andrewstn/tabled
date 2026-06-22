@@ -1,3 +1,5 @@
+require "csv"
+
 class EventAttendanceController < ApplicationController
   before_action :set_organization
   before_action :require_organization_membership
@@ -8,6 +10,15 @@ class EventAttendanceController < ApplicationController
     @memberships = @organization.memberships.includes(:user).order("users.name")
     @rsvps_by_membership_id = @event.rsvps.index_by(&:membership_id)
     @attendance_by_membership_id = @event.attendance_records.includes(:marked_by).index_by(&:membership_id)
+
+    respond_to do |format|
+      format.html
+      format.csv do
+        send_data attendance_csv,
+          filename: "event-#{@event.id}-attendance.csv",
+          type: "text/csv; charset=utf-8"
+      end
+    end
   end
 
   def update
@@ -47,5 +58,29 @@ class EventAttendanceController < ApplicationController
 
   def attendance_params
     params.expect(attendance_record: %i[status note])
+  end
+
+  def attendance_csv
+    CSV.generate(headers: true) do |csv|
+      csv << [ "Member name", "Email", "Role", "RSVP status", "Attendance status", "Checked in at", "Marked by", "Note" ]
+      @memberships.each do |membership|
+        rsvp = @rsvps_by_membership_id[membership.id]
+        attendance = @attendance_by_membership_id[membership.id]
+        csv << [
+          safe_csv_cell(membership.user.name),
+          safe_csv_cell(membership.user.email_address),
+          membership.role,
+          rsvp&.status,
+          attendance&.status,
+          attendance&.checked_in_at&.iso8601,
+          safe_csv_cell(attendance&.marked_by&.name),
+          safe_csv_cell(attendance&.note)
+        ]
+      end
+    end
+  end
+
+  def safe_csv_cell(value)
+    value.to_s.match?(/\A[=+\-@]/) ? "'#{value}" : value
   end
 end

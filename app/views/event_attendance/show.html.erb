@@ -8,9 +8,14 @@
   </div>
 
   <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
-    <p class="eyebrow"><%= @event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %></p>
-    <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Attendance sheet</h1>
-    <p class="mt-3 max-w-2xl leading-7 text-ink-soft">Mark who made it to <%= @event.title %>.</p>
+    <div class="flex flex-wrap items-end justify-between gap-5">
+      <div>
+        <p class="eyebrow"><%= @event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %></p>
+        <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Attendance sheet</h1>
+        <p class="mt-3 max-w-2xl leading-7 text-ink-soft">Mark who made it to <%= @event.title %>.</p>
+      </div>
+      <%= link_to "Export attendance CSV", organization_event_attendance_path(@organization, @event, format: :csv), class: "button-secondary" %>
+    </div>
   </header>
 
   <section class="workspace-section" aria-labelledby="attendance-roster">

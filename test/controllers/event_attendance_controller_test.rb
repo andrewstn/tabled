@@ -1,4 +1,5 @@
 require "test_helper"
+require "csv"
 
 class EventAttendanceControllerTest < ActionDispatch::IntegrationTest
   test "owner can view attendance sheet" do
@@ -85,6 +86,30 @@ class EventAttendanceControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :not_found
+  end
+
+  test "organizer can export attendance CSV" do
+    sign_in_as(users(:owner))
+
+    get organization_event_attendance_path(organizations(:film_society), events(:past_planning_table), format: :csv)
+
+    assert_response :success
+    assert_equal "text/csv", response.media_type
+    rows = CSV.parse(response.body, headers: true)
+    member_row = rows.find { |row| row["Email"] == users(:member).email_address }
+    assert_equal users(:member).name, member_row["Member name"]
+    assert_equal "maybe", member_row["RSVP status"]
+    assert_equal "late", member_row["Attendance status"]
+    assert_predicate member_row["Checked in at"], :present?
+    assert_equal users(:owner).name, member_row["Marked by"]
+  end
+
+  test "member cannot export attendance CSV" do
+    sign_in_as(users(:member))
+
+    get organization_event_attendance_path(organizations(:film_society), events(:past_planning_table), format: :csv)
+
+    assert_response :forbidden
   end
 
   private
