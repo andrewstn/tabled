@@ -25,6 +25,11 @@ class OrganizationsController < ApplicationController
     @upcoming_events = @organization.events.upcoming.includes(:rsvps).limit(3)
     @dashboard_rsvps = @membership.rsvps.where(event: @upcoming_events).index_by(&:event_id)
     @can_create_events = EventPolicy.new(current_user, @organization).create?
+    @recent_attendance_events = @organization.events.past
+      .joins(:attendance_records)
+      .distinct
+      .includes(:attendance_records)
+      .limit(3)
     load_attendance_follow_ups if @can_create_events
   end
 

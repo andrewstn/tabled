@@ -94,9 +94,26 @@
       <section class="workspace-section">
         <p class="eyebrow">Attendance</p>
         <h2 class="mt-1 text-2xl font-semibold">Recent roll call</h2>
-        <div class="ruled-list mt-5 min-h-20 border-t border-rule py-2 text-sm text-ink-soft">
-          <p class="px-2 py-1">No roll calls yet. Check-in history will appear here after events begin.</p>
-        </div>
+        <% if @recent_attendance_events.any? %>
+          <div class="mt-5 divide-y divide-rule border-y border-rule">
+            <% @recent_attendance_events.each do |event| %>
+              <article class="event-row">
+                <time class="event-date opacity-75" datetime="<%= event.starts_at.iso8601 %>">
+                  <span class="text-xs font-bold text-moss-dark"><%= event.starts_at.strftime("%b") %></span>
+                  <span class="font-serif text-2xl font-semibold leading-none"><%= event.starts_at.day %></span>
+                </time>
+                <div class="min-w-0 flex-1">
+                  <h3 class="font-semibold"><%= link_to event.title, organization_event_path(@organization, event), class: "text-link" %></h3>
+                  <p class="mt-1 text-sm text-ink-soft"><%= pluralize(event.attendance_records.count { |record| record.present? || record.late? }, "member") %> present or late · attendance recorded</p>
+                </div>
+              </article>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="ruled-list mt-5 min-h-20 border-t border-rule py-2 text-sm text-ink-soft">
+            <p class="px-2 py-1">No roll calls yet. Check-in history will appear here after events begin.</p>
+          </div>
+        <% end %>
       </section>
     </div>
 
