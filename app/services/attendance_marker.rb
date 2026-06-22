@@ -10,15 +10,17 @@ class AttendanceMarker
   end
 
   def save
-    @attendance_record = @event.attendance_records.find_or_initialize_by(membership: @membership)
-    @attendance_record.assign_attributes(status: @status, marked_by: @marked_by, note: @note)
+    @event.with_lock do
+      @attendance_record = @event.attendance_records.find_or_initialize_by(membership: @membership)
+      @attendance_record.assign_attributes(status: @status, marked_by: @marked_by, note: @note)
 
-    if %w[present late].include?(@status.to_s)
-      @attendance_record.checked_in_at ||= Time.current
-    else
-      @attendance_record.checked_in_at = nil
+      if %w[present late].include?(@status.to_s)
+        @attendance_record.checked_in_at ||= Time.current
+      else
+        @attendance_record.checked_in_at = nil
+      end
+
+      @attendance_record.save
     end
-
-    @attendance_record.save
   end
 end
