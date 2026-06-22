@@ -120,5 +120,35 @@ rsvp_statuses.each do |event_title, statuses_by_email|
   end
 end
 
-puts "Seeded Buckeye Film Society with four members, two pending invitations, four gatherings, and demo RSVPs."
+planning_event = events.fetch("Short Film Planning Table")
+unless planning_event.check_in_code_digest?
+  planning_event.regenerate_check_in_code
+end
+planning_event.update!(
+  check_in_opens_at: planning_event.starts_at - 15.minutes,
+  check_in_closes_at: planning_event.ends_at + 15.minutes
+)
+
+attendance_statuses = {
+  "demo-owner@example.test" => { status: :present, minutes_after_start: 0, note: "Opened the room and set out the sign-in sheet." },
+  "maya.member@example.test" => { status: :present, minutes_after_start: 2 },
+  "theo.member@example.test" => { status: :late, minutes_after_start: 14 },
+  "nina.member@example.test" => { status: :excused }
+}
+
+attendance_statuses.each do |email_address, attributes|
+  membership = Membership.find_by!(organization: organization, user: demo_users.fetch(email_address))
+  record = planning_event.attendance_records.find_or_initialize_by(membership: membership)
+  checked_in_at = if attributes[:minutes_after_start]
+    planning_event.starts_at + attributes[:minutes_after_start].minutes
+  end
+  record.update!(
+    status: attributes.fetch(:status),
+    checked_in_at: checked_in_at,
+    marked_by: demo_users.fetch("demo-owner@example.test"),
+    note: attributes[:note]
+  )
+end
+
+puts "Seeded Buckeye Film Society with four members, two pending invitations, four gatherings, RSVPs, and attendance records."
 puts "Sign in as demo-owner@example.test with tabled-demo-password."

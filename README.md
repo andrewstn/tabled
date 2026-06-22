@@ -25,7 +25,7 @@ Open [http://localhost:3000](http://localhost:3000). The seed data includes an o
 - Email: `demo-owner@example.test`
 - Password: `tabled-demo-password`
 
-The seed is idempotent and also creates officer, coordinator, and member accounts, two pending invitations, four gatherings, and a mix of demo RSVPs for Buckeye Film Society.
+The seed is idempotent and also creates officer, coordinator, and member accounts, two pending invitations, four gatherings, a mix of demo RSVPs, a closed check-in window, and attendance records for Buckeye Film Society. One past gathering remains unmarked to demonstrate the officer follow-up workflow.
 
 Invitation emails stay local in development and are written beneath `tmp/mails`.
 
@@ -52,7 +52,7 @@ bin/brakeman --no-pager
 
 ## Current scope
 
-Milestones 1 through 3 establish the multi-tenant organization workspace and its active semester calendar:
+Milestones 1 through 4 establish the multi-tenant organization workspace, active semester calendar, and event sign-in record:
 
 - Account signup and session authentication
 - Organizations with stable, human-readable URLs
@@ -71,9 +71,15 @@ Milestones 1 through 3 establish the multi-tenant organization workspace and its
 - Capacity and RSVP-deadline enforcement with organizer overrides
 - Private organizer event rosters and response summaries
 - Real upcoming gathering data on the organization dashboard
+- Organizer attendance sheets with present, late, excused, and absent records
+- Manual attendance marking with arrival times, notes, and the marking organizer
+- Digest-backed, time-limited member self check-in codes
+- Organization-scoped member attendance history
+- Organizer-only event attendance CSV export
+- Real attendance follow-ups and recent roll calls on the dashboard
 - Idempotent local demo data
 
-Attendance and check-ins, recurring events, calendar integrations, announcements, and activity history are intentionally outside the current scope. Dashboard placeholders for those later areas remain in place.
+Recurring events, QR codes, geolocation, complex attendance analytics, calendar integrations, announcements, and activity history are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
 
 ## Product and visual direction
 
