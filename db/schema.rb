@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_22_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_22_110000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -105,6 +105,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_100000) do
     t.check_constraint "role::text = ANY (ARRAY['owner'::character varying, 'officer'::character varying, 'coordinator'::character varying, 'member'::character varying]::text[])", name: "memberships_role_check"
   end
 
+  create_table "organization_join_links", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.bigint "created_by_id", null: false
+    t.datetime "expires_at"
+    t.string "label", null: false
+    t.integer "max_uses"
+    t.bigint "organization_id", null: false
+    t.string "role", default: "member", null: false
+    t.datetime "updated_at", null: false
+    t.integer "uses_count", default: 0, null: false
+    t.index ["created_by_id"], name: "index_organization_join_links_on_created_by_id"
+    t.index ["organization_id", "active"], name: "index_organization_join_links_on_organization_id_and_active"
+    t.index ["organization_id"], name: "index_organization_join_links_on_organization_id"
+    t.check_constraint "max_uses IS NULL OR max_uses > 0", name: "join_links_positive_max_uses"
+    t.check_constraint "uses_count >= 0", name: "join_links_nonnegative_uses_count"
+  end
+
   create_table "organizations", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -147,6 +165,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_100000) do
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "memberships", "organizations"
   add_foreign_key "memberships", "users"
+  add_foreign_key "organization_join_links", "organizations"
+  add_foreign_key "organization_join_links", "users", column: "created_by_id"
   add_foreign_key "rsvps", "events"
   add_foreign_key "rsvps", "memberships"
 end

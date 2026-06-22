@@ -4,6 +4,7 @@ class Organization < ApplicationRecord
   has_many :invitations, dependent: :destroy
   has_many :events, dependent: :destroy
   has_many :announcements, dependent: :destroy
+  has_many :organization_join_links, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 120 }
   validates :slug, presence: true, uniqueness: true,

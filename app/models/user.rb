@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  has_many :created_join_links, class_name: "OrganizationJoinLink", foreign_key: :created_by_id, inverse_of: :created_by, dependent: :restrict_with_error
   has_secure_password
 
   has_many :memberships, dependent: :destroy
