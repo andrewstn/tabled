@@ -1,4 +1,6 @@
 class Event < ApplicationRecord
+  has_secure_password :check_in_code, validations: false
+
   belongs_to :organization
   belongs_to :created_by, class_name: "User", inverse_of: :created_events
   has_many :rsvps, dependent: :destroy
@@ -11,6 +13,7 @@ class Event < ApplicationRecord
   validates :capacity, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validate :ends_after_start
   validate :rsvp_deadline_not_after_start
+  validate :check_in_closes_after_opening
 
   scope :upcoming, -> { where(starts_at: Time.current..).order(:starts_at) }
   scope :past, -> { where(starts_at: ...Time.current).order(starts_at: :desc) }
@@ -35,6 +38,28 @@ class Event < ApplicationRecord
     rsvp_deadline.present? && rsvp_deadline < Time.current
   end
 
+  def check_in_state
+    return :not_opened if check_in_opens_at.blank? || check_in_code_digest.blank?
+    return :not_opened if check_in_opens_at > Time.current
+    return :closed if check_in_closes_at.present? && check_in_closes_at <= Time.current
+
+    :open
+  end
+
+  def check_in_open?
+    check_in_state == :open
+  end
+
+  def regenerate_check_in_code
+    code = SecureRandom.alphanumeric(6).upcase
+    self.check_in_code = code
+    code
+  end
+
+  def valid_check_in_code?(code)
+    check_in_code_digest.present? && authenticate_check_in_code(code.to_s.strip.upcase).present?
+  end
+
   private
 
   def ends_after_start
@@ -47,5 +72,12 @@ class Event < ApplicationRecord
     return if rsvp_deadline.blank? || starts_at.blank? || rsvp_deadline <= starts_at
 
     errors.add(:rsvp_deadline, "must be on or before the start time")
+  end
+
+
+  def check_in_closes_after_opening
+    return if check_in_opens_at.blank? || check_in_closes_at.blank? || check_in_closes_at > check_in_opens_at
+
+    errors.add(:check_in_closes_at, "must be after check-in opens")
   end
 end

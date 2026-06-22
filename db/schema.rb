@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_22_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_22_091000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -33,6 +33,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_090000) do
 
   create_table "events", force: :cascade do |t|
     t.integer "capacity"
+    t.datetime "check_in_closes_at"
+    t.string "check_in_code_digest"
+    t.datetime "check_in_opens_at"
     t.datetime "created_at", null: false
     t.bigint "created_by_id", null: false
     t.text "description"
@@ -44,9 +47,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_090000) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["created_by_id"], name: "index_events_on_created_by_id"
+    t.index ["organization_id", "check_in_opens_at", "check_in_closes_at"], name: "index_events_on_organization_and_check_in_window"
     t.index ["organization_id", "starts_at"], name: "index_events_on_organization_id_and_starts_at"
     t.index ["organization_id"], name: "index_events_on_organization_id"
     t.check_constraint "capacity IS NULL OR capacity > 0", name: "events_positive_capacity"
+    t.check_constraint "check_in_opens_at IS NULL OR check_in_closes_at IS NULL OR check_in_closes_at > check_in_opens_at", name: "events_check_in_window_order"
     t.check_constraint "ends_at IS NULL OR ends_at > starts_at", name: "events_end_after_start"
     t.check_constraint "rsvp_deadline IS NULL OR rsvp_deadline <= starts_at", name: "events_deadline_before_start"
   end
