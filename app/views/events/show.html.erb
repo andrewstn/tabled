@@ -73,13 +73,14 @@
 
       <section class="workspace-section" aria-labelledby="your-rsvp">
         <div class="workspace-section-heading">
-          <p class="eyebrow">Your place</p>
+          <p class="eyebrow">Before the gathering</p>
           <h2 id="your-rsvp" class="mt-1 text-2xl font-semibold">Your RSVP</h2>
         </div>
+        <p class="mt-4 text-sm leading-6 text-ink-soft">Are you planning to come?</p>
         <% if @rsvp %>
-          <p class="mt-5">You answered <span class="role-tag"><%= @rsvp.status.humanize %></span></p>
+          <p class="mt-3">You answered <span class="role-tag"><%= @rsvp.status.humanize %></span></p>
         <% else %>
-          <p class="mt-5 text-sm leading-6 text-ink-soft">Let the organizers know whether to save you a place.</p>
+          <p class="mt-3 text-sm leading-6 text-ink-soft">Let the organizers know whether to save you a place.</p>
         <% end %>
 
         <% rsvps_closed = @event.rsvp_deadline_passed? && !@event_policy.override_rsvp_limits? %>
@@ -104,17 +105,18 @@
 
       <section class="workspace-section" aria-labelledby="member-check-in">
         <div class="workspace-section-heading">
-          <p class="eyebrow">Were you there?</p>
+          <p class="eyebrow">During the gathering</p>
           <h2 id="member-check-in" class="mt-1 text-2xl font-semibold">Member check-in</h2>
         </div>
+        <p class="mt-4 text-sm leading-6 text-ink-soft">Use this during the gathering to record that you were there.</p>
 
         <% if @attendance_record %>
-          <p class="mt-5">Attendance: <span class="role-tag"><%= @attendance_record.status.humanize %></span></p>
+          <p class="mt-3">Attendance: <span class="role-tag"><%= @attendance_record.status.humanize %></span></p>
           <% if @attendance_record.checked_in_at %><p class="mt-2 text-sm text-ink-soft">Checked in <%= @attendance_record.checked_in_at.strftime("%B %-d at %-I:%M %p") %>.</p><% end %>
         <% end %>
 
         <% if @event.check_in_open? %>
-          <p class="mt-5 text-sm leading-6 text-ink-soft">Enter the code shared at the gathering.</p>
+          <p class="mt-3 text-sm leading-6 text-ink-soft">Enter the code shared at the gathering.</p>
           <%= form_with url: organization_event_check_in_path(@organization, @event), class: "mt-4 flex max-w-md flex-wrap items-end gap-3" do |form| %>
             <div class="min-w-48 flex-1">
               <%= form.label :check_in_code, "Check-in code", class: "form-label" %>
