@@ -1,7 +1,9 @@
 class AnnouncementsController < ApplicationController
   before_action :set_organization
   before_action :require_organization_membership
-  before_action :set_announcement, only: :show
+  before_action :set_announcement, only: %i[show edit update destroy]
+  before_action :require_announcement_creator, only: %i[new create]
+  before_action :require_announcement_manager, only: %i[edit update destroy]
 
   def index
     @membership = current_user.memberships.find_by!(organization: @organization)
@@ -18,6 +20,38 @@ class AnnouncementsController < ApplicationController
     raise ActiveRecord::RecordNotFound unless @announcement_policy.show?
   end
 
+  def new
+    @announcement = @organization.announcements.new(author: current_user, audience: :all_members)
+  end
+
+  def create
+    @announcement = @organization.announcements.new(announcement_params.merge(author: current_user, status: requested_status))
+
+    if @announcement.save
+      redirect_to organization_announcement_path(@organization, @announcement), notice: announcement_saved_notice
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
+  end
+
+  def update
+    status = @announcement.published? ? "published" : requested_status
+    if @announcement.update(announcement_params.merge(status: status))
+      redirect_to organization_announcement_path(@organization, @announcement), notice: announcement_saved_notice
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    title = @announcement.title
+    @announcement.destroy!
+    redirect_to organization_announcements_path(@organization), notice: "#{title} was removed from the bulletin."
+  end
+
   private
 
   def set_organization
@@ -30,5 +64,25 @@ class AnnouncementsController < ApplicationController
 
   def set_announcement
     @announcement = @organization.announcements.includes(:author).find(params[:id])
+  end
+
+  def require_announcement_creator
+    head :forbidden unless AnnouncementPolicy.new(current_user, @organization).create?
+  end
+
+  def require_announcement_manager
+    head :forbidden unless AnnouncementPolicy.new(current_user, @organization, @announcement).update?
+  end
+
+  def announcement_params
+    params.expect(announcement: %i[title body audience pinned])
+  end
+
+  def requested_status
+    params.dig(:announcement, :status) == "published" ? "published" : "draft"
+  end
+
+  def announcement_saved_notice
+    @announcement.published? ? "Announcement posted to the bulletin." : "Draft saved on the officer desk."
   end
 end

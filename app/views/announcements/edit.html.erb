@@ -1,0 +1,14 @@
+<% content_for :title, "Edit #{@announcement.title} · Tabled" %>
+
+<section class="binder-page w-full max-w-3xl">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span><%= link_to "Bulletin", organization_announcements_path(@organization), class: "text-link" %></span>
+    <span>Edit announcement</span>
+  </div>
+  <div class="p-6 sm:p-9">
+    <p class="eyebrow">Officer desk</p>
+    <h1 class="mt-2 text-3xl font-semibold">Edit announcement</h1>
+    <%= render "form", organization: @organization, announcement: @announcement %>
+  </div>
+</section>

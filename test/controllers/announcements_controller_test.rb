@@ -61,6 +61,81 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", "Officers"
   end
 
+  test "owner can create a draft announcement" do
+    sign_in_as(users(:owner))
+
+    assert_difference("Announcement.count") do
+      post organization_announcements_path(organizations(:film_society)), params: {
+        announcement: { title: "Room reminder", body: "Meet in room 214.", audience: "all_members", status: "draft" }
+      }
+    end
+
+    announcement = Announcement.order(:created_at).last
+    assert_predicate announcement, :draft?
+    assert_equal users(:owner), announcement.author
+    assert_nil announcement.published_at
+  end
+
+  test "officer can create a draft announcement" do
+    memberships(:film_member).update!(role: :officer)
+    sign_in_as(users(:member))
+
+    assert_difference("Announcement.count") do
+      post organization_announcements_path(organizations(:film_society)), params: {
+        announcement: { title: "Officer note", body: "A note from the officer desk.", audience: "officers", status: "draft" }
+      }
+    end
+  end
+
+  test "member cannot create an announcement" do
+    sign_in_as(users(:member))
+
+    assert_no_difference("Announcement.count") do
+      post organization_announcements_path(organizations(:film_society)), params: {
+        announcement: { title: "Member post", body: "Not authorized.", audience: "all_members", status: "published" }
+      }
+    end
+
+    assert_response :forbidden
+  end
+
+  test "owner can publish a draft and publishing sets published at" do
+    announcement = announcements(:officer_notes)
+    sign_in_as(users(:owner))
+
+    patch organization_announcement_path(organizations(:film_society), announcement), params: {
+      announcement: { title: announcement.title, body: announcement.body, audience: "officers", pinned: "0", status: "published" }
+    }
+
+    assert_redirected_to organization_announcement_path(organizations(:film_society), announcement)
+    assert_predicate announcement.reload, :published?
+    assert_not_nil announcement.published_at
+  end
+
+  test "editing a published announcement preserves published at" do
+    announcement = announcements(:pinned_all_members)
+    published_at = announcement.published_at
+    sign_in_as(users(:owner))
+
+    patch organization_announcement_path(organizations(:film_society), announcement), params: {
+      announcement: { title: "Updated details", body: announcement.body, audience: "all_members", pinned: "1", status: "draft" }
+    }
+
+    assert_predicate announcement.reload, :published?
+    assert_equal published_at, announcement.published_at
+  end
+
+  test "invalid announcement renders errors" do
+    sign_in_as(users(:owner))
+
+    post organization_announcements_path(organizations(:film_society)), params: {
+      announcement: { title: "", body: "", audience: "all_members", status: "draft" }
+    }
+
+    assert_response :unprocessable_entity
+    assert_select "[role='alert']", text: /Title can't be blank/
+  end
+
   private
 
   def sign_in_as(user)

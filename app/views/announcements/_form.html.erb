@@ -1,0 +1,37 @@
+<%= form_with model: [ organization, announcement ], class: "mt-8 space-y-6" do |form| %>
+  <%= render "shared/form_errors", record: announcement %>
+
+  <div>
+    <%= form.label :title, "Announcement title", class: "form-label" %>
+    <%= form.text_field :title, required: true, maxlength: 160, autofocus: true, class: "form-input" %>
+  </div>
+
+  <div>
+    <%= form.label :body, "What should members know?", class: "form-label" %>
+    <%= form.text_area :body, required: true, rows: 10, maxlength: 10000, class: "form-input resize-y" %>
+  </div>
+
+  <div>
+    <%= form.label :audience, "Who should see this?", class: "form-label" %>
+    <%= form.select :audience, Announcement::AUDIENCES.map { |audience| [ audience == "all_members" ? "All members" : "Officers", audience ] }, {}, class: "form-input" %>
+    <p class="mt-1.5 text-xs text-ink-soft">Officers includes owners, officers, and coordinators.</p>
+  </div>
+
+  <div class="flex items-start gap-3">
+    <%= form.check_box :pinned, class: "mt-1 size-4 accent-moss" %>
+    <div>
+      <%= form.label :pinned, "Pin this to the bulletin", class: "font-bold" %>
+      <p class="mt-1 text-xs text-ink-soft">Pinned notes stay at the top of the board.</p>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3 border-t border-rule pt-5">
+    <% if announcement.published? %>
+      <%= form.button "Save changes", name: "announcement[status]", value: "published", class: "button-primary" %>
+    <% else %>
+      <%= form.button "Save draft", name: "announcement[status]", value: "draft", class: "button-secondary" %>
+      <%= form.button "Publish announcement", name: "announcement[status]", value: "published", class: "button-primary" %>
+    <% end %>
+    <%= link_to "Cancel", announcement.persisted? ? organization_announcement_path(organization, announcement) : organization_announcements_path(organization), class: "text-link" %>
+  </div>
+<% end %>
