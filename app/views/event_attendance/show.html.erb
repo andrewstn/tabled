@@ -14,9 +14,30 @@
         <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Attendance sheet</h1>
         <p class="mt-3 max-w-2xl leading-7 text-ink-soft">Mark who made it to <strong class="text-ink"><%= @event.title %></strong>. RSVPs show who planned to come; attendance records who was there.</p>
       </div>
-      <%= link_to "Export attendance CSV", organization_event_attendance_path(@organization, @event, format: :csv), class: "button-secondary" %>
+      <%= link_to "Export attendance CSV", organization_event_attendance_path(@organization, @event, request.query_parameters.merge(format: :csv, page: nil)), class: "button-secondary" %>
     </div>
   </header>
+
+  <section class="border-b border-rule px-5 py-5 sm:px-8" aria-label="Attendance filters">
+    <%= form_with url: organization_event_attendance_path(@organization, @event), method: :get, class: "grid gap-4 md:grid-cols-[1fr_10rem_10rem_auto] md:items-end" do |form| %>
+      <div>
+        <%= form.label :q, "Search attendance sheet", class: "form-label" %>
+        <%= form.search_field :q, value: @search_query, placeholder: "Name or email", class: "form-input" %>
+      </div>
+      <div>
+        <%= form.label :rsvp, "RSVP", class: "form-label" %>
+        <%= form.select :rsvp, options_for_select([["All responses", ""], ["Attending", "attending"], ["Maybe", "maybe"], ["Not attending", "not_attending"], ["No response", "no_response"]], @rsvp_filter), {}, class: "form-input" %>
+      </div>
+      <div>
+        <%= form.label :attendance, "Attendance", class: "form-label" %>
+        <%= form.select :attendance, options_for_select([["All records", ""]] + AttendanceRecord::STATUSES.map { |status| [status.humanize, status] } + [["Unmarked", "unmarked"]], @attendance_filter), {}, class: "form-input" %>
+      </div>
+      <%= form.submit "Filter sheet", class: "button-primary" %>
+    <% end %>
+    <% if @search_query.present? || @rsvp_filter.present? || @attendance_filter.present? %>
+      <p class="mt-3 text-sm"><%= link_to "Clear filters", organization_event_attendance_path(@organization, @event), class: "text-link" %></p>
+    <% end %>
+  </section>
 
   <section class="workspace-section" aria-labelledby="attendance-roster">
     <div class="workspace-section-heading">
@@ -24,10 +45,11 @@
       <h2 id="attendance-roster" class="mt-1 text-2xl font-semibold">Event roster</h2>
     </div>
 
-    <% if @attendance_by_membership_id.empty? %>
+    <% if @event.attendance_records.none? %>
       <p class="mt-5 border-l-4 border-amber bg-amber-pale/35 px-4 py-3 text-sm text-ink-soft">No attendance has been recorded yet. Use the roster below to mark attendance.</p>
     <% end %>
 
+    <% if @memberships.any? %>
     <div class="mt-6 divide-y divide-rule border-y border-rule">
       <% @memberships.each do |membership| %>
         <% rsvp = @rsvps_by_membership_id[membership.id] %>
@@ -47,6 +69,9 @@
               <span class="role-tag"><%= attendance&.status&.humanize || "Not marked" %></span>
               <% if turbo_frame_request? && flash[:notice] %><p class="mt-2 text-xs font-bold text-moss-dark"><%= flash[:notice] %></p><% end %>
               <%= form_with url: organization_event_attendance_record_path(@organization, @event, membership), method: :patch, scope: :attendance_record, class: "mt-3" do |form| %>
+                <% request.query_parameters.slice("q", "rsvp", "attendance", "page").each do |key, value| %>
+                  <%= hidden_field_tag key, value %>
+                <% end %>
                 <%= form.label :note, "Note for #{membership.user.name}", class: "form-label text-xs" %>
                 <%= form.text_field :note, value: attendance&.note, maxlength: 1000, placeholder: "Optional note", class: "form-input text-sm" %>
                 <fieldset class="mt-3">
@@ -63,5 +88,12 @@
         <% end %>
       <% end %>
     </div>
+    <%= render "shared/pagination", paginator: @paginator %>
+    <% else %>
+      <div class="mt-6 border-l-4 border-amber bg-amber-pale/35 px-4 py-3">
+        <p class="font-bold">No members match those filters.</p>
+        <p class="mt-1 text-sm text-ink-soft">Try another name, email, RSVP, or attendance status.</p>
+      </div>
+    <% end %>
   </section>
 </article>
