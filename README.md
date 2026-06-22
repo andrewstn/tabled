@@ -25,9 +25,9 @@ Open [http://localhost:3000](http://localhost:3000). The seed data includes an o
 - Email: `demo-owner@example.test`
 - Password: `tabled-demo-password`
 
-The seed is idempotent and also creates officer, coordinator, and member accounts, two pending invitations, four gatherings, a mix of demo RSVPs, a closed check-in window, and attendance records for Buckeye Film Society. One past gathering remains unmarked to demonstrate the officer follow-up workflow.
+The seed is idempotent and also creates officer, coordinator, and member accounts, two pending invitations, four gatherings, a mix of demo RSVPs, a closed check-in window, attendance records, two published bulletin posts, and an officer draft for Buckeye Film Society. One past gathering remains unmarked to demonstrate the officer follow-up workflow.
 
-Invitation emails stay local in development and are written beneath `tmp/mails`.
+Invitation and optional announcement emails stay local in development and are written beneath `tmp/mails`.
 
 ## Tests and checks
 
@@ -52,7 +52,7 @@ bin/brakeman --no-pager
 
 ## Current scope
 
-Milestones 1 through 4 establish the multi-tenant organization workspace, active semester calendar, and event sign-in record:
+Milestones 1 through 5 establish the multi-tenant organization workspace, active semester calendar, event sign-in record, and organization bulletin:
 
 - Account signup and session authentication
 - Organizations with stable, human-readable URLs
@@ -77,9 +77,14 @@ Milestones 1 through 4 establish the multi-tenant organization workspace, active
 - Organization-scoped member attendance history
 - Organizer-only event attendance CSV export
 - Real attendance follow-ups and recent roll calls on the dashboard
+- Organization bulletins with pinned and recent announcements
+- Private officer drafts and officers-only posts
+- Owner/officer announcement drafting, publishing, editing, and removal
+- Optional audience-scoped announcement email delivery
+- Real bulletin content on the organization dashboard
 - Idempotent local demo data
 
-Recurring events, QR codes, geolocation, complex attendance analytics, calendar integrations, announcements, and activity history are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
+Event-attendee announcement targeting, comments, reactions, attachments, notification preferences, production email providers, recurring events, QR codes, geolocation, complex analytics, calendar integrations, and activity history are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
 
 ## Product and visual direction
 

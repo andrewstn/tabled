@@ -150,5 +150,33 @@ attendance_statuses.each do |email_address, attributes|
   )
 end
 
-puts "Seeded Buckeye Film Society with four members, two pending invitations, four gatherings, RSVPs, and attendance records."
+announcement_attributes = {
+  "First Friday Film Night details" => {
+    body: "Meet in the Student Union screening room a few minutes before seven. Bring a favorite short film and something small to share if you can.",
+    audience: :all_members,
+    status: :published,
+    pinned: true,
+    published_at: 2.days.ago
+  },
+  "Camera Workshop sign-ups" => {
+    body: "Camera Workshop has a few spots left. Add your RSVP if you want a place at the equipment table.",
+    audience: :all_members,
+    status: :published,
+    pinned: false,
+    published_at: 1.day.ago
+  },
+  "Officer planning notes" => {
+    body: "Draft the next meeting agenda and confirm who can open the screening room.",
+    audience: :officers,
+    status: :draft,
+    pinned: false
+  }
+}
+
+announcement_attributes.each do |title, attributes|
+  announcement = organization.announcements.find_or_initialize_by(title: title)
+  announcement.update!(attributes.merge(author: demo_users.fetch("demo-owner@example.test")))
+end
+
+puts "Seeded Buckeye Film Society with members, invitations, gatherings, RSVPs, attendance, and announcements."
 puts "Sign in as demo-owner@example.test with tabled-demo-password."
