@@ -12,8 +12,9 @@ class UsersController < ApplicationController
     @invitation = invitation_from_params
 
     if @user.save
+      return_to = session[:return_to_after_authenticating]
       start_new_session_for(@user)
-      finish_signup
+      finish_signup(return_to)
     else
       render :new, status: :unprocessable_entity
     end
@@ -29,8 +30,8 @@ class UsersController < ApplicationController
     Invitation.find_by_token(params[:invitation_token])
   end
 
-  def finish_signup
-    return redirect_to root_path, notice: "Your member account is ready." unless @invitation
+  def finish_signup(return_to)
+    return redirect_to(return_to || root_path, notice: "Your member account is ready.") unless @invitation
 
     accepter = InvitationAccepter.new(invitation: @invitation, user: @user)
     if accepter.accept

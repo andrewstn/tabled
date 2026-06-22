@@ -34,8 +34,8 @@
       <% elsif authenticated? %>
         <div class="text-center">
           <h2 class="text-2xl font-semibold">Save your place on the roster</h2>
-          <p class="mx-auto mt-3 max-w-lg text-sm leading-6 text-ink-soft">You’re signed in as <strong class="text-ink"><%= current_user.name %></strong>. The final join button will add you as a member.</p>
-          <p class="mt-5 text-sm font-bold text-ink-soft">Ready to join</p>
+          <p class="mx-auto mt-3 max-w-lg text-sm leading-6 text-ink-soft">You’re signed in as <strong class="text-ink"><%= current_user.name %></strong>. Join as a member and add your name to the roster.</p>
+          <%= button_to "Join organization", organization_join_path(params[:token]), method: :patch, class: "button-primary mt-6" %>
         </div>
       <% else %>
         <div class="text-center">
