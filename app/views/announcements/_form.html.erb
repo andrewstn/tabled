@@ -25,6 +25,16 @@
     </div>
   </div>
 
+  <% unless announcement.published? %>
+    <div class="flex items-start gap-3 border-t border-rule pt-5">
+      <%= check_box_tag :send_email, "1", false, class: "mt-1 size-4 accent-moss" %>
+      <div>
+        <%= label_tag :send_email, "Send by email when published", class: "font-bold" %>
+        <p class="mt-1 text-xs text-ink-soft">Drafts are never emailed. Recipients follow the audience above.</p>
+      </div>
+    </div>
+  <% end %>
+
   <div class="flex flex-wrap items-center gap-3 border-t border-rule pt-5">
     <% if announcement.published? %>
       <%= form.button "Save changes", name: "announcement[status]", value: "published", class: "button-primary" %>

@@ -28,6 +28,7 @@ class AnnouncementsController < ApplicationController
     @announcement = @organization.announcements.new(announcement_params.merge(author: current_user, status: requested_status))
 
     if @announcement.save
+      deliver_announcement_email if email_requested?
       redirect_to organization_announcement_path(@organization, @announcement), notice: announcement_saved_notice
     else
       render :new, status: :unprocessable_entity
@@ -40,6 +41,7 @@ class AnnouncementsController < ApplicationController
   def update
     status = @announcement.published? ? "published" : requested_status
     if @announcement.update(announcement_params.merge(status: status))
+      deliver_announcement_email if email_requested?
       redirect_to organization_announcement_path(@organization, @announcement), notice: announcement_saved_notice
     else
       render :edit, status: :unprocessable_entity
@@ -84,5 +86,13 @@ class AnnouncementsController < ApplicationController
 
   def announcement_saved_notice
     @announcement.published? ? "Announcement posted to the bulletin." : "Draft saved on the officer desk."
+  end
+
+  def email_requested?
+    params[:send_email] == "1" && @announcement.published? && @announcement.emailed_at.nil?
+  end
+
+  def deliver_announcement_email
+    AnnouncementEmailSender.new(announcement: @announcement).deliver
   end
 end

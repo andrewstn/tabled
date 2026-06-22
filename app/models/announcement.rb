@@ -24,6 +24,11 @@ class Announcement < ApplicationRecord
     audience == "all_members" ? "All members" : "Officers"
   end
 
+  def recipient_memberships
+    memberships = organization.memberships.includes(:user)
+    officers? ? memberships.where(role: %w[owner officer coordinator]) : memberships
+  end
+
   private
 
   def set_published_at

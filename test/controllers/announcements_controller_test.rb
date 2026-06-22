@@ -136,6 +136,32 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[role='alert']", text: /Title can't be blank/
   end
 
+  test "draft announcement is not emailed when email is selected" do
+    sign_in_as(users(:owner))
+
+    assert_no_emails do
+      post organization_announcements_path(organizations(:film_society)), params: {
+        send_email: "1",
+        announcement: { title: "Draft reminder", body: "Still being written.", audience: "all_members", status: "draft" }
+      }
+    end
+
+    assert_nil Announcement.order(:created_at).last.emailed_at
+  end
+
+  test "published announcement can be emailed when selected" do
+    sign_in_as(users(:owner))
+
+    assert_emails organizations(:film_society).memberships.count do
+      post organization_announcements_path(organizations(:film_society)), params: {
+        send_email: "1",
+        announcement: { title: "Tonight's room", body: "Meet in the screening room.", audience: "all_members", status: "published" }
+      }
+    end
+
+    assert_not_nil Announcement.order(:created_at).last.emailed_at
+  end
+
   private
 
   def sign_in_as(user)
