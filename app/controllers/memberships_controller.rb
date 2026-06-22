@@ -5,7 +5,16 @@ class MembershipsController < ApplicationController
 
   def index
     @current_membership = current_user.memberships.find_by!(organization: @organization)
-    @memberships = @organization.memberships.includes(:user).order(:role, "users.name")
+    memberships = @organization.memberships.joins(:user).includes(:user).order("users.name", "memberships.id")
+    @search_query = params[:q].to_s.strip
+    @role_filter = params[:role].to_s
+    if @search_query.present?
+      pattern = "%#{ActiveRecord::Base.sanitize_sql_like(@search_query)}%"
+      memberships = memberships.where("users.name ILIKE :pattern OR users.email_address ILIKE :pattern", pattern: pattern)
+    end
+    memberships = memberships.where(role: @role_filter) if Membership::ROLES.include?(@role_filter)
+    @paginator = Paginator.new(memberships, page: params[:page])
+    @memberships = @paginator.records
     @can_manage_members = OrganizationPolicy.new(current_user, @organization).manage?
     @pending_invitation_count = @organization.invitations.pending.count if @can_manage_members
   end
