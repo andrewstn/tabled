@@ -195,6 +195,32 @@
             <p class="mt-3 text-sm leading-6 text-ink-soft">No one has said they’re coming yet.</p>
           <% end %>
         </section>
+
+        <section class="border-t border-rule p-5 sm:p-6" aria-labelledby="member-event-status">
+          <p class="eyebrow text-amber">Your record</p>
+          <h2 id="member-event-status" class="mt-1 text-xl font-semibold">Your place</h2>
+          <dl class="mt-4 space-y-4 text-sm">
+            <div>
+              <dt class="font-bold text-moss-dark">RSVP</dt>
+              <% if @rsvp %>
+                <dd class="mt-1"><%= @rsvp.status.humanize %></dd>
+              <% else %>
+                <dd class="mt-1 text-ink-soft">You haven’t answered yet.</dd>
+              <% end %>
+            </div>
+            <div>
+              <dt class="font-bold text-moss-dark">Attendance</dt>
+              <% if @attendance_record %>
+                <dd class="mt-1"><%= @attendance_record.status.humanize %></dd>
+                <% if @attendance_record.checked_in_at %>
+                  <dd class="mt-1 text-xs leading-5 text-ink-soft">Checked in <%= @attendance_record.checked_in_at.strftime("%B %-d at %-I:%M %p") %>.</dd>
+                <% end %>
+              <% else %>
+                <dd class="mt-1 text-ink-soft">You haven’t checked in yet.</dd>
+              <% end %>
+            </div>
+          </dl>
+        </section>
       <% end %>
 
       <% if @event_policy.manage_attendance? %>
