@@ -1,0 +1,40 @@
+<% content_for :title, "Attendance history · #{@membership.user.name} · Tabled" %>
+
+<article class="binder-page w-full max-w-4xl">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span><%= link_to "Member roster", organization_members_path(@organization), class: "text-link" %></span>
+    <span>Current semester · <%= current_semester_label %></span>
+  </div>
+
+  <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <p class="eyebrow"><%= @membership.role.humanize %> record</p>
+    <h1 class="mt-2 text-3xl font-semibold"><%= @membership.user.name %></h1>
+    <p class="mt-3 text-ink-soft">A semester record of gatherings attended.</p>
+  </header>
+
+  <section class="workspace-section" aria-labelledby="attendance-history">
+    <h2 id="attendance-history" class="text-2xl font-semibold">Attendance history</h2>
+
+    <% if @attendance_records.any? %>
+      <div class="mt-5 divide-y divide-rule border-y border-rule">
+        <% @attendance_records.each do |record| %>
+          <% rsvp = @rsvps_by_event_id[record.event_id] %>
+          <article class="event-row">
+            <time class="event-date" datetime="<%= record.event.starts_at.iso8601 %>">
+              <span class="text-xs font-bold text-moss-dark"><%= record.event.starts_at.strftime("%b") %></span>
+              <span class="font-serif text-2xl font-semibold leading-none"><%= record.event.starts_at.day %></span>
+            </time>
+            <div class="min-w-0 flex-1">
+              <h3 class="font-semibold"><%= link_to record.event.title, organization_event_path(@organization, record.event), class: "text-link" %></h3>
+              <p class="mt-1 text-sm text-ink-soft">RSVP: <%= rsvp&.status&.humanize || "No response" %><% if record.checked_in_at %> · Checked in at <%= record.checked_in_at.strftime("%-I:%M %p") %><% end %></p>
+            </div>
+            <span class="role-tag"><%= record.status.humanize %></span>
+          </article>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="mt-5 border-l-4 border-amber bg-amber-pale/35 px-4 py-3 text-sm text-ink-soft">No attendance has been recorded yet.</p>
+    <% end %>
+  </section>
+</article>

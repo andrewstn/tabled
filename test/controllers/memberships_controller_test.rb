@@ -20,6 +20,33 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "organizer can view a member attendance history" do
+    sign_in_as(users(:owner))
+
+    get organization_member_path(organizations(:film_society), memberships(:film_member))
+
+    assert_response :success
+    assert_select "h2", "Attendance history"
+    assert_select "h3", events(:past_planning_table).title
+    assert_select ".role-tag", text: "Late"
+  end
+
+  test "member can view their own attendance history" do
+    sign_in_as(users(:member))
+
+    get organization_member_path(organizations(:film_society), memberships(:film_member))
+
+    assert_response :success
+  end
+
+  test "member cannot view another member attendance history" do
+    sign_in_as(users(:member))
+
+    get organization_member_path(organizations(:film_society), memberships(:film_owner))
+
+    assert_response :forbidden
+  end
+
   test "owner can update member role" do
     sign_in_as(users(:owner))
 

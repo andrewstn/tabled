@@ -20,4 +20,8 @@ class MembershipPolicy
 
     @actor&.officer? && (@membership.coordinator? || @membership.member?)
   end
+
+  def view_attendance_history?
+    @actor == @membership || @actor&.owner? || @actor&.officer? || @actor&.coordinator?
+  end
 end

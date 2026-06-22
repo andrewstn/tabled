@@ -35,7 +35,14 @@
       <tbody class="divide-y divide-rule/70">
         <% @memberships.each do |membership| %>
           <tr>
-            <th scope="row" class="px-3 py-4 font-bold text-ink"><%= membership.user.name %></th>
+            <th scope="row" class="px-3 py-4 font-bold text-ink">
+              <% history_policy = MembershipPolicy.new(current_user, @organization, membership) %>
+              <% if history_policy.view_attendance_history? %>
+                <%= link_to membership.user.name, organization_member_path(@organization, membership), class: "text-link" %>
+              <% else %>
+                <%= membership.user.name %>
+              <% end %>
+            </th>
             <td class="px-3 py-4 text-ink-soft"><%= membership.user.email_address %></td>
             <td class="px-3 py-4"><span class="role-tag"><%= membership.role.humanize %></span></td>
             <td class="px-3 py-4 text-ink-soft"><%= membership.created_at.to_date.to_fs(:long) %></td>

@@ -1,13 +1,24 @@
 class MembershipsController < ApplicationController
   before_action :set_organization
   before_action :require_organization_membership
-  before_action :set_membership, only: %i[update destroy]
+  before_action :set_membership, only: %i[show update destroy]
 
   def index
     @current_membership = current_user.memberships.find_by!(organization: @organization)
     @memberships = @organization.memberships.includes(:user).order(:role, "users.name")
     @can_manage_members = OrganizationPolicy.new(current_user, @organization).manage?
     @pending_invitation_count = @organization.invitations.pending.count if @can_manage_members
+  end
+
+  def show
+    return head :forbidden unless MembershipPolicy.new(current_user, @organization, @membership).view_attendance_history?
+
+    @attendance_records = @membership.attendance_records
+      .joins(:event)
+      .where(events: { organization_id: @organization.id })
+      .includes(:event, :marked_by)
+      .order("events.starts_at DESC")
+    @rsvps_by_event_id = @membership.rsvps.where(event_id: @attendance_records.map(&:event_id)).index_by(&:event_id)
   end
 
   def update
