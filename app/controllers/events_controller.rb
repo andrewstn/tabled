@@ -16,8 +16,10 @@ class EventsController < ApplicationController
   def show
     @membership = current_user.memberships.find_by!(organization: @organization)
     @rsvp = @event.rsvps.find_by(membership: @membership)
+    @attendance_record = @event.attendance_records.find_by(membership: @membership)
     @event_policy = EventPolicy.new(current_user, @organization, @event)
     @rsvps_by_status = @event.rsvps.group_by(&:status) if @event_policy.view_roster?
+    @attendance_counts = @event.attendance_records.group(:status).count if @event_policy.manage_attendance?
   end
 
   def new
@@ -62,7 +64,7 @@ class EventsController < ApplicationController
   end
 
   def set_event
-    @event = @organization.events.includes(rsvps: { membership: :user }).find(params[:id])
+    @event = @organization.events.includes(rsvps: { membership: :user }, attendance_records: :marked_by).find(params[:id])
     raise ActiveRecord::RecordNotFound unless EventPolicy.new(current_user, @organization, @event).show?
   end
 

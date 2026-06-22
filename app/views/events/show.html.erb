@@ -16,6 +16,7 @@
       </div>
       <% if @event_policy.update? || @event_policy.destroy? %>
         <div class="flex flex-wrap items-center gap-4">
+          <% if @event_policy.manage_attendance? %><%= link_to "Attendance sheet", organization_event_attendance_path(@organization, @event), class: "text-link text-sm" %><% end %>
           <% if @event_policy.update? %><%= link_to "Edit gathering", edit_organization_event_path(@organization, @event), class: "text-link text-sm" %><% end %>
           <% if @event_policy.destroy? %><%= button_to "Remove gathering", organization_event_path(@organization, @event), method: :delete, class: "cursor-pointer text-sm font-bold text-brick underline decoration-brick/40 underline-offset-4", form: { data: { turbo_confirm: "Remove #{@event.title} from the calendar?" } } %><% end %>
         </div>
@@ -100,6 +101,33 @@
           <% end %>
         <% end %>
       </section>
+
+      <section class="workspace-section" aria-labelledby="member-check-in">
+        <div class="workspace-section-heading">
+          <p class="eyebrow">Were you there?</p>
+          <h2 id="member-check-in" class="mt-1 text-2xl font-semibold">Member check-in</h2>
+        </div>
+
+        <% if @attendance_record %>
+          <p class="mt-5">Attendance: <span class="role-tag"><%= @attendance_record.status.humanize %></span></p>
+          <% if @attendance_record.checked_in_at %><p class="mt-2 text-sm text-ink-soft">Checked in <%= @attendance_record.checked_in_at.strftime("%B %-d at %-I:%M %p") %>.</p><% end %>
+        <% end %>
+
+        <% if @event.check_in_open? %>
+          <p class="mt-5 text-sm leading-6 text-ink-soft">Enter the code shared at the gathering.</p>
+          <%= form_with url: organization_event_check_in_path(@organization, @event), class: "mt-4 flex max-w-md flex-wrap items-end gap-3" do |form| %>
+            <div class="min-w-48 flex-1">
+              <%= form.label :check_in_code, "Check-in code", class: "form-label" %>
+              <%= form.text_field :check_in_code, required: true, maxlength: 12, autocomplete: "off", class: "form-input uppercase", placeholder: "Six-character code" %>
+            </div>
+            <%= form.submit "Check in", class: "button-primary" %>
+          <% end %>
+        <% elsif @event.check_in_state == :closed %>
+          <p class="mt-5 text-sm font-bold text-brick">Check-in has closed.</p>
+        <% else %>
+          <p class="mt-5 text-sm text-ink-soft">Check-in is not open yet.</p>
+        <% end %>
+      </section>
     </div>
 
     <aside class="border-t-2 border-ink/15 bg-paper-deep/35 lg:border-t-0">
@@ -140,6 +168,37 @@
           </div>
         <% end %>
       </section>
+
+      <% if @event_policy.manage_attendance? %>
+        <section class="border-t border-rule p-5 sm:p-6">
+          <p class="eyebrow text-brick">Attendance</p>
+          <h2 class="mt-1 text-xl font-semibold">Check-in: <%= @event.check_in_state.to_s.humanize %></h2>
+
+          <% if flash[:check_in_code] %>
+            <div class="mt-4 border-2 border-amber bg-amber-pale/45 p-4 text-center">
+              <p class="text-xs font-bold uppercase tracking-wide text-ink-soft">Share this code</p>
+              <p class="mt-1 font-mono text-3xl font-bold tracking-[0.2em]"><%= flash[:check_in_code] %></p>
+              <p class="mt-2 text-xs text-ink-soft">It will not be shown again. Regenerate it if needed.</p>
+            </div>
+          <% end %>
+
+          <dl class="mt-4 grid grid-cols-2 gap-2 text-sm">
+            <% AttendanceRecord::STATUSES.each do |status| %>
+              <div><dt class="font-bold text-ink-soft"><%= status.humanize %></dt><dd><%= @attendance_counts.fetch(status, 0) %></dd></div>
+            <% end %>
+          </dl>
+
+          <div class="mt-5 flex flex-wrap gap-2">
+            <% if @event.check_in_open? %>
+              <%= button_to "Close check-in", organization_event_check_in_settings_path(@organization, @event), method: :patch, params: { operation: "close" }, class: "button-secondary" %>
+              <%= button_to "New code", organization_event_check_in_settings_path(@organization, @event), method: :patch, params: { operation: "regenerate" }, class: "button-secondary" %>
+            <% else %>
+              <%= button_to "Open check-in", organization_event_check_in_settings_path(@organization, @event), method: :patch, params: { operation: "open" }, class: "button-primary" %>
+            <% end %>
+          </div>
+          <p class="mt-4 text-sm font-bold"><%= link_to "Open attendance sheet →", organization_event_attendance_path(@organization, @event), class: "text-link" %></p>
+        </section>
+      <% end %>
     </aside>
   </div>
 </article>

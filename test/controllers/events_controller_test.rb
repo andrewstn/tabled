@@ -47,6 +47,8 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select "li", text: users(:member).name
     assert_select "dt", text: "Attending"
     assert_select "dd", text: "1"
+    assert_select "a[href=?]", organization_event_attendance_path(organizations(:film_society), events(:upcoming_film_night)), text: "Attendance sheet"
+    assert_select "h2", text: /Check-in: Not opened/
   end
 
   test "ordinary member cannot view the event roster" do
@@ -57,6 +59,22 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h2", { text: "Event roster", count: 0 }
     assert_select "li", { text: users(:owner).name, count: 0 }
+    assert_select "a[href=?]", organization_event_attendance_path(organizations(:film_society), events(:upcoming_film_night)), count: 0
+  end
+
+  test "member sees open check in form and their attendance status" do
+    event = events(:upcoming_film_night)
+    event.regenerate_check_in_code
+    event.update!(check_in_opens_at: 1.minute.ago, check_in_closes_at: 1.hour.from_now)
+    event.attendance_records.create!(membership: memberships(:film_member), status: :late, checked_in_at: Time.current)
+    sign_in_as(users(:member))
+
+    get organization_event_path(organizations(:film_society), event)
+
+    assert_response :success
+    assert_select "h2", "Member check-in"
+    assert_select "input[name='check_in_code']"
+    assert_select ".role-tag", text: "Late"
   end
 
   test "non-member cannot view an organization gathering" do
