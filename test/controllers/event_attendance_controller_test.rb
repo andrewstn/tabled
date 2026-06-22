@@ -37,6 +37,56 @@ class EventAttendanceControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "organizer can mark and update a member attendance" do
+    sign_in_as(users(:owner))
+    event = events(:upcoming_film_night)
+
+    assert_difference("AttendanceRecord.count") do
+      patch organization_event_attendance_record_path(organizations(:film_society), event, memberships(:film_member)), params: {
+        attendance_record: { status: "present", note: "At the camera table" }
+      }
+    end
+
+    record = event.attendance_records.find_by!(membership: memberships(:film_member))
+    assert_predicate record, :present?
+    assert_equal users(:owner), record.marked_by
+    assert_not_nil record.checked_in_at
+
+    assert_no_difference("AttendanceRecord.count") do
+      patch organization_event_attendance_record_path(organizations(:film_society), event, memberships(:film_member)), params: {
+        attendance_record: { status: "absent", note: "" }
+      }
+    end
+
+    assert_predicate record.reload, :absent?
+    assert_nil record.checked_in_at
+  end
+
+  test "member cannot mark attendance" do
+    sign_in_as(users(:member))
+
+    assert_no_difference("AttendanceRecord.count") do
+      patch organization_event_attendance_record_path(organizations(:film_society), events(:upcoming_film_night), memberships(:film_member)), params: {
+        attendance_record: { status: "present" }
+      }
+    end
+
+    assert_response :forbidden
+  end
+
+  test "organizer cannot mark a membership from another organization" do
+    garden_membership = Membership.create!(user: users(:member), organization: organizations(:garden_club), role: :member)
+    sign_in_as(users(:owner))
+
+    assert_no_difference("AttendanceRecord.count") do
+      patch organization_event_attendance_record_path(organizations(:film_society), events(:upcoming_film_night), garden_membership), params: {
+        attendance_record: { status: "present" }
+      }
+    end
+
+    assert_response :not_found
+  end
+
   private
 
   def sign_in_as(user)

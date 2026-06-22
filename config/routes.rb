@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     resources :events do
       resource :rsvp, only: %i[create update]
       resource :attendance, only: :show, controller: "event_attendance"
+      patch "attendance/:membership_id", to: "event_attendance#update", as: :attendance_record
     end
   end
   resources :invitation_acceptances, path: "invitations", param: :token, only: %i[show update]
