@@ -221,6 +221,20 @@
             </div>
           </dl>
         </section>
+
+        <section class="border-t border-rule p-5 sm:p-6" aria-labelledby="member-check-in-guidance">
+          <p class="eyebrow text-brick">At the gathering</p>
+          <h2 id="member-check-in-guidance" class="mt-1 text-xl font-semibold">Check-in</h2>
+          <% if @attendance_record&.present? || @attendance_record&.late? %>
+            <p class="mt-3 text-sm font-bold text-moss-dark">You’re checked in.</p>
+          <% elsif @event.check_in_open? %>
+            <p class="mt-3 text-sm leading-6 text-ink-soft">Enter the shared code to mark that you’re here.</p>
+          <% elsif @event.check_in_state == :closed %>
+            <p class="mt-3 text-sm leading-6 text-ink-soft">Check-in has closed for this gathering.</p>
+          <% else %>
+            <p class="mt-3 text-sm leading-6 text-ink-soft">Your organizer will share a code when the gathering begins.</p>
+          <% end %>
+        </section>
       <% end %>
 
       <% if @event_policy.manage_attendance? %>
