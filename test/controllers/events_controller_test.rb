@@ -79,6 +79,40 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".role-tag", text: "Late"
   end
 
+  test "attendance sidebar shows a simple empty state before check in" do
+    sign_in_as(users(:owner))
+
+    get organization_event_path(organizations(:film_society), events(:upcoming_film_night))
+
+    assert_response :success
+    assert_select "h2", text: /Check-in not started/
+    assert_select "p", text: "Attendance has not been recorded yet."
+    assert_select "p", text: /Present 0/, count: 0
+  end
+
+  test "attendance sidebar shows open state and real checked in count" do
+    event = events(:upcoming_film_night)
+    event.regenerate_check_in_code
+    event.update!(check_in_opens_at: 1.minute.ago, check_in_closes_at: 1.hour.from_now)
+    event.attendance_records.create!(membership: memberships(:film_member), status: :present, checked_in_at: Time.current)
+    sign_in_as(users(:owner))
+
+    get organization_event_path(organizations(:film_society), event)
+
+    assert_response :success
+    assert_select "h2", text: /Check-in is open/
+    assert_select "p", text: "1 member checked in."
+  end
+
+  test "attendance sidebar shows compact summary when records exist" do
+    sign_in_as(users(:owner))
+
+    get organization_event_path(organizations(:film_society), events(:past_planning_table))
+
+    assert_response :success
+    assert_select "p", text: /Present\s+1\s+·\s+Late\s+1\s+·\s+Excused\s+0\s+·\s+Absent\s+0/
+  end
+
   test "non-member cannot view an organization gathering" do
     sign_in_as(users(:member))
     garden_event = Event.create!(
