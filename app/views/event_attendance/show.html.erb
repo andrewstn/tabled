@@ -10,9 +10,9 @@
   <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
     <div class="flex flex-wrap items-end justify-between gap-5">
       <div>
-        <p class="eyebrow"><%= @event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %></p>
+        <p class="eyebrow">Digital sign-in sheet · <%= @event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %></p>
         <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Attendance sheet</h1>
-        <p class="mt-3 max-w-2xl leading-7 text-ink-soft">Mark who made it to <%= @event.title %>.</p>
+        <p class="mt-3 max-w-2xl leading-7 text-ink-soft">Mark who made it to <strong class="text-ink"><%= @event.title %></strong>. RSVPs show who planned to come; attendance records who was there.</p>
       </div>
       <%= link_to "Export attendance CSV", organization_event_attendance_path(@organization, @event, format: :csv), class: "button-secondary" %>
     </div>
@@ -35,19 +35,21 @@
         <article class="member-row items-start py-4">
           <div class="min-w-0 flex-1">
             <h3 class="font-semibold"><%= membership.user.name %></h3>
-            <p class="mt-1 text-xs text-ink-soft"><%= membership.role.humanize %> · RSVP: <%= rsvp&.status&.humanize || "No response" %></p>
+            <p class="mt-1 text-xs text-ink-soft"><%= membership.user.email_address %> · <%= membership.role.humanize %></p>
+            <p class="mt-3 text-xs font-bold text-ink-soft">RSVP <span class="role-tag ml-1"><%= rsvp&.status&.humanize || "No response" %></span></p>
             <% if attendance&.checked_in_at %><p class="mt-1 text-xs text-ink-soft">Checked in <%= attendance.checked_in_at.strftime("%-I:%M %p") %></p><% end %>
             <% if attendance&.marked_by %><p class="mt-1 text-xs text-ink-soft">Marked by <%= attendance.marked_by.name %> · updated <%= attendance.updated_at.strftime("%b %-d at %-I:%M %p") %></p><% end %>
             <% if attendance&.note.present? %><p class="mt-2 text-sm text-ink-soft"><%= attendance.note %></p><% end %>
           </div>
           <div class="w-full sm:w-auto sm:max-w-md">
+            <p class="text-xs font-bold uppercase tracking-wide text-ink-soft">Attendance</p>
             <span class="role-tag"><%= attendance&.status&.humanize || "Not marked" %></span>
             <%= form_with url: organization_event_attendance_record_path(@organization, @event, membership), method: :patch, scope: :attendance_record, class: "mt-3" do |form| %>
-              <%= form.label :note, "Attendance note for #{membership.user.name}", class: "sr-only" %>
+              <%= form.label :note, "Note for #{membership.user.name}", class: "form-label text-xs" %>
               <%= form.text_field :note, value: attendance&.note, maxlength: 1000, placeholder: "Optional note", class: "form-input text-sm" %>
-              <fieldset class="mt-2">
-                <legend class="sr-only">Mark attendance for <%= membership.user.name %></legend>
-                <div class="flex flex-wrap gap-2">
+              <fieldset class="mt-3">
+                <legend class="text-xs font-bold text-ink-soft">Mark attendance</legend>
+                <div class="mt-2 flex flex-wrap gap-2">
                   <% AttendanceRecord::STATUSES.each do |status| %>
                     <%= form.button status.humanize, name: "attendance_record[status]", value: status, class: status == attendance&.status ? "button-primary" : "button-secondary" %>
                   <% end %>

@@ -9,8 +9,10 @@ class EventAttendanceControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", "Attendance sheet"
+    assert_select "p", text: /RSVPs show who planned to come/
     assert_select "h3", users(:member).name
     assert_select ".role-tag", text: "Late"
+    assert_select "legend", text: "Mark attendance"
   end
 
   test "officer can view attendance sheet" do
