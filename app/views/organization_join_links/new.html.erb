@@ -1,0 +1,32 @@
+<% content_for :title, "Create recruitment link · #{@organization.name} · Tabled" %>
+
+<article class="binder-page mx-auto w-full max-w-3xl">
+  <div class="document-meta"><span><%= link_to "Recruitment links", organization_join_links_path(@organization), class: "text-link" %></span></div>
+  <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <p class="eyebrow">Invite table</p>
+    <h1 class="mt-2 text-3xl font-semibold">Create recruitment link</h1>
+    <p class="mt-2 text-sm leading-6 text-ink-soft">Share this link with students who should be able to join <%= @organization.name %> as members.</p>
+  </header>
+  <section class="p-5 sm:p-8">
+    <%= render "shared/form_errors", object: @join_link %>
+    <%= form_with model: @join_link, url: organization_join_links_path(@organization), class: "space-y-5" do |form| %>
+      <div>
+        <%= form.label :label, "Link label", class: "form-label" %>
+        <%= form.text_field :label, required: true, maxlength: 120, placeholder: "Autumn Involvement Fair", class: "form-input" %>
+      </div>
+      <div>
+        <%= form.label :expires_at, "Expiration (optional)", class: "form-label" %>
+        <%= form.datetime_local_field :expires_at, class: "form-input" %>
+      </div>
+      <div>
+        <%= form.label :max_uses, "Maximum uses (optional)", class: "form-label" %>
+        <%= form.number_field :max_uses, min: 1, step: 1, placeholder: "No limit", class: "form-input" %>
+      </div>
+      <p class="border-l-4 border-moss bg-moss-pale/40 px-4 py-3 text-sm text-ink-soft">Students who use this link join as members. Recruitment links cannot grant officer or owner access.</p>
+      <div class="flex flex-wrap gap-3">
+        <%= form.submit "Create link", class: "button-primary" %>
+        <%= link_to "Cancel", organization_join_links_path(@organization), class: "button-secondary" %>
+      </div>
+    <% end %>
+  </section>
+</article>

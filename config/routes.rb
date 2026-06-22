@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :organizations, param: :slug, only: %i[new create show edit update] do
     resources :members, controller: "memberships", only: %i[index show update destroy]
     resources :invitations, only: %i[index new create destroy]
+    resources :join_links, controller: "organization_join_links", only: %i[index new create destroy]
     resources :announcements
     resources :events do
       resource :rsvp, only: %i[create update]

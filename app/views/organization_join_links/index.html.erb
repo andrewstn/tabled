@@ -1,0 +1,54 @@
+<% content_for :title, "Recruitment links · #{@organization.name} · Tabled" %>
+
+<article class="binder-page w-full">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span><%= link_to "Member roster", organization_members_path(@organization), class: "text-link" %></span>
+  </div>
+
+  <header class="flex flex-wrap items-end justify-between gap-5 border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <div>
+      <p class="eyebrow">Invite table</p>
+      <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Recruitment links</h1>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">Create a link for fairs, QR codes, or group chats. Anyone with an active link can join as a member.</p>
+    </div>
+    <%= link_to "Create recruitment link", new_organization_join_link_path(@organization), class: "button-primary" %>
+  </header>
+
+  <section class="p-5 sm:p-8">
+    <% if @join_links.any? %>
+      <div class="divide-y divide-rule border-y border-rule">
+        <% @join_links.each do |link| %>
+          <% share_url = "#{request.base_url}/join/#{link.token}" %>
+          <article class="py-5" data-controller="clipboard">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h2 class="text-xl font-semibold"><%= link.label %></h2>
+                <p class="mt-1 text-sm text-ink-soft"><span class="role-tag"><%= link.status %></span> · Joining as <%= link.role %></p>
+              </div>
+              <% if link.active? %>
+                <%= button_to "Disable link", organization_join_link_path(@organization, link), method: :delete, class: "text-sm font-bold text-brick underline decoration-brick/40 underline-offset-4", form: { data: { turbo_confirm: "Disable this recruitment link? Students will no longer be able to use it." } } %>
+              <% end %>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <label for="join-link-<%= link.id %>" class="sr-only">Shareable URL for <%= link.label %></label>
+              <input id="join-link-<%= link.id %>" value="<%= share_url %>" readonly class="form-input min-w-0 flex-1 text-sm" data-clipboard-target="source">
+              <button type="button" class="button-secondary" data-action="clipboard#copy" data-clipboard-target="button">Copy URL</button>
+            </div>
+            <dl class="mt-4 grid gap-2 text-xs text-ink-soft sm:grid-cols-4">
+              <div><dt class="font-bold">Uses</dt><dd><%= link.uses_count %><%= " of #{link.max_uses}" if link.max_uses %></dd></div>
+              <div><dt class="font-bold">Expires</dt><dd><%= link.expires_at ? link.expires_at.to_fs(:long) : "No expiration" %></dd></div>
+              <div><dt class="font-bold">Created by</dt><dd><%= link.created_by.name %></dd></div>
+              <div><dt class="font-bold">Created</dt><dd><%= link.created_at.to_date.to_fs(:long) %></dd></div>
+            </dl>
+          </article>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="border-l-4 border-amber bg-amber-pale/35 px-4 py-3">
+        <p class="font-bold">No recruitment links yet.</p>
+        <p class="mt-1 text-sm text-ink-soft">Make one when you are ready to welcome new students around the table.</p>
+      </div>
+    <% end %>
+  </section>
+</article>
