@@ -36,6 +36,35 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", new_organization_event_path(organizations(:film_society)), text: "Add gathering"
   end
 
+  test "dashboard shows real attendance follow ups for organizers" do
+    missing_event = Event.create!(
+      organization: organizations(:film_society),
+      created_by: users(:owner),
+      title: "Unmarked workshop",
+      starts_at: 2.days.ago
+    )
+    open_event = events(:upcoming_film_night)
+    open_event.regenerate_check_in_code
+    open_event.update!(check_in_opens_at: 1.minute.ago, check_in_closes_at: 1.hour.from_now)
+    sign_in_as(users(:owner))
+
+    get organization_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "li", text: /Check-in is open for #{Regexp.escape(open_event.title)}/
+    assert_select "a[href=?]", organization_event_attendance_path(organizations(:film_society), missing_event), text: missing_event.title
+  end
+
+  test "ordinary member does not see organizer attendance follow ups" do
+    Event.create!(organization: organizations(:film_society), created_by: users(:owner), title: "Unmarked workshop", starts_at: 2.days.ago)
+    sign_in_as(users(:member))
+
+    get organization_path(organizations(:film_society))
+
+    assert_select "p", text: "Nothing needs follow-up right now."
+    assert_select "a", text: "Unmarked workshop", count: 0
+  end
+
   test "dashboard shows the gathering empty state from real data" do
     organizations(:film_society).events.destroy_all
     sign_in_as(users(:member))

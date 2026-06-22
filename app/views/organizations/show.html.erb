@@ -112,7 +112,23 @@
       <section class="border-b border-rule p-5 sm:p-6">
         <p class="eyebrow text-brick">Officer notes</p>
         <h2 class="mt-1 text-xl font-semibold">What needs attention</h2>
-        <p class="mt-3 text-sm leading-6 text-ink-soft">Nothing needs follow-up right now.</p>
+        <% if @attendance_follow_ups&.any? %>
+          <ul class="mt-4 divide-y divide-rule border-y border-rule text-sm">
+            <% @attendance_follow_ups.each do |kind, event| %>
+              <li class="py-3 leading-6">
+                <% if kind == :check_in_open %>
+                  Check-in is open for <%= link_to event.title, organization_event_path(@organization, event), class: "text-link font-bold" %>.
+                <% else %>
+                  Attendance still needs marking for <%= link_to event.title, organization_event_attendance_path(@organization, event), class: "text-link font-bold" %>.
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% elsif @attendance_follow_ups %>
+          <p class="mt-3 text-sm leading-6 text-ink-soft">All recent gatherings are recorded.</p>
+        <% else %>
+          <p class="mt-3 text-sm leading-6 text-ink-soft">Nothing needs follow-up right now.</p>
+        <% end %>
       </section>
 
       <section class="p-5 sm:p-6">
