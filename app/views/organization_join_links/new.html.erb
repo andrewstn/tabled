@@ -8,7 +8,7 @@
     <p class="mt-2 text-sm leading-6 text-ink-soft">Share this link with students who should be able to join <%= @organization.name %> as members.</p>
   </header>
   <section class="p-5 sm:p-8">
-    <%= render "shared/form_errors", object: @join_link %>
+    <%= render "shared/form_errors", record: @join_link %>
     <%= form_with model: @join_link, url: organization_join_links_path(@organization), class: "space-y-5" do |form| %>
       <div>
         <%= form.label :label, "Link label", class: "form-label" %>
