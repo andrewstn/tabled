@@ -34,7 +34,7 @@ class OrganizationJoinAcceptancesControllerTest < ActionDispatch::IntegrationTes
     get organization_join_path(link.token)
 
     assert_response :success
-    assert_select "h2", "You’re already around the table."
+    assert_select "h2", "You’re already a member."
   end
 
   test "invalid token returns a safe not found state" do
