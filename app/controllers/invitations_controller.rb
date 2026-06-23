@@ -1,5 +1,6 @@
 class InvitationsController < ApplicationController
   before_action :set_organization
+  before_action :require_active_organization, except: :index
   before_action :require_invitation_manager
   before_action :set_invitation, only: :destroy
 

@@ -8,6 +8,12 @@
   </div>
 
   <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <% if @organization.archived? %>
+      <div class="mb-5 border-l-4 border-brick bg-brick-pale px-4 py-3 text-sm leading-6 text-ink">
+        <p class="font-bold">This organization is archived.</p>
+        <p>Records are still available, but new activity is closed until an owner restores the workspace.</p>
+      </div>
+    <% end %>
     <div class="flex flex-wrap items-start justify-between gap-5">
       <div>
         <p class="eyebrow">This semester</p>

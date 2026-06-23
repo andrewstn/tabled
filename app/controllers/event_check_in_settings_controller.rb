@@ -1,6 +1,7 @@
 class EventCheckInSettingsController < ApplicationController
   before_action :set_organization_and_event
   before_action :require_check_in_manager
+  before_action :require_active_organization
 
   def update
     case params[:operation]

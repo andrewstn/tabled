@@ -71,6 +71,20 @@
           <%= form.submit "Transfer ownership", class: "button-secondary" %>
         <% end %>
       </div>
+
+      <div class="mt-6 border-l-4 border-brick bg-brick-pale px-4 py-4">
+        <% if @organization.archived? %>
+          <h3 class="font-bold">Restore organization</h3>
+          <p class="mt-1 text-sm leading-6 text-ink-soft">Restoring reopens the workspace for new events, announcements, invitations, and roster imports.</p>
+          <%= button_to "Restore organization", organization_archive_path(@organization), method: :delete, class: "button-secondary mt-4" %>
+        <% else %>
+          <h3 class="font-bold">Archive organization</h3>
+          <p class="mt-1 text-sm leading-6 text-ink-soft">Archiving keeps the records but closes the workspace for new activity.</p>
+          <%= button_to "Archive organization", organization_archive_path(@organization), method: :patch,
+            class: "mt-4 text-sm font-bold text-brick underline decoration-brick/40 underline-offset-4",
+            form: { data: { turbo_confirm: "Archive #{@organization.name}? Records stay available, but new activity will be closed." } } %>
+        <% end %>
+      </div>
     </section>
   <% end %>
 </article>

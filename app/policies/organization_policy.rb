@@ -14,4 +14,12 @@ class OrganizationPolicy
   def transfer_ownership?
     @membership&.owner?
   end
+
+  def archive?
+    @membership&.owner?
+  end
+
+  def restore?
+    archive?
+  end
 end

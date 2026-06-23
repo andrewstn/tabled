@@ -1,6 +1,7 @@
 class EventsController < ApplicationController
   before_action :set_organization
   before_action :require_organization_membership
+  before_action :require_active_organization, except: %i[index show]
   before_action :set_event, only: %i[show edit update destroy]
   before_action :require_event_creator, only: %i[new create]
   before_action :require_event_editor, only: %i[edit update]

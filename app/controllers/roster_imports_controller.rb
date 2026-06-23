@@ -1,5 +1,6 @@
 class RosterImportsController < ApplicationController
   before_action :set_organization
+  before_action :require_active_organization
   before_action :require_import_manager
 
   def new

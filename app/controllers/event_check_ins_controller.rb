@@ -1,6 +1,7 @@
 class EventCheckInsController < ApplicationController
   before_action :set_organization_and_event
   before_action :set_membership
+  before_action :require_active_organization
 
   def create
     unless @event.check_in_open?

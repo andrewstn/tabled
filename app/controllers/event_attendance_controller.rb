@@ -5,6 +5,7 @@ class EventAttendanceController < ApplicationController
   before_action :require_organization_membership
   before_action :set_event
   before_action :require_attendance_manager
+  before_action :require_active_organization, only: :update
 
   def show
     memberships = filtered_memberships

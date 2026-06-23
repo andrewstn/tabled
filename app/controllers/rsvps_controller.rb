@@ -1,6 +1,7 @@
 class RsvpsController < ApplicationController
   before_action :set_organization_and_event
   before_action :require_organization_membership
+  before_action :require_active_organization
 
   def create
     save_rsvp

@@ -9,10 +9,10 @@
     <p class="eyebrow">Welcome, <%= current_user.name %></p>
     <h1 class="mt-2 text-3xl font-semibold">Your organizations</h1>
 
-    <% if current_user.organizations.any? %>
+    <% if current_user.organizations.active.any? %>
       <p class="mt-2 text-sm text-ink-soft">Choose an organization to work in.</p>
       <nav aria-label="Organization workspaces" class="mt-7 border-t border-rule">
-        <% current_user.organizations.order(:name).each do |organization| %>
+        <% current_user.organizations.active.order(:name).each do |organization| %>
           <%= link_to organization_path(organization), class: "organization-row" do %>
             <span class="font-bold"><%= organization.name %></span>
             <span class="flex items-center gap-3">

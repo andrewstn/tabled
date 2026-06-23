@@ -31,6 +31,12 @@ class ApplicationController < ActionController::Base
     session[:user_id] = user.id
   end
 
+  def require_active_organization
+    return unless @organization&.archived?
+
+    redirect_to organization_path(@organization), alert: "Restore this organization before making changes."
+  end
+
   def terminate_session
     reset_session
     Current.reset

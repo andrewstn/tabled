@@ -1,5 +1,6 @@
 class OrganizationJoinLinksController < ApplicationController
   before_action :set_organization
+  before_action :require_active_organization, except: :index
   before_action :require_join_link_manager
   before_action :set_join_link, only: :destroy
 

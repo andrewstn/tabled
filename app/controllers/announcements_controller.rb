@@ -1,6 +1,7 @@
 class AnnouncementsController < ApplicationController
   before_action :set_organization
   before_action :require_organization_membership
+  before_action :require_active_organization, except: %i[index show]
   before_action :set_announcement, only: %i[show edit update destroy]
   before_action :require_announcement_creator, only: %i[new create]
   before_action :require_announcement_manager, only: %i[edit update destroy]
