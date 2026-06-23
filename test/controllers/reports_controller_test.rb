@@ -80,6 +80,17 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", text: "100%"
   end
 
+  test "report shows held gathering summaries without upcoming events" do
+    sign_in_as(users(:owner))
+
+    get organization_reports_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "h2", "Held gatherings"
+    assert_select "a[href=?]", organization_event_path(organizations(:film_society), events(:past_planning_table)), text: events(:past_planning_table).title
+    assert_select "a[href=?]", organization_event_path(organizations(:film_society), events(:upcoming_film_night)), count: 0
+  end
+
   private
 
   def sign_in_as(user)

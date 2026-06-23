@@ -30,6 +30,26 @@ class SemesterReport
     end
   end
 
+  EventSummary = Data.define(
+    :event,
+    :rsvp_attending_count,
+    :present_count,
+    :late_count,
+    :excused_count,
+    :absent_count,
+    :attendance_recorded
+  ) do
+    def attendance_recorded?
+      attendance_recorded
+    end
+
+    def capacity_usage
+      return nil if event.capacity.blank?
+
+      "#{rsvp_attending_count} of #{event.capacity}"
+    end
+  end
+
   attr_reader :organization
 
   def initialize(organization:)
@@ -99,6 +119,26 @@ class SemesterReport
           absent_count: attendance_counts.fetch([ membership.id, "absent" ], 0),
           last_attended_record: last_attendance_by_membership_id[membership.id],
           recorded_event_count: recorded_attendance_event_ids.size
+        )
+      end
+    end
+  end
+
+  def event_summaries
+    @event_summaries ||= begin
+      events = past_events.includes(:attendance_records).to_a
+      rsvp_counts = organization.rsvps.attending.where(event: events).group(:event_id).count
+      attendance_counts = organization.attendance_records.where(event: events).group(:event_id, :status).count
+
+      events.map do |event|
+        EventSummary.new(
+          event: event,
+          rsvp_attending_count: rsvp_counts.fetch(event.id, 0),
+          present_count: attendance_counts.fetch([ event.id, "present" ], 0),
+          late_count: attendance_counts.fetch([ event.id, "late" ], 0),
+          excused_count: attendance_counts.fetch([ event.id, "excused" ], 0),
+          absent_count: attendance_counts.fetch([ event.id, "absent" ], 0),
+          attendance_recorded: event.attendance_records.any?
         )
       end
     end

@@ -124,5 +124,49 @@
         </table>
       </div>
     </section>
+
+    <section class="workspace-section" aria-labelledby="event-summary">
+      <div class="workspace-section-heading">
+        <p class="eyebrow">Event summary</p>
+        <h2 id="event-summary" class="mt-1 text-2xl font-semibold">Held gatherings</h2>
+      </div>
+
+      <% if @report.event_summaries.any? %>
+        <div class="mt-6 overflow-x-auto">
+          <table class="w-full min-w-[52rem] border-collapse text-left text-sm">
+            <thead>
+              <tr class="border-b-2 border-ink/20 text-xs text-ink-soft">
+                <th scope="col" class="px-3 py-3 font-bold">Gathering</th>
+                <th scope="col" class="px-3 py-3 font-bold">Date</th>
+                <th scope="col" class="px-3 py-3 font-bold">RSVPs</th>
+                <th scope="col" class="px-3 py-3 font-bold">Present</th>
+                <th scope="col" class="px-3 py-3 font-bold">Late</th>
+                <th scope="col" class="px-3 py-3 font-bold">Excused</th>
+                <th scope="col" class="px-3 py-3 font-bold">Absent</th>
+                <th scope="col" class="px-3 py-3 font-bold">Recorded?</th>
+                <th scope="col" class="px-3 py-3 font-bold">Capacity</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-rule/70">
+              <% @report.event_summaries.each do |row| %>
+                <tr>
+                  <th scope="row" class="px-3 py-4 font-bold text-ink"><%= link_to row.event.title, organization_event_path(@organization, row.event), class: "text-link" %></th>
+                  <td class="px-3 py-4 text-ink-soft"><%= row.event.starts_at.to_date.to_fs(:long) %></td>
+                  <td class="px-3 py-4"><%= row.rsvp_attending_count %></td>
+                  <td class="px-3 py-4"><%= row.present_count %></td>
+                  <td class="px-3 py-4"><%= row.late_count %></td>
+                  <td class="px-3 py-4"><%= row.excused_count %></td>
+                  <td class="px-3 py-4"><%= row.absent_count %></td>
+                  <td class="px-3 py-4"><%= row.attendance_recorded? ? "Yes" : "No" %></td>
+                  <td class="px-3 py-4 text-ink-soft"><%= row.capacity_usage || "No capacity" %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="mt-5 border-l-4 border-amber bg-amber-pale/35 px-4 py-3 text-sm text-ink-soft">No past gatherings yet.</p>
+      <% end %>
+    </section>
   <% end %>
 </article>
