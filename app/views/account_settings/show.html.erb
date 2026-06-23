@@ -1,0 +1,33 @@
+<% content_for :title, "Account settings · Tabled" %>
+
+<article class="binder-page mx-auto w-full max-w-2xl">
+  <div class="document-meta">
+    <span>Account settings</span>
+    <span>Signed in as <%= current_user.email_address %></span>
+  </div>
+
+  <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <p class="eyebrow">Account settings</p>
+    <h1 class="mt-2 text-3xl font-semibold">Account settings</h1>
+    <p class="mt-2 max-w-xl text-sm leading-6 text-ink-soft">Update the name used across your organizations.</p>
+  </header>
+
+  <section class="p-5 sm:p-8">
+    <%= form_with model: @user, url: account_settings_path, method: :patch, class: "space-y-6" do |form| %>
+      <%= render "shared/form_errors", record: @user %>
+      <div>
+        <%= form.label :name, "Full name", class: "form-label" %>
+        <%= form.text_field :name, required: true, autocomplete: "name", class: "form-input" %>
+      </div>
+
+      <div class="border-l-4 border-amber bg-amber-pale/35 px-4 py-3 text-sm leading-6 text-ink-soft">
+        Email and password changes are not available here yet.
+      </div>
+
+      <div class="flex flex-wrap gap-3 border-t border-rule pt-5">
+        <%= form.submit "Save account settings", class: "button-primary" %>
+        <%= link_to "Back to organizations", root_path, class: "button-secondary" %>
+      </div>
+    <% end %>
+  </section>
+</article>

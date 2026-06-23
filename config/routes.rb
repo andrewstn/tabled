@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resource :session, only: %i[new create destroy]
+  resource :account_settings, only: %i[show update]
   resources :users, only: %i[new create]
   resources :organizations, param: :slug, only: %i[new create show edit update] do
     resources :members, controller: "memberships", only: %i[index show update destroy]
