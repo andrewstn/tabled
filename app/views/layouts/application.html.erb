@@ -33,6 +33,7 @@
         <% if authenticated? %>
           <div class="flex min-w-0 items-center gap-3 text-sm sm:gap-4">
             <span class="max-w-32 truncate border-b border-rule pb-0.5 text-ink-soft sm:max-w-48"><%= current_user.name %></span>
+            <%= link_to "Account settings", account_settings_path, class: "whitespace-nowrap font-bold text-moss-dark underline decoration-moss/40 underline-offset-4 focus:outline-2 focus:outline-offset-2 focus:outline-moss/50" %>
             <%= button_to "Sign out", session_path, method: :delete, class: "cursor-pointer whitespace-nowrap font-bold text-moss-dark underline decoration-moss/40 underline-offset-4 focus:outline-2 focus:outline-offset-2 focus:outline-moss/50" %>
           </div>
         <% end %>
@@ -45,6 +46,9 @@
               <%= link_to organization.name, organization_path(organization), aria: { current: ("page" if @organization == organization) }, class: "shrink-0 border-x border-t px-3 py-2 font-bold focus:outline-2 focus:outline-offset-[-2px] focus:outline-moss/50 #{"border-rule bg-sheet text-ink" if @organization == organization} #{"border-transparent text-ink-soft hover:border-rule" unless @organization == organization}" %>
             <% end %>
             <%= link_to "+ New organization", new_organization_path, class: "ml-2 shrink-0 pb-2 font-bold text-moss-dark underline decoration-moss/35 underline-offset-4 focus:outline-2 focus:outline-moss/50" %>
+            <% if @organization && OrganizationPolicy.new(current_user, @organization).manage? %>
+              <%= link_to "Organization settings", edit_organization_path(@organization), class: "ml-2 shrink-0 pb-2 font-bold text-moss-dark underline decoration-moss/35 underline-offset-4 focus:outline-2 focus:outline-moss/50" %>
+            <% end %>
           </div>
         </nav>
       <% end %>

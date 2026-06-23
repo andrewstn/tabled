@@ -55,7 +55,7 @@
           <%= link_to "Pending invitations (#{@pending_invitation_count})", organization_invitations_path(@organization), class: "text-link text-sm" %>
         <% end %>
         <% if OrganizationPolicy.new(current_user, @organization).manage? %>
-          <%= link_to "Edit organization", edit_organization_path(@organization), class: "text-link text-sm" %>
+          <%= link_to "Organization settings", edit_organization_path(@organization), class: "text-link text-sm" %>
         <% end %>
         <span class="role-tag"><%= @membership.role.humanize %></span>
       </div>
