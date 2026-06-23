@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       get :participation
       get :events
     end
+    resource :roster_import, only: %i[new create], controller: "roster_imports"
     resources :invitations, only: %i[index new create destroy]
     resources :join_links, controller: "organization_join_links", only: %i[index new create destroy]
     resources :announcements
