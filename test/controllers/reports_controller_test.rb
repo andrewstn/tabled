@@ -68,6 +68,18 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     assert_select "dd", text: "10", count: 0
   end
 
+  test "report shows member participation table" do
+    sign_in_as(users(:owner))
+
+    get organization_reports_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "h2", "Participation record"
+    assert_select "tbody th", text: /#{Regexp.escape(users(:owner).name)}/
+    assert_select "span", text: users(:owner).email_address
+    assert_select "td", text: "100%"
+  end
+
   private
 
   def sign_in_as(user)

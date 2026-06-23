@@ -74,5 +74,55 @@
         <p class="mt-5 border-l-4 border-amber bg-amber-pale/35 px-4 py-3 text-sm text-ink-soft">No attendance has been recorded yet.</p>
       <% end %>
     </section>
+
+    <section class="workspace-section" aria-labelledby="member-participation">
+      <div class="workspace-section-heading">
+        <p class="eyebrow">Member participation</p>
+        <h2 id="member-participation" class="mt-1 text-2xl font-semibold">Participation record</h2>
+      </div>
+
+      <div class="mt-6 overflow-x-auto">
+        <table class="w-full min-w-[56rem] border-collapse text-left text-sm">
+          <thead>
+            <tr class="border-b-2 border-ink/20 text-xs text-ink-soft">
+              <th scope="col" class="px-3 py-3 font-bold">Member</th>
+              <th scope="col" class="px-3 py-3 font-bold">Role</th>
+              <th scope="col" class="px-3 py-3 font-bold">RSVP attending</th>
+              <th scope="col" class="px-3 py-3 font-bold">Attended</th>
+              <th scope="col" class="px-3 py-3 font-bold">Late</th>
+              <th scope="col" class="px-3 py-3 font-bold">Excused</th>
+              <th scope="col" class="px-3 py-3 font-bold">Absent</th>
+              <th scope="col" class="px-3 py-3 font-bold">Last attended</th>
+              <th scope="col" class="px-3 py-3 font-bold">Attendance rate</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-rule/70">
+            <% @report.member_participation.each do |row| %>
+              <tr>
+                <th scope="row" class="px-3 py-4">
+                  <span class="font-bold text-ink"><%= row.user.name %></span>
+                  <span class="mt-1 block text-xs font-normal text-ink-soft"><%= row.user.email_address %></span>
+                </th>
+                <td class="px-3 py-4"><span class="role-tag"><%= row.membership.role.humanize %></span></td>
+                <td class="px-3 py-4"><%= row.rsvp_attending_count %></td>
+                <td class="px-3 py-4"><%= row.attended_count %></td>
+                <td class="px-3 py-4"><%= row.late_count %></td>
+                <td class="px-3 py-4"><%= row.excused_count %></td>
+                <td class="px-3 py-4"><%= row.absent_count %></td>
+                <td class="px-3 py-4 text-ink-soft">
+                  <% if row.last_attended_record %>
+                    <%= row.last_attended_record.event.title %><br>
+                    <span class="text-xs"><%= row.last_attended_record.event.starts_at.to_date.to_fs(:long) %></span>
+                  <% else %>
+                    Not recorded
+                  <% end %>
+                </td>
+                <td class="px-3 py-4"><%= row.attendance_rate_label %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
   <% end %>
 </article>
