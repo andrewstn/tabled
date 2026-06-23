@@ -1,4 +1,4 @@
-<% content_for :title, "Attendance history · #{@membership.user.name} · Tabled" %>
+<% content_for :title, "Member record · #{@membership.user.name} · Tabled" %>
 
 <article class="binder-page w-full max-w-4xl">
   <div class="document-meta">
@@ -10,8 +10,34 @@
   <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
     <p class="eyebrow"><%= @membership.role.humanize %> record</p>
     <h1 class="mt-2 text-3xl font-semibold"><%= @membership.user.name %></h1>
-    <p class="mt-3 text-ink-soft">A semester record of gatherings attended.</p>
+    <p class="mt-3 text-ink-soft">A practical member record for roster, attendance, and participation context.</p>
   </header>
+
+  <section class="workspace-section" aria-labelledby="member-details">
+    <div class="workspace-section-heading">
+      <p class="eyebrow">Member record</p>
+      <h2 id="member-details" class="mt-1 text-2xl font-semibold">Roster details</h2>
+    </div>
+    <dl class="mt-6 grid gap-4 text-sm sm:grid-cols-2">
+      <div><dt class="font-bold text-moss-dark">Email</dt><dd class="mt-1"><%= @membership.user.email_address %></dd></div>
+      <div><dt class="font-bold text-moss-dark">Role</dt><dd class="mt-1"><span class="role-tag"><%= @membership.role.humanize %></span></dd></div>
+      <div><dt class="font-bold text-moss-dark">Joined</dt><dd class="mt-1"><%= @membership.created_at.to_date.to_fs(:long) %></dd></div>
+      <% if @participation_row %>
+        <div><dt class="font-bold text-moss-dark">Attendance rate</dt><dd class="mt-1"><%= @participation_row.attendance_rate_label %></dd></div>
+        <div><dt class="font-bold text-moss-dark">Attended</dt><dd class="mt-1"><%= @participation_row.attended_count %> present · <%= @participation_row.late_count %> late</dd></div>
+        <div><dt class="font-bold text-moss-dark">Other records</dt><dd class="mt-1"><%= @participation_row.excused_count %> excused · <%= @participation_row.absent_count %> absent</dd></div>
+      <% end %>
+    </dl>
+
+    <% if @show_private_member_details %>
+      <div class="mt-6 border-l-4 border-amber bg-amber-pale/35 px-4 py-3 text-sm leading-6 text-ink-soft">
+        <p class="font-bold text-ink">Communication preferences</p>
+        <p>Announcement emails: <%= @membership.announcement_emails_enabled? ? "On" : "Off" %></p>
+        <p>Event reminder emails: <%= @membership.event_reminder_emails_enabled? ? "On" : "Off" %></p>
+        <p>Recruitment and onboarding emails: <%= @membership.recruitment_emails_enabled? ? "On" : "Off" %></p>
+      </div>
+    <% end %>
+  </section>
 
   <section class="workspace-section" aria-labelledby="attendance-history">
     <h2 id="attendance-history" class="text-2xl font-semibold">Attendance history</h2>

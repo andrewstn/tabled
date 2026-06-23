@@ -103,11 +103,15 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "organizer can view a member attendance history" do
+    memberships(:film_member).update!(announcement_emails_enabled: false)
     sign_in_as(users(:owner))
 
     get organization_member_path(organizations(:film_society), memberships(:film_member))
 
     assert_response :success
+    assert_select "h1", users(:member).name
+    assert_select "h2", "Roster details"
+    assert_select "p", text: "Announcement emails: Off"
     assert_select "h2", "Attendance history"
     assert_select "h3", events(:past_planning_table).title
     assert_select ".role-tag", text: "Late"
@@ -119,6 +123,7 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
     get organization_member_path(organizations(:film_society), memberships(:film_member))
 
     assert_response :success
+    assert_select "p", text: /Announcement emails:/
   end
 
   test "member cannot view another member attendance history" do
@@ -127,6 +132,15 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
     get organization_member_path(organizations(:film_society), memberships(:film_owner))
 
     assert_response :forbidden
+  end
+
+  test "member record is organization scoped" do
+    other_membership = Membership.create!(organization: organizations(:garden_club), user: users(:owner), role: :member)
+    sign_in_as(users(:member))
+
+    get organization_member_path(organizations(:film_society), other_membership)
+
+    assert_response :not_found
   end
 
   test "owner can update member role" do

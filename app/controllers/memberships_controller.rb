@@ -32,6 +32,8 @@ class MembershipsController < ApplicationController
       .includes(:event, :marked_by)
       .order("events.starts_at DESC")
     @rsvps_by_event_id = @membership.rsvps.where(event_id: @attendance_records.map(&:event_id)).index_by(&:event_id)
+    @participation_row = SemesterReport.new(organization: @organization).member_participation.find { |row| row.membership == @membership }
+    @show_private_member_details = @membership.user == current_user || OrganizationPolicy.new(current_user, @organization).manage? || current_user.memberships.find_by(organization: @organization)&.coordinator?
   end
 
   def update
