@@ -15,7 +15,11 @@ end
 organization = Organization.find_or_initialize_by(slug: "buckeye-film-society")
 organization.update!(
   name: "Buckeye Film Society",
-  description: "A campus film society for watching, discussing, and making films together all semester."
+  description: "A campus film society for watching, discussing, and making films together all semester.",
+  contact_email: "film-society@example.test",
+  website_url: "https://film-society.example.test",
+  meeting_note: "Student Union screening room on First Fridays",
+  current_semester_label: "Fall 2026"
 )
 
 roles_by_email = {
@@ -47,7 +51,13 @@ scale_memberships = 28.times.map do |index|
   user.save!
 
   organization.memberships.find_or_initialize_by(user: user).tap do |membership|
-    membership.role = index.in?([ 6, 18 ]) ? :coordinator : :member
+    membership.role = if index == 0
+      :owner
+    elsif index.in?([ 6, 18 ])
+      :coordinator
+    else
+      :member
+    end
     membership.announcement_emails_enabled = index % 7 != 0
     membership.event_reminder_emails_enabled = index % 5 != 0
     membership.recruitment_emails_enabled = index % 6 != 0
@@ -273,5 +283,18 @@ expired_join_link.update!(
   max_uses: nil
 )
 
-puts "Seeded Buckeye Film Society with a 32-person roster, report-ready attendance records, communication preferences, and recruitment links."
+archived_organization = Organization.find_or_initialize_by(slug: "archived-film-committee")
+archived_organization.update!(
+  name: "Archived Film Committee",
+  description: "A closed demo workspace kept for historical records.",
+  contact_email: "archived-film@example.test",
+  website_url: "https://archived-film.example.test",
+  meeting_note: "Archived after last semester",
+  current_semester_label: "Spring 2026",
+  archived_at: 30.days.ago
+)
+archived_membership = archived_organization.memberships.find_or_initialize_by(user: demo_users.fetch("demo-owner@example.test"))
+archived_membership.update!(role: :owner)
+
+puts "Seeded Buckeye Film Society with a 32-person roster, report-ready attendance records, communication preferences, settings data, and recruitment links."
 puts "Sign in as demo-owner@example.test with tabled-demo-password."

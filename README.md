@@ -25,7 +25,7 @@ Open [http://localhost:3000](http://localhost:3000). The seed data includes an o
 - Email: `demo-owner@example.test`
 - Password: `tabled-demo-password`
 
-The seed is idempotent and also creates a 32-person roster, varied communication preferences, two pending invitations, four gatherings, varied RSVP and attendance records, all-member/officer/event-targeted bulletin posts, an officer draft, announcement delivery records, and active and closed recruitment links for Buckeye Film Society. The larger roster makes pagination, attendance filters, semester reports, communication preferences, and CSV exports visible immediately.
+The seed is idempotent and also creates a 32-person roster, organization settings data, multiple owners/officers, varied communication preferences, two pending invitations, four gatherings, varied RSVP and attendance records, all-member/officer/event-targeted bulletin posts, an officer draft, announcement delivery records, active and closed recruitment links for Buckeye Film Society, and one archived demo organization hidden from normal workspace lists. The larger roster makes pagination, attendance filters, semester reports, communication preferences, settings, and CSV exports visible immediately.
 
 To try recruitment locally, sign in as the demo owner, open **Member roster → Recruitment links**, and copy the active Autumn Involvement Fair URL. Open that URL in a private browser window to follow the sign-up and join flow. Reusable links always add members; they cannot grant elevated roles. QR generation is intentionally not included yet.
 
@@ -34,6 +34,10 @@ To try reporting locally, sign in as the demo owner and open **Semester report**
 To try communication preferences locally, sign in as any demo member and open **Communication preferences** from the organization dashboard. These settings are scoped to that member’s Buckeye Film Society membership.
 
 To try targeted announcement audiences, sign in as the demo owner and open **Bulletin → Post announcement**. Choose All members, Officers, Event RSVPs, or Checked-in attendees. Event audiences require a selected gathering. If you choose to email a published announcement, delivery records are created for sent and skipped recipients based on members’ announcement email preferences.
+
+To try workspace administration, sign in as the demo owner and open **Organization settings**. You can update organization details, transfer ownership to another current member, archive the organization, or restore an archived organization. The previous owner remains an owner after transfer. Archived organizations keep their records but block new activity and are hidden from normal workspace lists.
+
+To try account settings, use **Account settings** in the signed-in header. This page only updates the account name used across organizations; social profiles, avatars, bios, and public user pages are intentionally out of scope.
 
 To try roster import locally, open **Member roster → Import roster** and upload a CSV with these headers:
 
@@ -70,7 +74,7 @@ bin/brakeman --no-pager
 
 ## Current scope
 
-Milestones 1 through 8 establish the multi-tenant organization workspace, active semester calendar, event sign-in record, organization bulletin, practical large-roster recruitment workflow, semester reporting, CSV exports, roster import, communication preferences, event-targeted announcements, and delivery records:
+Milestones 1 through 9 establish the multi-tenant organization workspace, active semester calendar, event sign-in record, organization bulletin, practical large-roster recruitment workflow, semester reporting, CSV exports, roster import, communication preferences, event-targeted announcements, delivery records, and workspace administration:
 
 - Account signup and session authentication
 - Organizations with stable, human-readable URLs
@@ -112,9 +116,15 @@ Milestones 1 through 8 establish the multi-tenant organization workspace, active
 - Event-targeted announcement audiences for RSVP and checked-in attendee groups
 - Announcement email delivery previews and organizer-visible delivery summaries
 - Delivery records for sent and preference-skipped announcement emails
+- Practical organization settings and read-only workspace slugs
+- Owner-only ownership transfer that keeps the previous owner in place
+- Self-service leave organization flow with last-owner protection
+- Owner-only archive and restore flows for organization workspaces
+- Minimal account settings for editing account name
+- Organization-scoped member records for roster and attendance context
 - Idempotent local demo data
 
-Event reminder scheduling, digest emails, push notifications, SMS, comments, reactions, attachments, production email providers, recurring events, QR-code generation, geolocation, complex analytics, calendar integrations, persistent import batches, XLSX import, automatic import emails, charts, read receipts, and activity history are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
+Event reminder scheduling, digest emails, push notifications, SMS, comments, reactions, attachments, production email providers, recurring events, QR-code generation, geolocation, complex analytics, calendar integrations, persistent import batches, XLSX import, automatic import emails, charts, read receipts, social-style profiles, avatars, bios, public user profile pages, and activity history are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
 
 ## Product and visual direction
 
