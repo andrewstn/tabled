@@ -25,6 +25,7 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "h3", text: events(:past_planning_table).title
     assert_select "p", text: /2 members present or late/
     assert_select "a[href=?]", organization_members_path(organizations(:film_society)), text: /Member roster/
+    assert_select "a[href=?]", organization_communication_preferences_path(organizations(:film_society)), text: "Communication preferences"
     assert_select "a[href=?]", organization_events_path(organizations(:film_society)), text: "Gatherings"
     assert_select "a[href=?]", organization_announcements_path(organizations(:film_society)), text: "Bulletin"
     assert_select "a[href=?]", new_organization_invitation_path(organizations(:film_society)), count: 0
