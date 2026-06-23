@@ -1,0 +1,51 @@
+<% content_for :title, "Communication preferences · #{@organization.name} · Tabled" %>
+
+<article class="binder-page mx-auto w-full max-w-3xl">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span>Organization emails</span>
+  </div>
+
+  <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <p class="eyebrow">Organization emails</p>
+    <h1 class="mt-2 text-3xl font-semibold">Communication preferences</h1>
+    <p class="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">Choose which emails you want from this organization. These settings only apply to <%= @organization.name %>.</p>
+  </header>
+
+  <section class="p-5 sm:p-8">
+    <%= form_with model: @membership, url: organization_communication_preferences_path(@organization), method: :patch, class: "space-y-6" do |form| %>
+      <div class="space-y-4">
+        <div class="flex items-start gap-3 border border-rule bg-sheet p-4">
+          <%= form.check_box :announcement_emails_enabled, class: "mt-1 size-4 accent-moss" %>
+          <div>
+            <%= form.label :announcement_emails_enabled, "Announcement emails", class: "font-bold" %>
+            <p class="mt-1 text-sm leading-6 text-ink-soft">Email copies of announcements shared with you.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 border border-rule bg-sheet p-4">
+          <%= form.check_box :event_reminder_emails_enabled, class: "mt-1 size-4 accent-moss" %>
+          <div>
+            <%= form.label :event_reminder_emails_enabled, "Event reminder emails", class: "font-bold" %>
+            <p class="mt-1 text-sm leading-6 text-ink-soft">For future reminders about gatherings you’re part of.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 border border-rule bg-sheet p-4">
+          <%= form.check_box :recruitment_emails_enabled, class: "mt-1 size-4 accent-moss" %>
+          <div>
+            <%= form.label :recruitment_emails_enabled, "Recruitment and onboarding emails", class: "font-bold" %>
+            <p class="mt-1 text-sm leading-6 text-ink-soft">Useful notes related to joining or onboarding for this organization.</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="border-l-4 border-amber bg-amber-pale/35 px-4 py-3 text-sm leading-6 text-ink-soft">Important account emails may still be sent when needed.</p>
+
+      <div class="flex flex-wrap gap-3 border-t border-rule pt-5">
+        <%= form.submit "Save preferences", class: "button-primary" %>
+        <%= link_to "Back to organization", organization_path(@organization), class: "button-secondary" %>
+      </div>
+    <% end %>
+  </section>
+</article>
