@@ -6,6 +6,7 @@ class Announcement < ApplicationRecord
   belongs_to :organization
   belongs_to :author, class_name: "User", inverse_of: :authored_announcements
   belongs_to :target_event, class_name: "Event", optional: true
+  has_many :announcement_deliveries, dependent: :destroy
 
   enum :audience, AUDIENCES.index_by(&:itself), validate: true
   enum :status, STATUSES.index_by(&:itself), validate: true

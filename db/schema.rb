@@ -10,9 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_23_091000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_23_092000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "announcement_deliveries", force: :cascade do |t|
+    t.bigint "announcement_id", null: false
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.bigint "membership_id", null: false
+    t.datetime "sent_at"
+    t.string "skipped_reason"
+    t.string "status", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["announcement_id", "membership_id"], name: "idx_on_announcement_id_membership_id_a7b4d846e6", unique: true
+    t.index ["announcement_id"], name: "index_announcement_deliveries_on_announcement_id"
+    t.index ["membership_id"], name: "index_announcement_deliveries_on_membership_id"
+    t.index ["user_id"], name: "index_announcement_deliveries_on_user_id"
+    t.check_constraint "status::text = ANY (ARRAY['sent'::character varying, 'skipped'::character varying]::text[])", name: "announcement_deliveries_status_check"
+  end
 
   create_table "announcements", force: :cascade do |t|
     t.string "audience", null: false
@@ -159,6 +176,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_091000) do
     t.index "lower((email_address)::text)", name: "index_users_on_lower_email_address", unique: true
   end
 
+  add_foreign_key "announcement_deliveries", "announcements"
+  add_foreign_key "announcement_deliveries", "memberships"
+  add_foreign_key "announcement_deliveries", "users"
   add_foreign_key "announcements", "events", column: "target_event_id"
   add_foreign_key "announcements", "organizations"
   add_foreign_key "announcements", "users", column: "author_id"
