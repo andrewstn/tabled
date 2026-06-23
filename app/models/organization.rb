@@ -3,6 +3,7 @@ class Organization < ApplicationRecord
   has_many :users, through: :memberships
   has_many :invitations, dependent: :destroy
   has_many :events, dependent: :destroy
+  has_many :attendance_records, through: :events
   has_many :announcements, dependent: :destroy
   has_many :organization_join_links, dependent: :destroy
 

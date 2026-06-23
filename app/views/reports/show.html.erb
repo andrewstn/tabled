@@ -1,0 +1,78 @@
+<% content_for :title, "Semester report · #{@organization.name} · Tabled" %>
+
+<article class="binder-page w-full">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span>Officer records</span>
+    <span>Current semester · <%= current_semester_label %></span>
+  </div>
+
+  <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <p class="eyebrow">Semester record</p>
+    <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Semester report</h1>
+    <p class="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">A practical record of members, gatherings, and attendance.</p>
+  </header>
+
+  <% if @report.empty? %>
+    <section class="workspace-section">
+      <div class="border-l-4 border-amber bg-amber-pale/35 px-4 py-3">
+        <p class="font-bold">No semester record yet.</p>
+        <p class="mt-1 text-sm text-ink-soft">Reports will fill in as events, RSVPs, and attendance are recorded.</p>
+      </div>
+    </section>
+  <% else %>
+    <section class="workspace-section" aria-labelledby="report-summary">
+      <div class="workspace-section-heading">
+        <p class="eyebrow">Record summary</p>
+        <h2 id="report-summary" class="mt-1 text-2xl font-semibold">Current semester</h2>
+      </div>
+
+      <dl class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="border border-rule bg-sheet p-4">
+          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Current members</dt>
+          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.total_members %></dd>
+        </div>
+        <div class="border border-rule bg-sheet p-4">
+          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Gatherings held</dt>
+          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.events_held %></dd>
+        </div>
+        <div class="border border-rule bg-sheet p-4">
+          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Attendance recorded</dt>
+          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.events_with_attendance_recorded %></dd>
+        </div>
+        <div class="border border-rule bg-sheet p-4">
+          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Upcoming gatherings</dt>
+          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.upcoming_events %></dd>
+        </div>
+        <div class="border border-rule bg-sheet p-4">
+          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Published bulletin posts</dt>
+          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.published_announcements %></dd>
+        </div>
+        <div class="border border-rule bg-sheet p-4">
+          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Open onboarding</dt>
+          <dd class="mt-2 text-sm leading-6"><%= pluralize(@report.pending_invitations, "pending invitation") %> · <%= pluralize(@report.active_recruitment_links, "active recruitment link") %></dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="workspace-section" aria-labelledby="attendance-summary">
+      <div class="workspace-section-heading">
+        <p class="eyebrow">Attendance summary</p>
+        <h2 id="attendance-summary" class="mt-1 text-2xl font-semibold">Recorded participation</h2>
+      </div>
+
+      <% if @report.events_with_attendance_recorded.positive? %>
+        <dl class="mt-6 grid gap-4 sm:grid-cols-4">
+          <% AttendanceRecord::STATUSES.each do |status| %>
+            <div class="border border-rule bg-sheet p-4">
+              <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft"><%= status.humanize %></dt>
+              <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.attendance_count(status) %></dd>
+            </div>
+          <% end %>
+        </dl>
+      <% else %>
+        <p class="mt-5 border-l-4 border-amber bg-amber-pale/35 px-4 py-3 text-sm text-ink-soft">No attendance has been recorded yet.</p>
+      <% end %>
+    </section>
+  <% end %>
+</article>
