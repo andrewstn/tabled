@@ -68,7 +68,7 @@ class OrganizationsController < ApplicationController
   end
 
   def organization_params
-    params.expect(organization: %i[name description])
+    params.expect(organization: %i[name description contact_email website_url meeting_note current_semester_label])
   end
 
   def load_attendance_follow_ups

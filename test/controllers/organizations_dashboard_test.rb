@@ -2,12 +2,22 @@ require "test_helper"
 
 class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
   test "a member sees the organization dashboard and their role" do
+    organizations(:film_society).update!(
+      contact_email: "film@example.test",
+      website_url: "https://film.example.test",
+      meeting_note: "Student Union screening room",
+      current_semester_label: "Fall 2026"
+    )
     sign_in_as(users(:member))
 
     get organization_path(organizations(:film_society))
 
     assert_response :success
     assert_select "h1", organizations(:film_society).name
+    assert_select "dt", text: "Current semester"
+    assert_select "dd", text: "Fall 2026"
+    assert_select "a[href='mailto:film@example.test']", text: "film@example.test"
+    assert_select "a[href='https://film.example.test']", text: "https://film.example.test"
     assert_select "span", text: "Member"
     assert_select "h2", text: "Around the table"
     assert_select "h2", text: "Upcoming gatherings"

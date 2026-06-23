@@ -19,6 +19,22 @@
         <% else %>
           <p class="mt-3 max-w-3xl leading-7 text-ink-soft">This organization does not have a description yet. An owner or officer can add one.</p>
         <% end %>
+        <% if @organization.contact_email.present? || @organization.website_url.present? || @organization.meeting_note.present? || @organization.current_semester_label.present? %>
+          <dl class="mt-5 grid max-w-3xl gap-3 text-sm leading-6 text-ink-soft sm:grid-cols-2">
+            <% if @organization.current_semester_label.present? %>
+              <div><dt class="font-bold text-moss-dark">Current semester</dt><dd><%= @organization.current_semester_label %></dd></div>
+            <% end %>
+            <% if @organization.meeting_note.present? %>
+              <div><dt class="font-bold text-moss-dark">Meeting note</dt><dd><%= @organization.meeting_note %></dd></div>
+            <% end %>
+            <% if @organization.contact_email.present? %>
+              <div><dt class="font-bold text-moss-dark">Contact</dt><dd><%= mail_to @organization.contact_email, @organization.contact_email, class: "text-link" %></dd></div>
+            <% end %>
+            <% if @organization.website_url.present? %>
+              <div><dt class="font-bold text-moss-dark">Website</dt><dd><%= link_to @organization.website_url, @organization.website_url, class: "text-link" %></dd></div>
+            <% end %>
+          </dl>
+        <% end %>
       </div>
       <div class="flex flex-wrap items-center gap-3">
         <%= link_to "Bulletin", organization_announcements_path(@organization), class: "text-link text-sm" %>

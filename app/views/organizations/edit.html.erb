@@ -1,23 +1,55 @@
-<% content_for :title, "Settings · #{@organization.name} · Tabled" %>
+<% content_for :title, "Organization settings · #{@organization.name} · Tabled" %>
 
-<div class="paper-panel w-full max-w-2xl p-7 sm:p-10">
-  <p class="eyebrow">Organization settings</p>
-  <h1 class="auth-title">Organization details</h1>
-  <p class="auth-copy">Update the name and description shown to members. The organization’s web address will not change.</p>
+<article class="binder-page w-full max-w-3xl">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span>Officer settings</span>
+  </div>
 
-  <%= form_with model: @organization, class: "mt-8 space-y-6" do |form| %>
-    <%= render "shared/form_errors", record: @organization %>
-    <div>
-      <%= form.label :name, "Organization name", class: "form-label" %>
-      <%= form.text_field :name, required: true, class: "form-input" %>
-    </div>
-    <div>
-      <%= form.label :description, "Organization description", class: "form-label" %>
-      <%= form.text_area :description, rows: 5, maxlength: 1000, class: "form-input resize-y" %>
-    </div>
-    <div class="flex flex-wrap items-center gap-4">
-      <%= form.submit "Save organization details", class: "button-primary" %>
-      <%= link_to "Cancel", organization_path(@organization), class: "text-link" %>
-    </div>
-  <% end %>
-</div>
+  <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <p class="eyebrow">Organization settings</p>
+    <h1 class="mt-2 text-3xl font-semibold">Organization settings</h1>
+    <p class="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">Update the details members see across this organization. These settings help keep the workspace clear for current and future officers.</p>
+  </header>
+
+  <section class="p-5 sm:p-8">
+    <%= form_with model: @organization, class: "space-y-6" do |form| %>
+      <%= render "shared/form_errors", record: @organization %>
+      <div>
+        <%= form.label :name, "Organization name", class: "form-label" %>
+        <%= form.text_field :name, required: true, class: "form-input" %>
+      </div>
+      <div>
+        <%= form.label :description, "Organization description", class: "form-label" %>
+        <%= form.text_area :description, rows: 5, maxlength: 1000, class: "form-input resize-y" %>
+      </div>
+      <div>
+        <%= form.label :contact_email, "Contact email", class: "form-label" %>
+        <%= form.email_field :contact_email, autocomplete: "email", class: "form-input" %>
+      </div>
+      <div>
+        <%= form.label :website_url, "Website or public link", class: "form-label" %>
+        <%= form.url_field :website_url, placeholder: "https://example.edu/club", class: "form-input" %>
+      </div>
+      <div>
+        <%= form.label :meeting_note, "Usual meeting location or note", class: "form-label" %>
+        <%= form.text_field :meeting_note, maxlength: 255, placeholder: "Student Union room 214 on Fridays", class: "form-input" %>
+      </div>
+      <div>
+        <%= form.label :current_semester_label, "Current semester label", class: "form-label" %>
+        <%= form.text_field :current_semester_label, maxlength: 80, placeholder: current_semester_label, class: "form-input" %>
+      </div>
+
+      <div class="border-l-4 border-amber bg-amber-pale/35 px-4 py-3 text-sm leading-6 text-ink-soft">
+        <p class="font-bold text-ink">Workspace address</p>
+        <p class="mt-1"><code><%= @organization.slug %></code></p>
+        <p class="mt-1">The organization slug is visible here but not editable yet, so existing links stay stable.</p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-4 border-t border-rule pt-5">
+        <%= form.submit "Save organization details", class: "button-primary" %>
+        <%= link_to "Cancel", organization_path(@organization), class: "button-secondary" %>
+      </div>
+    <% end %>
+  </section>
+</article>
