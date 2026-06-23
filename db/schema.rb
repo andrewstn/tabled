@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_23_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_23_091000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -24,12 +24,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_090000) do
     t.boolean "pinned", default: false, null: false
     t.datetime "published_at"
     t.string "status", default: "draft", null: false
+    t.bigint "target_event_id"
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_announcements_on_author_id"
     t.index ["organization_id", "status", "pinned", "published_at"], name: "index_announcements_for_bulletin"
     t.index ["organization_id"], name: "index_announcements_on_organization_id"
-    t.check_constraint "audience::text = ANY (ARRAY['all_members'::character varying, 'officers'::character varying]::text[])", name: "announcements_audience_check"
+    t.index ["target_event_id"], name: "index_announcements_on_target_event_id"
+    t.check_constraint "audience::text = ANY (ARRAY['all_members'::character varying, 'officers'::character varying, 'event_rsvps'::character varying, 'event_attendees'::character varying]::text[])", name: "announcements_audience_check"
     t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'published'::character varying]::text[])", name: "announcements_status_check"
   end
 
@@ -157,6 +159,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_090000) do
     t.index "lower((email_address)::text)", name: "index_users_on_lower_email_address", unique: true
   end
 
+  add_foreign_key "announcements", "events", column: "target_event_id"
   add_foreign_key "announcements", "organizations"
   add_foreign_key "announcements", "users", column: "author_id"
   add_foreign_key "attendance_records", "events"

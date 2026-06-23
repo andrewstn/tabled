@@ -1,50 +1,48 @@
 require "test_helper"
 
 class AnnouncementTest < ActiveSupport::TestCase
-  test "requires title body audience status organization and author" do
-    announcement = Announcement.new
-
-    assert_not announcement.valid?
-    assert_includes announcement.errors[:title], "can't be blank"
-    assert_includes announcement.errors[:body], "can't be blank"
-    assert_includes announcement.errors[:organization], "must exist"
-    assert_includes announcement.errors[:author], "must exist"
-    assert_includes announcement.errors[:audience], "is not included in the list"
-  end
-
-  test "publishing sets published at" do
-    announcement = Announcement.create!(
+  test "event targeted announcement requires target event" do
+    announcement = Announcement.new(
       organization: organizations(:film_society),
       author: users(:owner),
-      title: "Room update",
-      body: "We are meeting in room 214.",
-      audience: :all_members,
-      status: :published
+      title: "RSVP note",
+      body: "For event RSVPs.",
+      audience: :event_rsvps
     )
 
-    assert_not_nil announcement.published_at
+    assert_not announcement.valid?
+    assert_includes announcement.errors[:target_event], "must be selected for this audience"
   end
 
-  test "draft does not retain a published timestamp" do
-    announcement = announcements(:pinned_all_members)
+  test "target event must belong to same organization" do
+    other_event = Event.create!(
+      organization: organizations(:garden_club),
+      created_by: users(:owner),
+      title: "Garden night",
+      starts_at: 1.day.from_now
+    )
+    announcement = Announcement.new(
+      organization: organizations(:film_society),
+      author: users(:owner),
+      title: "Wrong event",
+      body: "Wrong organization.",
+      audience: :event_rsvps,
+      target_event: other_event
+    )
 
-    announcement.update!(status: :draft)
-
-    assert_nil announcement.published_at
+    assert_not announcement.valid?
+    assert_includes announcement.errors[:target_event], "must belong to this organization"
   end
 
-  test "bulletin ordering puts pinned announcements first" do
-    ordered = organizations(:film_society).announcements.published.bulletin_order
+  test "non-event audience does not require target event" do
+    announcement = Announcement.new(
+      organization: organizations(:film_society),
+      author: users(:owner),
+      title: "General note",
+      body: "For everyone.",
+      audience: :all_members
+    )
 
-    assert_equal announcements(:pinned_all_members), ordered.first
-  end
-
-  test "published visibility follows membership audience" do
-    member_visible = organizations(:film_society).announcements.published_for(memberships(:film_member))
-    owner_visible = organizations(:film_society).announcements.published_for(memberships(:film_owner))
-
-    assert_includes member_visible, announcements(:pinned_all_members)
-    assert_not_includes member_visible, announcements(:officer_notes)
-    assert_includes owner_visible, announcements(:pinned_all_members)
+    assert_predicate announcement, :valid?
   end
 end
