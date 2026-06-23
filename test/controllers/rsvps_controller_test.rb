@@ -57,7 +57,7 @@ class RsvpsControllerTest < ActionDispatch::IntegrationTest
 
     patch organization_event_rsvp_path(organizations(:film_society), event), params: { rsvp: { status: "attending" } }
 
-    assert_equal "RSVPs are closed for this gathering", flash[:alert]
+    assert_equal "RSVPs have closed for this gathering", flash[:alert]
     assert_predicate rsvps(:member_maybe_film_night).reload, :maybe?
   end
 

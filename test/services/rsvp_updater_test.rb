@@ -41,7 +41,7 @@ class RsvpUpdaterTest < ActiveSupport::TestCase
     updater = RsvpUpdater.new(event: event, membership: memberships(:film_member), attributes: { status: :attending })
 
     assert_not updater.save
-    assert_includes updater.rsvp.errors[:base], "RSVPs are closed for this gathering"
+    assert_includes updater.rsvp.errors[:base], "RSVPs have closed for this gathering"
   end
 
   test "organizer override permits a late RSVP" do

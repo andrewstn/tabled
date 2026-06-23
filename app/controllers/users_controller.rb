@@ -31,11 +31,11 @@ class UsersController < ApplicationController
   end
 
   def finish_signup(return_to)
-    return redirect_to(return_to || root_path, notice: "Your member account is ready.") unless @invitation
+    return redirect_to(return_to || root_path, notice: "Your account is ready.") unless @invitation
 
     accepter = InvitationAccepter.new(invitation: @invitation, user: @user)
     if accepter.accept
-      redirect_to organization_path(@invitation.organization), notice: "Your account is ready, and you joined #{@invitation.organization.name}."
+      redirect_to organization_path(@invitation.organization), notice: "You joined #{@invitation.organization.name}."
     else
       redirect_to invitation_acceptance_path(params[:invitation_token]), alert: @invitation.errors.full_messages.to_sentence
     end

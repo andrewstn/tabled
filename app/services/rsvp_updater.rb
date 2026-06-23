@@ -21,7 +21,7 @@ class RsvpUpdater
 
   def enforce_limits
     if @event.rsvp_deadline_passed?
-      @rsvp.errors.add(:base, "RSVPs are closed for this gathering")
+      @rsvp.errors.add(:base, "RSVPs have closed for this gathering")
     end
 
     return unless @rsvp.attending?

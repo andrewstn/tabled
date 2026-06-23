@@ -24,7 +24,7 @@ class InvitationsController < ApplicationController
 
     if issuer.create
       InvitationMailer.with(invitation: issuer.invitation, token: issuer.invitation.token).invite.deliver_now
-      redirect_to organization_invitations_path(@organization), notice: "Invitation sent to #{issuer.invitation.email}."
+      redirect_to organization_invitations_path(@organization), notice: "Invitation sent."
     else
       @invitation = issuer.invitation
       set_permitted_roles
@@ -37,7 +37,7 @@ class InvitationsController < ApplicationController
 
     if @invitation.pending?
       @invitation.update!(revoked_at: Time.current)
-      redirect_to organization_invitations_path(@organization), notice: "Invitation for #{@invitation.email} was revoked."
+      redirect_to organization_invitations_path(@organization), notice: "Invitation revoked."
     else
       redirect_to organization_invitations_path(@organization), alert: "That invitation is no longer pending."
     end

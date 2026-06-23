@@ -39,7 +39,7 @@ class MembershipsController < ApplicationController
     return head :forbidden unless policy.update_role?(new_role)
 
     if MembershipRoleUpdater.new(membership: @membership, role: new_role).update
-      redirect_to organization_members_path(@organization), notice: "#{@membership.user.name} is now #{@membership.role.humanize.downcase}."
+      redirect_to organization_members_path(@organization), notice: "Member role updated."
     else
       redirect_to organization_members_path(@organization), alert: @membership.errors.full_messages.to_sentence
     end
@@ -53,7 +53,7 @@ class MembershipsController < ApplicationController
     destination = @membership.user == current_user ? root_path : organization_members_path(@organization)
 
     if MembershipRemover.new(membership: @membership).remove
-      redirect_to destination, notice: "#{member_name} was removed from #{@organization.name}."
+      redirect_to destination, notice: "#{member_name} was removed from the roster."
     else
       redirect_to organization_members_path(@organization), alert: @membership.errors.full_messages.to_sentence
     end

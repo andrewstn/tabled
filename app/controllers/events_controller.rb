@@ -35,7 +35,7 @@ class EventsController < ApplicationController
     @event = @organization.events.new(event_params.merge(created_by: current_user))
 
     if @event.save
-      redirect_to organization_event_path(@organization, @event), notice: "#{@event.title} was added to the calendar."
+      redirect_to organization_event_path(@organization, @event), notice: "Gathering added."
     else
       render :new, status: :unprocessable_entity
     end
@@ -53,9 +53,8 @@ class EventsController < ApplicationController
   end
 
   def destroy
-    title = @event.title
     @event.destroy!
-    redirect_to organization_events_path(@organization), notice: "#{title} was removed from the calendar."
+    redirect_to organization_events_path(@organization), notice: "Gathering removed."
   end
 
   private

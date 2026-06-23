@@ -15,7 +15,7 @@ class OrganizationJoinLinksController < ApplicationController
     @join_link = @organization.organization_join_links.new(join_link_params.merge(created_by: current_user, role: :member))
 
     if @join_link.save
-      redirect_to organization_join_links_path(@organization), notice: "Recruitment link ready to share."
+      redirect_to organization_join_links_path(@organization), notice: "Recruitment link created."
     else
       render :new, status: :unprocessable_entity
     end

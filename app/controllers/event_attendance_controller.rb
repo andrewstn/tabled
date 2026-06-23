@@ -36,7 +36,7 @@ class EventAttendanceController < ApplicationController
     )
 
     if marker.save
-      redirect_to attendance_sheet_path(membership), notice: "Saved to the event record."
+      redirect_to attendance_sheet_path(membership), notice: "Attendance updated."
     else
       redirect_to attendance_sheet_path(membership), alert: marker.attendance_record.errors.full_messages.to_sentence
     end

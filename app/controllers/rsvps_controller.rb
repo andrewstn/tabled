@@ -31,7 +31,7 @@ class RsvpsController < ApplicationController
     )
 
     if updater.save
-      redirect_to organization_event_path(@organization, @event), notice: "Your RSVP has been saved."
+      redirect_to organization_event_path(@organization, @event), notice: "RSVP saved."
     else
       redirect_to organization_event_path(@organization, @event), alert: updater.rsvp.errors.full_messages.to_sentence
     end

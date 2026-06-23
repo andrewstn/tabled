@@ -49,9 +49,8 @@ class AnnouncementsController < ApplicationController
   end
 
   def destroy
-    title = @announcement.title
     @announcement.destroy!
-    redirect_to organization_announcements_path(@organization), notice: "#{title} was removed from the bulletin."
+    redirect_to organization_announcements_path(@organization), notice: "Announcement removed."
   end
 
   private
@@ -85,7 +84,7 @@ class AnnouncementsController < ApplicationController
   end
 
   def announcement_saved_notice
-    @announcement.published? ? "Announcement posted to the bulletin." : "Draft saved on the officer desk."
+    @announcement.published? ? "Announcement published." : "Draft saved."
   end
 
   def email_requested?

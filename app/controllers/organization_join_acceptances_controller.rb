@@ -11,9 +11,9 @@ class OrganizationJoinAcceptancesController < ApplicationController
     accepter = OrganizationJoinLinkAccepter.new(join_link: @join_link, user: current_user)
 
     if accepter.accept
-      redirect_to organization_path(@join_link.organization), notice: "You joined #{@join_link.organization.name}. Welcome around the table."
+      redirect_to organization_path(@join_link.organization), notice: "You joined #{@join_link.organization.name}."
     elsif accepter.already_joined?
-      redirect_to organization_path(@join_link.organization), notice: "You’re already on the #{@join_link.organization.name} roster."
+      redirect_to organization_path(@join_link.organization), notice: "You’re already a member of #{@join_link.organization.name}."
     else
       @existing_membership = current_user.memberships.find_by(organization: @join_link.organization)
       flash.now[:alert] = @join_link.errors.full_messages.to_sentence
