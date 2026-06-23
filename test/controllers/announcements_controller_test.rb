@@ -43,6 +43,89 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /Posted by #{Regexp.escape(users(:owner).name)}/
   end
 
+  test "all members announcement is visible to organization members" do
+    sign_in_as(users(:member))
+
+    get organization_announcements_path(organizations(:film_society))
+
+    assert_select "h3", announcements(:pinned_all_members).title
+  end
+
+  test "officers announcement is visible to organizer roles only" do
+    announcement = announcements(:officer_notes)
+    announcement.update!(status: :published)
+    memberships(:film_member).update!(role: :coordinator)
+    sign_in_as(users(:member))
+
+    get organization_announcement_path(organizations(:film_society), announcement)
+
+    assert_response :success
+    assert_select "h1", announcement.title
+  end
+
+  test "officers announcement is not visible to regular members" do
+    announcement = announcements(:officer_notes)
+    announcement.update!(status: :published)
+    memberships(:film_member).update!(role: :member)
+    sign_in_as(users(:member))
+
+    get organization_announcement_path(organizations(:film_society), announcement)
+
+    assert_response :not_found
+  end
+
+  test "event rsvps announcement is visible to members with RSVP" do
+    announcement = create_targeted_announcement(audience: :event_rsvps, target_event: events(:upcoming_film_night))
+    sign_in_as(users(:member))
+
+    get organization_announcement_path(organizations(:film_society), announcement)
+
+    assert_response :success
+    assert_select "h2", "Event RSVPs"
+  end
+
+  test "event rsvps announcement is not visible to members without RSVP" do
+    user = create_user("No RSVP", "no-rsvp@example.test")
+    Membership.create!(organization: organizations(:film_society), user: user, role: :member)
+    announcement = create_targeted_announcement(audience: :event_rsvps, target_event: events(:upcoming_film_night))
+    sign_in_as(user)
+
+    get organization_announcement_path(organizations(:film_society), announcement)
+
+    assert_response :not_found
+  end
+
+  test "event attendees announcement is visible to present or late members" do
+    announcement = create_targeted_announcement(audience: :event_attendees, target_event: events(:past_planning_table))
+    sign_in_as(users(:member))
+
+    get organization_announcement_path(organizations(:film_society), announcement)
+
+    assert_response :success
+    assert_select "h2", "Checked-in attendees"
+  end
+
+  test "event attendees announcement is not visible to members without present or late attendance" do
+    user = create_user("Absent Member", "absent-member@example.test")
+    membership = Membership.create!(organization: organizations(:film_society), user: user, role: :member)
+    events(:past_planning_table).attendance_records.create!(membership: membership, marked_by: users(:owner), status: :absent)
+    announcement = create_targeted_announcement(audience: :event_attendees, target_event: events(:past_planning_table))
+    sign_in_as(user)
+
+    get organization_announcement_path(organizations(:film_society), announcement)
+
+    assert_response :not_found
+  end
+
+  test "non-member cannot view targeted announcement" do
+    announcement = create_targeted_announcement(audience: :event_rsvps, target_event: events(:upcoming_film_night))
+    sign_in_as(users(:member))
+
+    get organization_announcement_path(organizations(:garden_club), announcement)
+
+    assert_response :not_found
+  end
+
   test "member cannot view a draft announcement" do
     sign_in_as(users(:member))
 
@@ -166,5 +249,21 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
 
   def sign_in_as(user)
     post session_path, params: { email_address: user.email_address, password: "password1234" }
+  end
+
+  def create_targeted_announcement(audience:, target_event:)
+    Announcement.create!(
+      organization: organizations(:film_society),
+      author: users(:owner),
+      title: "#{audience.to_s.humanize} note",
+      body: "A targeted announcement.",
+      audience: audience,
+      target_event: target_event,
+      status: :published
+    )
+  end
+
+  def create_user(name, email)
+    User.create!(name: name, email_address: email, password: "password1234")
   end
 end

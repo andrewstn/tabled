@@ -20,8 +20,10 @@ class Announcement < ApplicationRecord
 
   scope :bulletin_order, -> { order(pinned: :desc, published_at: :desc, created_at: :desc) }
   scope :published_for, ->(membership) {
-    audiences = membership.member? ? [ "all_members" ] : AUDIENCES
-    published.where(audience: audiences)
+    relation = published.where(audience: "all_members")
+    relation = relation.or(published.where(audience: "officers")) if membership.owner? || membership.officer? || membership.coordinator?
+    relation = relation.or(published.where(audience: "event_rsvps", target_event_id: membership.rsvps.select(:event_id)))
+    relation.or(published.where(audience: "event_attendees", target_event_id: membership.attendance_records.where(status: %w[present late]).select(:event_id)))
   }
 
   def audience_label
