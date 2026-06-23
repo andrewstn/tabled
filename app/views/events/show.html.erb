@@ -87,7 +87,7 @@
         <% if @rsvp %>
           <p class="mt-3">You answered <span class="role-tag"><%= @rsvp.status.humanize %></span></p>
         <% else %>
-          <p class="mt-3 text-sm leading-6 text-ink-soft">Let the organizers know whether to save you a place.</p>
+          <p class="mt-3 text-sm leading-6 text-ink-soft">Let the organizers know whether you plan to come.</p>
         <% end %>
 
         <% rsvps_closed = @event.rsvp_deadline_passed? && !@event_policy.override_rsvp_limits? %>
@@ -141,7 +141,7 @@
 
     <aside class="border-t-2 border-ink/15 bg-paper-deep/35 lg:border-t-0">
       <section class="p-5 sm:p-6">
-        <p class="eyebrow text-amber">Around the table</p>
+        <p class="eyebrow text-amber">RSVPs</p>
         <h2 class="mt-1 text-xl font-semibold">RSVP summary</h2>
         <p class="mt-4 font-serif text-3xl font-semibold"><%= @event.attending_count %></p>
         <p class="text-sm text-ink-soft"><%= "member".pluralize(@event.attending_count) %> attending<% if @event.capacity.present? %> of <%= @event.capacity %> spots<% end %></p>
@@ -180,7 +180,7 @@
 
       <% unless @event_policy.view_roster? %>
         <section id="member-attendees" class="border-t border-rule p-5 sm:p-6" aria-labelledby="member-attendees-heading">
-          <p class="eyebrow text-moss-dark">Around the table</p>
+          <p class="eyebrow text-moss-dark">Attendees</p>
           <h2 id="member-attendees-heading" class="mt-1 text-xl font-semibold">Who’s coming</h2>
           <% if @visible_attending_rsvps.any? %>
             <ul class="mt-4 divide-y divide-rule/70 border-y border-rule text-sm">
@@ -198,7 +198,7 @@
 
         <section id="member-event-status" class="border-t border-rule p-5 sm:p-6" aria-labelledby="member-event-status-heading">
           <p class="eyebrow text-amber">Your record</p>
-          <h2 id="member-event-status-heading" class="mt-1 text-xl font-semibold">Your place</h2>
+          <h2 id="member-event-status-heading" class="mt-1 text-xl font-semibold">Your status</h2>
           <dl class="mt-4 space-y-4 text-sm">
             <div>
               <dt class="font-bold text-moss-dark">RSVP</dt>

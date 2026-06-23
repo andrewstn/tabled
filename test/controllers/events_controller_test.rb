@@ -35,7 +35,7 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".role-tag", text: "Maybe"
     assert_select "p", text: /Organizer access includes/, count: 0
     assert_select "h2", "Who’s coming"
-    assert_select "h2", "Your place"
+    assert_select "h2", "Your status"
     assert_select "#member-event-status dd", text: "Maybe"
     assert_select "#member-event-status dd", text: "You haven’t checked in yet."
     assert_select "#member-check-in-guidance", text: /Your organizer will share a code/
