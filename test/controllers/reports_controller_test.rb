@@ -1,4 +1,5 @@
 require "test_helper"
+require "csv"
 
 class ReportsControllerTest < ActionDispatch::IntegrationTest
   test "owner can view semester report" do
@@ -91,9 +92,74 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", organization_event_path(organizations(:film_society), events(:upcoming_film_night)), count: 0
   end
 
+  test "roster CSV export is organization scoped" do
+    outsider = create_user(name: "Garden Member", email: "garden-member@example.test")
+    Membership.create!(organization: organizations(:garden_club), user: outsider, role: :member)
+    sign_in_as(users(:owner))
+
+    get roster_organization_reports_path(organizations(:film_society), format: :csv)
+
+    assert_response :success
+    rows = CSV.parse(response.body, headers: true)
+    assert_equal [ "Name", "Email", "Role", "Joined at" ], rows.headers
+    assert_includes rows["Email"], users(:owner).email_address
+    assert_not_includes rows["Email"], outsider.email_address
+  end
+
+  test "participation CSV export is organization scoped" do
+    outsider = create_user(name: "Garden Member", email: "garden-participation@example.test")
+    Membership.create!(organization: organizations(:garden_club), user: outsider, role: :member)
+    sign_in_as(users(:owner))
+
+    get participation_organization_reports_path(organizations(:film_society), format: :csv)
+
+    assert_response :success
+    rows = CSV.parse(response.body, headers: true)
+    assert_equal "RSVP attending count", rows.headers.fetch(4)
+    assert_includes rows["Email"], users(:owner).email_address
+    assert_not_includes rows["Email"], outsider.email_address
+  end
+
+  test "event summary CSV export is organization scoped" do
+    Event.create!(
+      organization: organizations(:garden_club),
+      created_by: users(:owner),
+      title: "Garden records night",
+      starts_at: 1.day.ago
+    )
+    Membership.create!(organization: organizations(:garden_club), user: users(:owner), role: :officer)
+    sign_in_as(users(:owner))
+
+    get events_organization_reports_path(organizations(:film_society), format: :csv)
+
+    assert_response :success
+    rows = CSV.parse(response.body, headers: true)
+    assert_equal [ "Event title", "Starts at", "Location", "RSVP attending count", "Present count", "Late count", "Excused count", "Absent count", "Attendance recorded" ], rows.headers
+    assert_includes rows["Event title"], events(:past_planning_table).title
+    assert_not_includes rows["Event title"], events(:upcoming_film_night).title
+    assert_not_includes rows["Event title"], "Garden records night"
+  end
+
+  test "member cannot export reports" do
+    sign_in_as(users(:member))
+
+    get roster_organization_reports_path(organizations(:film_society), format: :csv)
+
+    assert_response :forbidden
+  end
+
   private
 
   def sign_in_as(user)
     post session_path, params: { email_address: user.email_address, password: "password1234" }
+  end
+
+  def create_user(name:, email:)
+    User.create!(
+      name: name,
+      email_address: email,
+      password: "password1234",
+      password_confirmation: "password1234"
+    )
   end
 end

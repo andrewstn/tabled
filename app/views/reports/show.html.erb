@@ -7,10 +7,17 @@
     <span>Current semester · <%= current_semester_label %></span>
   </div>
 
-  <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
-    <p class="eyebrow">Semester record</p>
-    <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Semester report</h1>
-    <p class="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">A practical record of members, gatherings, and attendance.</p>
+  <header class="flex flex-wrap items-end justify-between gap-5 border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <div>
+      <p class="eyebrow">Semester record</p>
+      <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Semester report</h1>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">A practical record of members, gatherings, and attendance.</p>
+    </div>
+    <div class="flex flex-wrap gap-3 text-sm" aria-label="Export records">
+      <%= link_to "Download roster CSV", roster_organization_reports_path(@organization, format: :csv), class: "button-secondary" %>
+      <%= link_to "Download participation CSV", participation_organization_reports_path(@organization, format: :csv), class: "button-secondary" %>
+      <%= link_to "Download event summary CSV", events_organization_reports_path(@organization, format: :csv), class: "button-secondary" %>
+    </div>
   </header>
 
   <% if @report.empty? %>
