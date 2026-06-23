@@ -209,6 +209,15 @@
         <h2 class="mt-1 text-xl font-semibold">Recent activity</h2>
         <p class="mt-3 text-sm leading-6 text-ink-soft">No notes in the log book yet.</p>
       </section>
+
+      <section class="border-t border-rule p-5 sm:p-6">
+        <p class="eyebrow text-brick">Membership</p>
+        <h2 class="mt-1 text-xl font-semibold">Leave organization</h2>
+        <p class="mt-3 text-sm leading-6 text-ink-soft">You’ll lose access to this organization’s roster, events, announcements, and reports.</p>
+        <%= button_to "Leave organization", organization_leave_path(@organization), method: :delete,
+          class: "mt-4 text-sm font-bold text-brick underline decoration-brick/40 underline-offset-4",
+          form: { data: { turbo_confirm: "Leave #{@organization.name}? You’ll lose access to this organization." } } %>
+      </section>
     </aside>
   </div>
 </article>

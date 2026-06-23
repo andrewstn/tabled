@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :users, only: %i[new create]
   resources :organizations, param: :slug, only: %i[new create show edit update] do
     resources :members, controller: "memberships", only: %i[index show update destroy]
+    resource :leave, only: :destroy, controller: "organization_leaves"
     resource :communication_preferences, only: %i[show update]
     resource :ownership_transfer, only: :update
     resource :reports, only: :show, controller: "reports" do
