@@ -39,6 +39,7 @@ class OrganizationsController < ApplicationController
   end
 
   def edit
+    @owner_transfer_memberships = @organization.memberships.includes(:user).where.not(user: current_user).order("users.name")
   end
 
   def update

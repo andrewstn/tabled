@@ -10,4 +10,8 @@ class OrganizationPolicy
   def manage?
     @membership&.owner? || @membership&.officer?
   end
+
+  def transfer_ownership?
+    @membership&.owner?
+  end
 end

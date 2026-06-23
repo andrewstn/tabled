@@ -52,4 +52,25 @@
       </div>
     <% end %>
   </section>
+
+  <% if OrganizationPolicy.new(current_user, @organization).transfer_ownership? %>
+    <section class="border-t border-rule p-5 sm:p-8" aria-labelledby="administrative-actions">
+      <div class="workspace-section-heading">
+        <p class="eyebrow text-brick">Owner settings</p>
+        <h2 id="administrative-actions" class="mt-1 text-2xl font-semibold">Administrative actions</h2>
+      </div>
+
+      <div class="mt-6 border-l-4 border-amber bg-amber-pale/35 px-4 py-4">
+        <h3 class="font-bold">Transfer ownership</h3>
+        <p class="mt-1 text-sm leading-6 text-ink-soft">Choose another member to make an owner. This does not remove your own owner access.</p>
+        <%= form_with url: organization_ownership_transfer_path(@organization), method: :patch, class: "mt-4 flex flex-wrap items-end gap-3" do |form| %>
+          <div class="min-w-48 flex-1">
+            <%= form.label :membership_id, "Member", class: "form-label" %>
+            <%= form.collection_select :membership_id, @owner_transfer_memberships, :id, ->(membership) { "#{membership.user.name} · #{membership.role.humanize}" }, { prompt: "Choose a member" }, class: "form-input" %>
+          </div>
+          <%= form.submit "Transfer ownership", class: "button-secondary" %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
 </article>
