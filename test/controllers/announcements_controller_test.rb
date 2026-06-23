@@ -245,6 +245,22 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil Announcement.order(:created_at).last.emailed_at
   end
 
+  test "disabling announcement emails prevents optional announcement email delivery" do
+    memberships(:film_member).update!(announcement_emails_enabled: false)
+    sign_in_as(users(:owner))
+
+    assert_emails 1 do
+      post organization_announcements_path(organizations(:film_society)), params: {
+        send_email: "1",
+        announcement: { title: "Room update", body: "Meet upstairs.", audience: "all_members", status: "published" }
+      }
+    end
+
+    announcement = Announcement.order(:created_at).last
+    assert_equal 1, announcement.announcement_deliveries.sent.count
+    assert_equal 1, announcement.announcement_deliveries.skipped.count
+  end
+
   private
 
   def sign_in_as(user)
