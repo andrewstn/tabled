@@ -37,4 +37,18 @@
     </div>
     <div class="mt-6 whitespace-pre-line text-base leading-8 text-ink"><%= @announcement.body %></div>
   </section>
+
+  <% if @announcement_policy.update? && @announcement.announcement_deliveries.any? %>
+    <section class="workspace-section border-t border-rule" aria-labelledby="email-delivery">
+      <div class="workspace-section-heading">
+        <p class="eyebrow">Email recipients</p>
+        <h2 id="email-delivery" class="mt-1 text-lg font-semibold">Email delivery</h2>
+      </div>
+      <p class="mt-4 text-sm leading-6 text-ink-soft">
+        Sent to <%= pluralize(@announcement.announcement_deliveries.sent.count, "member") %>.
+        Skipped <%= pluralize(@announcement.announcement_deliveries.skipped.count, "member") %> based on communication preferences.
+        <% if @announcement.emailed_at %>Emailed <%= @announcement.emailed_at.to_fs(:long) %>.<% end %>
+      </p>
+    </section>
+  <% end %>
 </article>

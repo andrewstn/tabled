@@ -22,6 +22,7 @@ class AnnouncementsController < ApplicationController
 
   def new
     @announcement = @organization.announcements.new(author: current_user, audience: :all_members)
+    prepare_form
   end
 
   def create
@@ -31,11 +32,13 @@ class AnnouncementsController < ApplicationController
       deliver_announcement_email if email_requested?
       redirect_to organization_announcement_path(@organization, @announcement), notice: announcement_saved_notice
     else
+      prepare_form
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
+    prepare_form
   end
 
   def update
@@ -44,6 +47,7 @@ class AnnouncementsController < ApplicationController
       deliver_announcement_email if email_requested?
       redirect_to organization_announcement_path(@organization, @announcement), notice: announcement_saved_notice
     else
+      prepare_form
       render :edit, status: :unprocessable_entity
     end
   end
@@ -76,7 +80,7 @@ class AnnouncementsController < ApplicationController
   end
 
   def announcement_params
-    params.expect(announcement: %i[title body audience pinned])
+    params.expect(announcement: %i[title body audience target_event_id pinned])
   end
 
   def requested_status
@@ -93,5 +97,10 @@ class AnnouncementsController < ApplicationController
 
   def deliver_announcement_email
     AnnouncementEmailSender.new(announcement: @announcement).deliver
+  end
+
+  def prepare_form
+    @target_events = @organization.events.order(starts_at: :desc)
+    @delivery_preview = AnnouncementDeliveryPreview.new(@announcement)
   end
 end

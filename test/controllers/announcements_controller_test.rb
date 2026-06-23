@@ -159,6 +159,44 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     assert_nil announcement.published_at
   end
 
+  test "announcement form shows delivery preview" do
+    memberships(:film_member).update!(announcement_emails_enabled: false)
+    sign_in_as(users(:owner))
+
+    get new_organization_announcement_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "p", text: "Delivery preview"
+    assert_select "p", text: /Visible to 2 members/
+    assert_select "p", text: /Email will be sent to 1 member/
+    assert_select "p", text: /1 member have announcement emails turned off/
+  end
+
+  test "event audience announcement requires target event from form" do
+    sign_in_as(users(:owner))
+
+    post organization_announcements_path(organizations(:film_society)), params: {
+      announcement: { title: "RSVP note", body: "For RSVPs.", audience: "event_rsvps", target_event_id: "", status: "published" }
+    }
+
+    assert_response :unprocessable_entity
+    assert_select "[role='alert']", text: /Target event must be selected/
+  end
+
+  test "owner can create event targeted announcement from form" do
+    sign_in_as(users(:owner))
+
+    assert_difference("Announcement.count") do
+      post organization_announcements_path(organizations(:film_society)), params: {
+        announcement: { title: "RSVP note", body: "For RSVPs.", audience: "event_rsvps", target_event_id: events(:upcoming_film_night).id, status: "published" }
+      }
+    end
+
+    announcement = Announcement.order(:created_at).last
+    assert_equal "event_rsvps", announcement.audience
+    assert_equal events(:upcoming_film_night), announcement.target_event
+  end
+
   test "officer can create a draft announcement" do
     memberships(:film_member).update!(role: :officer)
     sign_in_as(users(:member))
@@ -259,6 +297,29 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     announcement = Announcement.order(:created_at).last
     assert_equal 1, announcement.announcement_deliveries.sent.count
     assert_equal 1, announcement.announcement_deliveries.skipped.count
+  end
+
+  test "organizer sees delivery summary on announcement detail" do
+    announcement = announcements(:pinned_all_members)
+    AnnouncementEmailSender.new(announcement: announcement).deliver
+    sign_in_as(users(:owner))
+
+    get organization_announcement_path(organizations(:film_society), announcement)
+
+    assert_response :success
+    assert_select "h2", "Email delivery"
+    assert_select "p", text: /Sent to 2 members/
+  end
+
+  test "regular member cannot see delivery summary" do
+    announcement = announcements(:pinned_all_members)
+    AnnouncementEmailSender.new(announcement: announcement).deliver
+    sign_in_as(users(:member))
+
+    get organization_announcement_path(organizations(:film_society), announcement)
+
+    assert_response :success
+    assert_select "h2", { text: "Email delivery", count: 0 }
   end
 
   private
