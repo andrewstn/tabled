@@ -21,6 +21,7 @@ class OrganizationsController < ApplicationController
   def show
     @membership = current_user.memberships.find_by!(organization: @organization)
     @can_manage_members = organization_policy.manage?
+    @can_view_reports = ReportPolicy.new(current_user, @organization).show?
     @pending_invitation_count = @organization.invitations.pending.count if @can_manage_members
     @upcoming_events = @organization.events.upcoming.includes(:rsvps).limit(3)
     @dashboard_rsvps = @membership.rsvps.where(event: @upcoming_events).index_by(&:event_id)
@@ -33,6 +34,7 @@ class OrganizationsController < ApplicationController
       .distinct
       .includes(:attendance_records)
       .limit(3)
+    load_report_preview if @can_view_reports
     load_attendance_follow_ups if @can_create_events
   end
 
@@ -85,5 +87,13 @@ class OrganizationsController < ApplicationController
       .where(attendance_records: { id: nil })
       .limit(3)
       .each { |event| @attendance_follow_ups << [ :attendance_missing, event ] }
+  end
+
+  def load_report_preview
+    @semester_report = SemesterReport.new(organization: @organization)
+    @events_needing_attendance_count = @organization.events.past
+      .left_outer_joins(:attendance_records)
+      .where(attendance_records: { id: nil })
+      .count
   end
 end

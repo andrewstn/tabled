@@ -38,9 +38,22 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
 
     assert_select "a[href=?]", new_organization_invitation_path(organizations(:film_society)), text: "Invite member"
     assert_select "a[href=?]", organization_invitations_path(organizations(:film_society)), text: "Pending invitations (1)"
+    assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), text: "Semester report"
+    assert_select "h2", text: "Semester report"
+    assert_select "p", text: /members · \d+ gathering recorded/
     assert_select "a[href=?]", new_organization_event_path(organizations(:film_society)), text: "Add gathering"
     assert_select "a[href=?]", new_organization_announcement_path(organizations(:film_society)), text: "Post announcement"
     assert_select "span", text: "1 draft"
+  end
+
+  test "coordinator sees semester report entry point" do
+    memberships(:film_member).update!(role: :coordinator)
+    sign_in_as(users(:member))
+
+    get organization_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), text: "Semester report"
   end
 
   test "dashboard shows bulletin empty state from real data" do
@@ -80,6 +93,7 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
 
     assert_select "p", text: "Nothing needs follow-up right now."
     assert_select "a", text: "Unmarked workshop", count: 0
+    assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), count: 0
   end
 
   test "dashboard shows the gathering empty state from real data" do

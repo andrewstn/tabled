@@ -15,6 +15,7 @@ class MembershipsController < ApplicationController
     memberships = memberships.where(role: @role_filter) if Membership::ROLES.include?(@role_filter)
     @paginator = Paginator.new(memberships, page: params[:page])
     @memberships = @paginator.records
+    @can_view_reports = ReportPolicy.new(current_user, @organization).show?
     @can_manage_members = OrganizationPolicy.new(current_user, @organization).manage?
     if @can_manage_members
       @pending_invitation_count = @organization.invitations.pending.count
