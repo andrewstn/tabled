@@ -25,9 +25,21 @@ Open [http://localhost:3000](http://localhost:3000). The seed data includes an o
 - Email: `demo-owner@example.test`
 - Password: `tabled-demo-password`
 
-The seed is idempotent and also creates a 32-person roster, two pending invitations, four gatherings, varied RSVP and attendance records, two published bulletin posts, an officer draft, and active and closed recruitment links for Buckeye Film Society. The larger roster makes pagination and attendance filters visible immediately.
+The seed is idempotent and also creates a 32-person roster, two pending invitations, four gatherings, varied RSVP and attendance records, two published bulletin posts, an officer draft, and active and closed recruitment links for Buckeye Film Society. The larger roster makes pagination, attendance filters, semester reports, and CSV exports visible immediately.
 
 To try recruitment locally, sign in as the demo owner, open **Member roster → Recruitment links**, and copy the active Autumn Involvement Fair URL. Open that URL in a private browser window to follow the sign-up and join flow. Reusable links always add members; they cannot grant elevated roles. QR generation is intentionally not included yet.
+
+To try reporting locally, sign in as the demo owner and open **Semester report** from the organization dashboard or member roster. Use the report actions to download roster, participation, or event summary CSV files.
+
+To try roster import locally, open **Member roster → Import roster** and upload a CSV with these headers:
+
+```csv
+name,email,role
+Sample Member,sample.member@example.test,member
+Sample Coordinator,sample.coordinator@example.test,coordinator
+```
+
+The import creates pending invitations for valid rows. Rows for existing members or duplicate pending invitations are skipped. Blank roles default to `member`; `owner` rows are rejected.
 
 Invitation and optional announcement emails stay local in development and are written beneath `tmp/mails`.
 
@@ -54,7 +66,7 @@ bin/brakeman --no-pager
 
 ## Current scope
 
-Milestones 1 through 6 establish the multi-tenant organization workspace, active semester calendar, event sign-in record, organization bulletin, and practical large-roster recruitment workflow:
+Milestones 1 through 7 establish the multi-tenant organization workspace, active semester calendar, event sign-in record, organization bulletin, practical large-roster recruitment workflow, semester reporting, CSV exports, and roster import:
 
 - Account signup and session authentication
 - Organizations with stable, human-readable URLs
@@ -89,9 +101,12 @@ Milestones 1 through 6 establish the multi-tenant organization workspace, active
 - Stable, query-preserving pagination for roster and attendance workflows
 - Reusable member-only recruitment links with expiration, use limits, and organizer controls
 - Public join pages with sign-in and account-creation return paths
+- Organizer-only semester reports with member participation and event summaries
+- Roster, participation, and event summary CSV exports
+- CSV roster import that creates pending invitations and reports skipped or invalid rows
 - Idempotent local demo data
 
-Event-attendee announcement targeting, comments, reactions, attachments, notification preferences, production email providers, recurring events, QR-code generation, geolocation, complex analytics, calendar integrations, and activity history are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
+Event-attendee announcement targeting, comments, reactions, attachments, notification preferences, production email providers, recurring events, QR-code generation, geolocation, complex analytics, calendar integrations, persistent import batches, XLSX import, automatic import emails, charts, and activity history are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
 
 ## Product and visual direction
 

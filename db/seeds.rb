@@ -15,7 +15,7 @@ end
 organization = Organization.find_or_initialize_by(slug: "buckeye-film-society")
 organization.update!(
   name: "Buckeye Film Society",
-  description: "A campus table for watching, discussing, and making films together all semester."
+  description: "A campus film society for watching, discussing, and making films together all semester."
 )
 
 roles_by_email = {
@@ -225,5 +225,5 @@ expired_join_link.update!(
   max_uses: nil
 )
 
-puts "Seeded Buckeye Film Society with a 32-person roster, varied attendance, and recruitment links."
+puts "Seeded Buckeye Film Society with a 32-person roster, report-ready attendance records, and recruitment links."
 puts "Sign in as demo-owner@example.test with tabled-demo-password."
