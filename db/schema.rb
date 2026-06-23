@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_22_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_23_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -94,8 +94,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_110000) do
   end
 
   create_table "memberships", force: :cascade do |t|
+    t.boolean "announcement_emails_enabled", default: true, null: false
     t.datetime "created_at", null: false
+    t.boolean "event_reminder_emails_enabled", default: true, null: false
     t.bigint "organization_id", null: false
+    t.boolean "recruitment_emails_enabled", default: true, null: false
     t.string "role", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
