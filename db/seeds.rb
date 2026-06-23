@@ -33,6 +33,12 @@ roles_by_email.each do |email_address, role|
   membership.update!(role: role)
 end
 
+Membership.find_by!(organization: organization, user: demo_users.fetch("nina.member@example.test")).update!(
+  announcement_emails_enabled: false,
+  event_reminder_emails_enabled: true,
+  recruitment_emails_enabled: false
+)
+
 scale_memberships = 28.times.map do |index|
   email_address = format("film.member.%02d@example.test", index + 1)
   user = User.find_or_initialize_by(email_address: email_address)
@@ -42,6 +48,9 @@ scale_memberships = 28.times.map do |index|
 
   organization.memberships.find_or_initialize_by(user: user).tap do |membership|
     membership.role = index.in?([ 6, 18 ]) ? :coordinator : :member
+    membership.announcement_emails_enabled = index % 7 != 0
+    membership.event_reminder_emails_enabled = index % 5 != 0
+    membership.recruitment_emails_enabled = index % 6 != 0
     membership.save!
   end
 end
@@ -199,6 +208,22 @@ announcement_attributes = {
     audience: :officers,
     status: :draft,
     pinned: false
+  },
+  "Short Film Planning follow-up" => {
+    body: "Thanks for helping shape the next short film. Crew notes are ready for anyone who RSVP’d.",
+    audience: :event_rsvps,
+    target_event: planning_event,
+    status: :published,
+    pinned: false,
+    published_at: 6.hours.ago
+  },
+  "Checked-in crew notes" => {
+    body: "A few notes for members who checked in at the planning session.",
+    audience: :event_attendees,
+    target_event: planning_event,
+    status: :published,
+    pinned: false,
+    published_at: 4.hours.ago
   }
 }
 
@@ -206,6 +231,29 @@ announcement_attributes.each do |title, attributes|
   announcement = organization.announcements.find_or_initialize_by(title: title)
   announcement.update!(attributes.merge(author: demo_users.fetch("demo-owner@example.test")))
 end
+
+delivered_announcement = organization.announcements.find_by!(title: "First Friday Film Night details")
+delivered_announcement.recipient_memberships.find_each do |membership|
+  delivery = delivered_announcement.announcement_deliveries.find_or_initialize_by(membership: membership)
+  if membership.announcement_emails_enabled?
+    delivery.update!(
+      user: membership.user,
+      email: membership.user.email_address,
+      status: :sent,
+      skipped_reason: nil,
+      sent_at: 2.hours.ago
+    )
+  else
+    delivery.update!(
+      user: membership.user,
+      email: membership.user.email_address,
+      status: :skipped,
+      skipped_reason: "announcement_emails_disabled",
+      sent_at: nil
+    )
+  end
+end
+delivered_announcement.update!(emailed_at: 2.hours.ago)
 
 active_join_link = organization.organization_join_links.find_or_initialize_by(label: "Autumn Involvement Fair")
 active_join_link.update!(
@@ -225,5 +273,5 @@ expired_join_link.update!(
   max_uses: nil
 )
 
-puts "Seeded Buckeye Film Society with a 32-person roster, report-ready attendance records, and recruitment links."
+puts "Seeded Buckeye Film Society with a 32-person roster, report-ready attendance records, communication preferences, and recruitment links."
 puts "Sign in as demo-owner@example.test with tabled-demo-password."

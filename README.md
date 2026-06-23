@@ -25,11 +25,15 @@ Open [http://localhost:3000](http://localhost:3000). The seed data includes an o
 - Email: `demo-owner@example.test`
 - Password: `tabled-demo-password`
 
-The seed is idempotent and also creates a 32-person roster, two pending invitations, four gatherings, varied RSVP and attendance records, two published bulletin posts, an officer draft, and active and closed recruitment links for Buckeye Film Society. The larger roster makes pagination, attendance filters, semester reports, and CSV exports visible immediately.
+The seed is idempotent and also creates a 32-person roster, varied communication preferences, two pending invitations, four gatherings, varied RSVP and attendance records, all-member/officer/event-targeted bulletin posts, an officer draft, announcement delivery records, and active and closed recruitment links for Buckeye Film Society. The larger roster makes pagination, attendance filters, semester reports, communication preferences, and CSV exports visible immediately.
 
 To try recruitment locally, sign in as the demo owner, open **Member roster → Recruitment links**, and copy the active Autumn Involvement Fair URL. Open that URL in a private browser window to follow the sign-up and join flow. Reusable links always add members; they cannot grant elevated roles. QR generation is intentionally not included yet.
 
 To try reporting locally, sign in as the demo owner and open **Semester report** from the organization dashboard or member roster. Use the report actions to download roster, participation, or event summary CSV files.
+
+To try communication preferences locally, sign in as any demo member and open **Communication preferences** from the organization dashboard. These settings are scoped to that member’s Buckeye Film Society membership.
+
+To try targeted announcement audiences, sign in as the demo owner and open **Bulletin → Post announcement**. Choose All members, Officers, Event RSVPs, or Checked-in attendees. Event audiences require a selected gathering. If you choose to email a published announcement, delivery records are created for sent and skipped recipients based on members’ announcement email preferences.
 
 To try roster import locally, open **Member roster → Import roster** and upload a CSV with these headers:
 
@@ -66,7 +70,7 @@ bin/brakeman --no-pager
 
 ## Current scope
 
-Milestones 1 through 7 establish the multi-tenant organization workspace, active semester calendar, event sign-in record, organization bulletin, practical large-roster recruitment workflow, semester reporting, CSV exports, and roster import:
+Milestones 1 through 8 establish the multi-tenant organization workspace, active semester calendar, event sign-in record, organization bulletin, practical large-roster recruitment workflow, semester reporting, CSV exports, roster import, communication preferences, event-targeted announcements, and delivery records:
 
 - Account signup and session authentication
 - Organizations with stable, human-readable URLs
@@ -104,9 +108,13 @@ Milestones 1 through 7 establish the multi-tenant organization workspace, active
 - Organizer-only semester reports with member participation and event summaries
 - Roster, participation, and event summary CSV exports
 - CSV roster import that creates pending invitations and reports skipped or invalid rows
+- Membership-scoped communication preferences
+- Event-targeted announcement audiences for RSVP and checked-in attendee groups
+- Announcement email delivery previews and organizer-visible delivery summaries
+- Delivery records for sent and preference-skipped announcement emails
 - Idempotent local demo data
 
-Event-attendee announcement targeting, comments, reactions, attachments, notification preferences, production email providers, recurring events, QR-code generation, geolocation, complex analytics, calendar integrations, persistent import batches, XLSX import, automatic import emails, charts, and activity history are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
+Event reminder scheduling, digest emails, push notifications, SMS, comments, reactions, attachments, production email providers, recurring events, QR-code generation, geolocation, complex analytics, calendar integrations, persistent import batches, XLSX import, automatic import emails, charts, read receipts, and activity history are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
 
 ## Product and visual direction
 
