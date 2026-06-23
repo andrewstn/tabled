@@ -12,6 +12,10 @@ class Organization < ApplicationRecord
   validates :slug, presence: true, uniqueness: true,
     format: { with: /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/, message: "may only contain lowercase letters, numbers, and hyphens" }
   validates :description, length: { maximum: 1_000 }
+  validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  validates :website_url, format: { with: URI::DEFAULT_PARSER.make_regexp(%w[http https]), message: "must start with http:// or https://" }, allow_blank: true
+  validates :meeting_note, length: { maximum: 255 }
+  validates :current_semester_label, length: { maximum: 80 }
 
   def to_param
     slug
