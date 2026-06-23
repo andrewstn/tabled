@@ -66,7 +66,7 @@ end
 
 event_attributes = {
   "First Friday Film Night" => {
-    description: "Bring a favorite short film and something small to share around the table.",
+    description: "Bring a favorite short film and something small to share if you can.",
     location: "Student Union screening room",
     starts_at: 5.days.from_now.change(hour: 19, min: 0),
     ends_at: 5.days.from_now.change(hour: 21, min: 0),
@@ -188,7 +188,7 @@ announcement_attributes = {
     published_at: 2.days.ago
   },
   "Camera Workshop sign-ups" => {
-    body: "Camera Workshop has a few spots left. Add your RSVP if you want a place at the equipment table.",
+    body: "Camera Workshop has a few spots left. Add your RSVP if you want to attend.",
     audience: :all_members,
     status: :published,
     pinned: false,
@@ -216,7 +216,7 @@ active_join_link.update!(
   max_uses: 100
 )
 
-expired_join_link = organization.organization_join_links.find_or_initialize_by(label: "General recruitment table — closed")
+expired_join_link = organization.organization_join_links.find_or_initialize_by(label: "General recruitment link — closed")
 expired_join_link.update!(
   created_by: demo_users.fetch("demo-owner@example.test"),
   role: :member,

@@ -95,6 +95,6 @@ Event-attendee announcement targeting, comments, reactions, attachments, notific
 
 ## Product and visual direction
 
-Tabled should feel like a shared meeting table, club office, campus bulletin board, and well-used organization binder. The interface uses warm paper surfaces, moss and amber accents, readable type, tactile controls, and specific campus language. Keep future work active, practical, and human—not archival or bureaucratic—and avoid generic SaaS cards, glass effects, AI-style gradients, and vague productivity copy.
+Tabled should feel like a club office, campus bulletin board, practical sign-in sheet, and well-used organization binder. The interface uses warm paper surfaces, moss and amber accents, readable type, tactile controls, and specific campus language. Keep future work active, practical, and human—not archival or bureaucratic—and avoid generic SaaS cards, glass effects, AI-style gradients, and vague productivity copy.
 
 See [docs/project_brief.md](docs/project_brief.md) for the broader product brief.

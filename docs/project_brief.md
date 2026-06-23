@@ -14,7 +14,7 @@ Student organizations need a shared place to manage the real operational work th
 
 - Student organization officers
 - Volunteer coordinators
-- Event chairs
+- Event leads
 - Project team leads
 - Club members
 - Residence hall committees
@@ -23,7 +23,6 @@ Student organizations need a shared place to manage the real operational work th
 
 Tabled should feel like a digital version of:
 
-- a shared meeting table
 - a club office
 - a sign-in sheet
 - a campus bulletin board
