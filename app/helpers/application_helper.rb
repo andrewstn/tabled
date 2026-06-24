@@ -9,7 +9,9 @@ module ApplicationHelper
     "#{term} #{date.year}"
   end
 
-  def pagination_url(page)
-    url_for(request.path_parameters.merge(request.query_parameters).merge(page: page))
+  def pagination_url(page, anchor: nil)
+    url_options = request.path_parameters.merge(request.query_parameters).merge(page: page)
+    url_options[:anchor] = anchor if anchor.present?
+    url_for(url_options)
   end
 end

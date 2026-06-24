@@ -62,7 +62,7 @@
 
   <div class="lg:grid lg:grid-cols-[1fr_18rem]">
     <div class="divide-y divide-rule lg:border-r lg:border-rule">
-      <section class="workspace-section">
+      <section id="around-the-table" class="workspace-section">
         <div class="workspace-section-heading">
           <p class="eyebrow">Members</p>
           <h2 class="mt-1 text-2xl font-semibold">Around the table</h2>
@@ -78,7 +78,7 @@
               </div>
             <% end %>
           </div>
-          <%= render "shared/pagination", paginator: @member_paginator %>
+          <%= render "shared/pagination", paginator: @member_paginator, anchor: "around-the-table" %>
         </div>
       </section>
 

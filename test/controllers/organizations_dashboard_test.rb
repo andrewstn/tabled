@@ -104,13 +104,14 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".member-row", count: 10
     assert_select "nav[aria-label='Pagination']", text: /Showing 1–10 of 13/
-    assert_select "a", text: "Next"
+    assert_select "a[href$='#around-the-table']", text: "Next"
 
     get organization_path(organizations(:film_society)), params: { page: 2 }
 
     assert_response :success
     assert_select ".member-row", count: 3
     assert_select "nav[aria-label='Pagination']", text: /Showing 11–13 of 13/
+    assert_select "a[href$='#around-the-table']", text: "Previous"
     assert_select ".member-row", text: /Dashboard Member/
   end
 
