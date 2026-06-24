@@ -1,7 +1,7 @@
 class ActivityLog
   SENSITIVE_KEY_PATTERN = /password|token|secret|credential|code/i
 
-  def self.record!(organization:, action:, summary:, actor: nil, subject: nil, metadata: {})
+  def self.record!(organization:, action:, summary:, actor: nil, subject: nil, metadata: {}, occurred_at: nil)
     raise ArgumentError, "organization is required" unless organization
 
     organization.activity_log_entries.create!(
@@ -9,6 +9,7 @@ class ActivityLog
       action: action,
       subject: subject,
       summary: summary,
+      occurred_at: occurred_at,
       metadata: safe_metadata(metadata)
     )
   end

@@ -40,6 +40,19 @@ class ActivityLogTest < ActiveSupport::TestCase
     assert_nil entry.actor
   end
 
+  test "record accepts an explicit occurred at timestamp" do
+    timestamp = 2.days.ago
+
+    entry = ActivityLog.record!(
+      organization: organizations(:film_society),
+      action: "report.exported",
+      summary: "Alex exported a report.",
+      occurred_at: timestamp
+    )
+
+    assert_in_delta timestamp, entry.occurred_at, 1.second
+  end
+
   test "record removes sensitive metadata keys" do
     entry = ActivityLog.record!(
       organization: organizations(:film_society),
