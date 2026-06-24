@@ -31,7 +31,7 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "h3", text: announcements(:pinned_all_members).title
     assert_select "p", text: "Pinned"
     assert_select "p", text: "Nothing needs follow-up right now."
-    assert_select "p", text: "No notes in the log book yet."
+    assert_select "p", text: "Recent changes are available to organization organizers."
     assert_select "h3", text: events(:past_planning_table).title
     assert_select "p", text: /2 members present or late/
     assert_select "a[href=?]", organization_members_path(organizations(:film_society)), text: /Member roster/
@@ -58,6 +58,49 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", new_organization_event_path(organizations(:film_society)), text: "Add gathering"
     assert_select "a[href=?]", new_organization_announcement_path(organizations(:film_society)), text: "Post announcement"
     assert_select "span", text: "1 draft"
+    assert_select "p", text: "No notes in the log book yet."
+  end
+
+  test "dashboard shows recent activity from the current organization to organizers" do
+    ActivityLogEntry.create!(
+      organization: organizations(:film_society),
+      actor: users(:owner),
+      action: "event.created",
+      summary: "Alex created Camera Workshop.",
+      occurred_at: 1.minute.ago
+    )
+    ActivityLogEntry.create!(
+      organization: organizations(:garden_club),
+      actor: users(:owner),
+      action: "event.created",
+      summary: "Alex created Garden Work Day.",
+      occurred_at: Time.current
+    )
+    sign_in_as(users(:owner))
+
+    get organization_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "h2", "Recent activity"
+    assert_select "p", text: "Alex created Camera Workshop."
+    assert_select "p", text: "Alex created Garden Work Day.", count: 0
+    assert_select "a[href=?]", organization_log_book_path(organizations(:film_society)), text: "Open log book →"
+  end
+
+  test "dashboard does not show recent activity to ordinary members" do
+    ActivityLogEntry.create!(
+      organization: organizations(:film_society),
+      actor: users(:owner),
+      action: "settings.updated",
+      summary: "Alex updated organization settings."
+    )
+    sign_in_as(users(:member))
+
+    get organization_path(organizations(:film_society))
+
+    assert_select "p", text: "Alex updated organization settings.", count: 0
+    assert_select "a[href=?]", organization_log_book_path(organizations(:film_society)), count: 0
+    assert_select "p", text: "Recent changes are available to organization organizers."
   end
 
   test "coordinator sees semester report entry point" do

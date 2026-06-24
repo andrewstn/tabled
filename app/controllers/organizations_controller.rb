@@ -26,6 +26,7 @@ class OrganizationsController < ApplicationController
     @upcoming_events = @organization.events.upcoming.includes(:rsvps).limit(3)
     @dashboard_rsvps = @membership.rsvps.where(event: @upcoming_events).index_by(&:event_id)
     @can_create_events = EventPolicy.new(current_user, @organization).create?
+    @can_view_activity = organization_policy.view_activity?
     @announcement_policy = AnnouncementPolicy.new(current_user, @organization)
     @bulletin_announcement = @organization.announcements.published_for(@membership).bulletin_order.first
     @draft_announcement_count = @organization.announcements.draft.count if @announcement_policy.manage?
@@ -36,6 +37,7 @@ class OrganizationsController < ApplicationController
       .limit(3)
     load_report_preview if @can_view_reports
     load_attendance_follow_ups if @can_create_events
+    load_recent_activity if @can_view_activity
   end
 
   def edit
@@ -104,5 +106,9 @@ class OrganizationsController < ApplicationController
       .left_outer_joins(:attendance_records)
       .where(attendance_records: { id: nil })
       .count
+  end
+
+  def load_recent_activity
+    @recent_activity_entries = @organization.activity_log_entries.includes(:actor).recent_first.limit(6)
   end
 end

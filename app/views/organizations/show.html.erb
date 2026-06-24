@@ -213,7 +213,26 @@
       <section class="p-5 sm:p-6">
         <p class="eyebrow">Log book</p>
         <h2 class="mt-1 text-xl font-semibold">Recent activity</h2>
-        <p class="mt-3 text-sm leading-6 text-ink-soft">No notes in the log book yet.</p>
+        <% if @recent_activity_entries&.any? %>
+          <ul class="mt-4 divide-y divide-rule border-y border-rule text-sm">
+            <% @recent_activity_entries.each do |entry| %>
+              <li class="py-3 leading-6">
+                <p class="font-semibold text-ink"><%= entry.summary %></p>
+                <p class="mt-1 text-xs text-ink-soft">
+                  <%= entry.category_label %> · <%= entry.occurred_at.to_fs(:short) %>
+                  <% if entry.actor %>
+                    · Updated by <%= entry.actor.name %>
+                  <% end %>
+                </p>
+              </li>
+            <% end %>
+          </ul>
+          <p class="mt-4 text-sm font-bold"><%= link_to "Open log book →", organization_log_book_path(@organization), class: "text-link" %></p>
+        <% elsif @can_view_activity %>
+          <p class="mt-3 text-sm leading-6 text-ink-soft">No notes in the log book yet.</p>
+        <% else %>
+          <p class="mt-3 text-sm leading-6 text-ink-soft">Recent changes are available to organization organizers.</p>
+        <% end %>
       </section>
 
       <section class="border-t border-rule p-5 sm:p-6">
