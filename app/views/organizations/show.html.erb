@@ -14,50 +14,48 @@
         <p>Records are still available, but new activity is closed until an owner restores the workspace.</p>
       </div>
     <% end %>
-    <div class="flex flex-wrap items-start justify-between gap-5">
-      <div>
-        <p class="eyebrow">This semester</p>
-        <h1 class="mt-2 text-3xl font-semibold sm:text-4xl"><%= @organization.name %></h1>
-        <% if @organization.description.present? %>
-          <p class="mt-3 max-w-3xl leading-7 text-ink-soft"><%= @organization.description %></p>
-        <% elsif OrganizationPolicy.new(current_user, @organization).manage? %>
-          <p class="mt-3 max-w-3xl leading-7 text-ink-soft">This organization does not have a description yet. <%= link_to "Add one in organization details", edit_organization_path(@organization), class: "text-link" %>.</p>
-        <% else %>
-          <p class="mt-3 max-w-3xl leading-7 text-ink-soft">This organization does not have a description yet. An owner or officer can add one.</p>
-        <% end %>
-        <% if @organization.contact_email.present? || @organization.website_url.present? || @organization.meeting_note.present? || @organization.current_semester_label.present? %>
-          <dl class="mt-5 grid max-w-3xl gap-3 text-sm leading-6 text-ink-soft sm:grid-cols-2">
-            <% if @organization.current_semester_label.present? %>
-              <div><dt class="font-bold text-moss-dark">Current semester</dt><dd><%= @organization.current_semester_label %></dd></div>
-            <% end %>
-            <% if @organization.meeting_note.present? %>
-              <div><dt class="font-bold text-moss-dark">Meeting note</dt><dd><%= @organization.meeting_note %></dd></div>
-            <% end %>
-            <% if @organization.contact_email.present? %>
-              <div><dt class="font-bold text-moss-dark">Contact</dt><dd><%= mail_to @organization.contact_email, @organization.contact_email, class: "text-link" %></dd></div>
-            <% end %>
-            <% if @organization.website_url.present? %>
-              <div><dt class="font-bold text-moss-dark">Website</dt><dd><%= link_to @organization.website_url, @organization.website_url, class: "text-link" %></dd></div>
-            <% end %>
-          </dl>
-        <% end %>
-      </div>
-      <nav aria-label="Organization sections" class="flex max-w-full flex-wrap items-center gap-x-3 gap-y-2 text-sm sm:justify-end">
-        <%= link_to "Bulletin", organization_announcements_path(@organization), class: "text-link whitespace-nowrap" %>
-        <%= link_to "Gatherings", organization_events_path(@organization), class: "text-link whitespace-nowrap" %>
-        <%= link_to "Member roster", organization_members_path(@organization), class: "text-link whitespace-nowrap" %>
-        <% unless @can_view_reports || @can_view_activity %>
-          <%= link_to "Communication preferences", organization_communication_preferences_path(@organization), class: "text-link whitespace-nowrap" %>
-        <% end %>
-        <% if @can_view_reports %>
-          <%= link_to "Semester report", organization_reports_path(@organization), class: "text-link whitespace-nowrap" %>
-        <% end %>
-        <% if @can_view_activity %>
-          <%= link_to "Log book", organization_log_book_path(@organization), class: "text-link whitespace-nowrap" %>
-        <% end %>
-        <span class="role-tag shrink-0"><%= @membership.role.humanize %></span>
-      </nav>
+    <div>
+      <p class="eyebrow">This semester</p>
+      <h1 class="mt-2 text-3xl font-semibold sm:text-4xl"><%= @organization.name %></h1>
+      <% if @organization.description.present? %>
+        <p class="mt-3 max-w-3xl leading-7 text-ink-soft"><%= @organization.description %></p>
+      <% elsif OrganizationPolicy.new(current_user, @organization).manage? %>
+        <p class="mt-3 max-w-3xl leading-7 text-ink-soft">This organization does not have a description yet. <%= link_to "Add one in organization details", edit_organization_path(@organization), class: "text-link" %>.</p>
+      <% else %>
+        <p class="mt-3 max-w-3xl leading-7 text-ink-soft">This organization does not have a description yet. An owner or officer can add one.</p>
+      <% end %>
+      <% if @organization.contact_email.present? || @organization.website_url.present? || @organization.meeting_note.present? || @organization.current_semester_label.present? %>
+        <dl class="mt-5 grid max-w-3xl gap-3 text-sm leading-6 text-ink-soft sm:grid-cols-2">
+          <% if @organization.current_semester_label.present? %>
+            <div><dt class="font-bold text-moss-dark">Current semester</dt><dd><%= @organization.current_semester_label %></dd></div>
+          <% end %>
+          <% if @organization.meeting_note.present? %>
+            <div><dt class="font-bold text-moss-dark">Meeting note</dt><dd><%= @organization.meeting_note %></dd></div>
+          <% end %>
+          <% if @organization.contact_email.present? %>
+            <div><dt class="font-bold text-moss-dark">Contact</dt><dd><%= mail_to @organization.contact_email, @organization.contact_email, class: "text-link" %></dd></div>
+          <% end %>
+          <% if @organization.website_url.present? %>
+            <div><dt class="font-bold text-moss-dark">Website</dt><dd><%= link_to @organization.website_url, @organization.website_url, class: "text-link" %></dd></div>
+          <% end %>
+        </dl>
+      <% end %>
     </div>
+    <nav aria-label="Organization sections" class="mt-6 flex max-w-full flex-wrap items-center gap-x-3 gap-y-2 border-t border-rule pt-4 text-sm">
+      <%= link_to "Bulletin", organization_announcements_path(@organization), class: "text-link whitespace-nowrap" %>
+      <%= link_to "Gatherings", organization_events_path(@organization), class: "text-link whitespace-nowrap" %>
+      <%= link_to "Member roster", organization_members_path(@organization), class: "text-link whitespace-nowrap" %>
+      <% unless @can_view_reports || @can_view_activity %>
+        <%= link_to "Communication preferences", organization_communication_preferences_path(@organization), class: "text-link whitespace-nowrap" %>
+      <% end %>
+      <% if @can_view_reports %>
+        <%= link_to "Semester report", organization_reports_path(@organization), class: "text-link whitespace-nowrap" %>
+      <% end %>
+      <% if @can_view_activity %>
+        <%= link_to "Log book", organization_log_book_path(@organization), class: "text-link whitespace-nowrap" %>
+      <% end %>
+      <span class="role-tag shrink-0"><%= @membership.role.humanize %></span>
+    </nav>
   </header>
 
   <div class="lg:grid lg:grid-cols-[1fr_18rem]">
