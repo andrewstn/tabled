@@ -27,6 +27,16 @@ class OrganizationJoinAcceptancesControllerTest < ActionDispatch::IntegrationTes
     assert_select "h2", "This recruitment link has reached its limit."
   end
 
+  test "archived organization recruitment link explains why it is unavailable" do
+    link = create_join_link
+    organizations(:film_society).archive!
+
+    get organization_join_path(link.token)
+
+    assert_response :success
+    assert_select "h2", "This organization is archived."
+  end
+
   test "existing member sees an already joined state" do
     link = create_join_link
     sign_in_as(users(:member))
@@ -85,6 +95,19 @@ class OrganizationJoinAcceptancesControllerTest < ActionDispatch::IntegrationTes
       end
       assert_response :unprocessable_entity
     end
+  end
+
+  test "archived organization recruitment link cannot be accepted" do
+    link = create_join_link
+    organizations(:film_society).archive!
+    sign_in_as(create_non_member)
+
+    assert_no_difference([ "Membership.count", "link.reload.uses_count", "ActivityLogEntry.count" ]) do
+      patch organization_join_path(link.token)
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "h2", "This organization is archived."
   end
 
   test "joining requires authentication" do

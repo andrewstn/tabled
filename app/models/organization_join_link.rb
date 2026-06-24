@@ -11,7 +11,13 @@ class OrganizationJoinLink < ApplicationRecord
   validates :max_uses, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :uses_count, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
-  scope :available, -> { where(active: true).where(expires_at: [ nil, Time.current.. ]).where("max_uses IS NULL OR uses_count < max_uses") }
+  scope :available, -> {
+    joins(:organization)
+      .merge(Organization.active)
+      .where(active: true)
+      .where(expires_at: [ nil, Time.current.. ])
+      .where("max_uses IS NULL OR uses_count < max_uses")
+  }
 
   def token
     signed_id(purpose: :organization_join)
@@ -24,7 +30,7 @@ class OrganizationJoinLink < ApplicationRecord
   end
 
   def available?
-    active? && !expired? && !full?
+    !organization.archived? && active? && !expired? && !full?
   end
 
   def expired?

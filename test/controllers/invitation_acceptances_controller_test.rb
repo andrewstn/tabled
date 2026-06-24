@@ -40,6 +40,20 @@ class InvitationAcceptancesControllerTest < ActionDispatch::IntegrationTest
     assert_not invitation.reload.accepted?
   end
 
+  test "invitation cannot be accepted after organization is archived" do
+    invitation = create_invitation(organization: organizations(:garden_club), email: users(:member).email_address)
+    organizations(:garden_club).archive!
+    sign_in_as(users(:member))
+
+    assert_no_difference([ "Membership.count", "ActivityLogEntry.count" ]) do
+      patch invitation_acceptance_path(invitation.token)
+    end
+
+    assert_redirected_to invitation_acceptance_path(invitation.token)
+    assert_not invitation.reload.accepted?
+    assert_equal "This organization is archived", flash[:alert]
+  end
+
   test "invitation cannot create a duplicate membership" do
     invitation = create_invitation(organization: organizations(:garden_club), email: users(:member).email_address)
     Membership.create!(organization: organizations(:garden_club), user: users(:member), role: :member)

@@ -19,7 +19,9 @@
 
   <% if @join_link %>
     <section class="p-5 sm:p-8">
-      <% if @existing_membership %>
+      <% if @join_link.organization.archived? %>
+        <%= render "unavailable", heading: "This organization is archived.", detail: "Ask an organization officer whether this workspace has been restored." %>
+      <% elsif @existing_membership %>
         <div class="border-l-4 border-moss bg-moss-pale/40 px-5 py-4">
           <h2 class="text-xl font-semibold">You’re already a member.</h2>
           <p class="mt-2 text-sm text-ink-soft">You already belong to <%= @join_link.organization.name %>.</p>

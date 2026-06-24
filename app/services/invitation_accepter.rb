@@ -17,6 +17,11 @@ class InvitationAccepter
         raise ActiveRecord::Rollback
       end
 
+      if @invitation.organization.archived?
+        @invitation.errors.add(:base, "This organization is archived")
+        raise ActiveRecord::Rollback
+      end
+
       unless @invitation.email.casecmp?(@user.email_address)
         @invitation.errors.add(:base, "Sign in with #{@invitation.email} to accept this invitation")
         raise ActiveRecord::Rollback
