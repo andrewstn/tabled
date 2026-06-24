@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_24_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_24_091000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -27,6 +27,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_090000) do
     t.datetime "updated_at", null: false
     t.index ["action"], name: "index_activity_log_entries_on_action"
     t.index ["actor_id"], name: "index_activity_log_entries_on_actor_id"
+    t.index ["organization_id", "action", "occurred_at"], name: "index_activity_log_entries_on_organization_action_occurred_at"
     t.index ["organization_id", "occurred_at"], name: "index_activity_log_entries_on_organization_id_and_occurred_at"
     t.index ["organization_id"], name: "index_activity_log_entries_on_organization_id"
     t.index ["subject_type", "subject_id"], name: "index_activity_log_entries_on_subject_type_and_subject_id"
@@ -63,6 +64,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_090000) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_announcements_on_author_id"
+    t.index ["organization_id", "audience", "status"], name: "index_announcements_on_organization_audience_status"
     t.index ["organization_id", "status", "pinned", "published_at"], name: "index_announcements_for_bulletin"
     t.index ["organization_id"], name: "index_announcements_on_organization_id"
     t.index ["target_event_id"], name: "index_announcements_on_target_event_id"
@@ -80,6 +82,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_090000) do
     t.string "status", null: false
     t.datetime "updated_at", null: false
     t.index ["event_id", "membership_id"], name: "index_attendance_records_on_event_id_and_membership_id", unique: true
+    t.index ["event_id", "status"], name: "index_attendance_records_on_event_id_and_status"
     t.index ["event_id"], name: "index_attendance_records_on_event_id"
     t.index ["marked_by_id"], name: "index_attendance_records_on_marked_by_id"
     t.index ["membership_id", "created_at"], name: "index_attendance_records_on_membership_id_and_created_at"
@@ -139,6 +142,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_090000) do
     t.string "role", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["organization_id", "role"], name: "index_memberships_on_organization_id_and_role"
     t.index ["organization_id"], name: "index_memberships_on_organization_id"
     t.index ["user_id", "organization_id"], name: "index_memberships_on_user_id_and_organization_id", unique: true
     t.index ["user_id"], name: "index_memberships_on_user_id"
@@ -157,6 +161,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_090000) do
     t.datetime "updated_at", null: false
     t.integer "uses_count", default: 0, null: false
     t.index ["created_by_id"], name: "index_organization_join_links_on_created_by_id"
+    t.index ["organization_id", "active", "expires_at"], name: "index_join_links_on_organization_active_expires_at"
     t.index ["organization_id", "active"], name: "index_organization_join_links_on_organization_id_and_active"
     t.index ["organization_id"], name: "index_organization_join_links_on_organization_id"
     t.check_constraint "max_uses IS NULL OR max_uses > 0", name: "join_links_positive_max_uses"
@@ -186,6 +191,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_090000) do
     t.string "status", null: false
     t.datetime "updated_at", null: false
     t.index ["event_id", "membership_id"], name: "index_rsvps_on_event_id_and_membership_id", unique: true
+    t.index ["event_id", "status"], name: "index_rsvps_on_event_id_and_status"
     t.index ["event_id"], name: "index_rsvps_on_event_id"
     t.index ["membership_id"], name: "index_rsvps_on_membership_id"
     t.check_constraint "status::text = ANY (ARRAY['attending'::character varying, 'maybe'::character varying, 'not_attending'::character varying]::text[])", name: "rsvps_status_check"
