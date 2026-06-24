@@ -50,7 +50,17 @@ Open [http://localhost:3000](http://localhost:3000). The seed data includes an o
 - Email: `demo-owner@example.test`
 - Password: `tabled-demo-password`
 
-The seed is idempotent and also creates a 32-person roster, organization settings data, multiple owners/officers, varied communication preferences, two pending invitations, four gatherings, varied RSVP and attendance records, all-member/officer/event-targeted bulletin posts, an officer draft, announcement delivery records, activity log entries, active and closed recruitment links for Buckeye Film Society, and one archived demo organization hidden from normal workspace lists. The larger roster makes pagination, attendance filters, semester reports, communication preferences, settings, the Log Book, and CSV exports visible immediately.
+The default seed is the small demo seed. It is idempotent and creates a polished Buckeye Film Society workspace with a 12-person roster, organization settings data, owner/officer/coordinator/member roles, varied communication preferences, pending invitations, recruitment links, four gatherings, varied RSVP and attendance records, all-member/officer/event-targeted bulletin posts, an officer draft, announcement delivery records, activity log entries, and one archived demo organization hidden from normal workspace lists.
+
+For local screenshots, pagination checks, and UI stress testing, load the opt-in large demo seed:
+
+```bash
+SEED=large_demo bin/rails db:seed
+# or
+bin/rails seed:large_demo
+```
+
+The large demo seed creates deterministic fake data only: seven organizations, hundreds of `example.com` demo users, a large Buckeye Film Society roster, many gatherings, RSVPs, attendance records, announcements, recruitment links, invitations, archived organization state, and Log Book entries. It is guarded from accidental production use unless `ALLOW_LARGE_DEMO_SEED=true` is set intentionally. The default `bin/rails db:seed` path remains small and safe for demo deployment.
 
 To try recruitment locally, sign in as the demo owner, open **Member roster → Recruitment links**, and copy the active Autumn Involvement Fair URL. Open that URL in a private browser window to follow the sign-up and join flow. Reusable links always add members; they cannot grant elevated roles. QR generation is intentionally not included yet.
 
@@ -64,7 +74,7 @@ To try workspace administration, sign in as the demo owner and open **Organizati
 
 To try the Log Book, sign in as the demo owner and open **Log book** from the Recent activity dashboard section. Owners, officers, and coordinators can view the organization-wide record of important changes; regular members cannot view the full Log Book.
 
-To try account settings, use **Account settings** in the signed-in header. This page only updates the account name used across organizations; social profiles, avatars, bios, and public user pages are intentionally out of scope.
+To try account settings, use **Account settings** in the signed-in header. This page updates the account name, email, and password used across organizations; social profiles, avatars, bios, and public user pages are intentionally out of scope.
 
 To try roster import locally, open **Member roster → Import roster** and upload a CSV with these headers:
 
@@ -128,7 +138,7 @@ The repository includes a production Dockerfile and Kamal configuration. Before 
 
 3. Confirm `TABLED_HOST` matches the public hostname.
 4. Run `bin/kamal setup` for the first deploy, then `bin/kamal deploy` for later deploys.
-5. Run `bin/kamal app exec "bin/rails db:seed"` only if you want the demo workspace in that environment.
+5. Run `bin/kamal app exec "bin/rails db:seed"` only if you want the small demo workspace in that environment. Do not run the large demo seed in production unless you intentionally set `ALLOW_LARGE_DEMO_SEED=true`.
 
 The `/up` health check is available for platform probes. Production uses Solid Queue, Solid Cache, and Solid Cable with separate configured databases. Local Active Storage is deliberate for the current portfolio/demo deployment; a durable object store can be added later if user uploads become part of the product.
 
