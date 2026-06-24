@@ -51,6 +51,8 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", organization_communication_preferences_path(organizations(:film_society)), text: "Communication preferences"
     assert_select "a[href=?]", organization_events_path(organizations(:film_society)), text: "Gatherings"
     assert_select "a[href=?]", organization_announcements_path(organizations(:film_society)), text: "Bulletin"
+    assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), count: 0
+    assert_select "a[href=?]", organization_log_book_path(organizations(:film_society)), count: 0
     assert_select "a[href=?]", account_settings_path, text: "Account settings"
     assert_select "a[href=?]", edit_organization_path(organizations(:film_society)), text: "Organization settings", count: 0
     assert_select "a[href=?]", new_organization_invitation_path(organizations(:film_society)), count: 0
@@ -62,9 +64,17 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
 
     get organization_path(organizations(:film_society))
 
-    assert_select "a[href=?]", new_organization_invitation_path(organizations(:film_society)), text: "Invite member"
-    assert_select "a[href=?]", organization_invitations_path(organizations(:film_society)), text: "Pending invitations (1)"
-    assert_select "a[href=?]", edit_organization_path(organizations(:film_society)), text: "Organization settings"
+    assert_select "nav[aria-label='Organization sections']" do
+      assert_select "a[href=?]", organization_announcements_path(organizations(:film_society)), text: "Bulletin"
+      assert_select "a[href=?]", organization_events_path(organizations(:film_society)), text: "Gatherings"
+      assert_select "a[href=?]", organization_members_path(organizations(:film_society)), text: "Member roster"
+      assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), text: "Semester report"
+      assert_select "a[href=?]", organization_log_book_path(organizations(:film_society)), text: "Log book"
+      assert_select "a[href=?]", organization_communication_preferences_path(organizations(:film_society)), count: 0
+      assert_select "a[href=?]", new_organization_invitation_path(organizations(:film_society)), count: 0
+      assert_select "a[href=?]", organization_invitations_path(organizations(:film_society)), count: 0
+      assert_select "a[href=?]", edit_organization_path(organizations(:film_society)), count: 0
+    end
     assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), text: "Semester report"
     assert_select "h2", text: "Semester report"
     assert_select "p", text: /members · \d+ gathering recorded/
