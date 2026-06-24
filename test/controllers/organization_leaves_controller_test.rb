@@ -57,7 +57,8 @@ class OrganizationLeavesControllerTest < ActionDispatch::IntegrationTest
     get organization_path(organizations(:film_society))
 
     assert_response :success
-    assert_select "h2", "Leave organization"
+    assert_select "summary", "Membership options"
+    assert_select "p", "Leave organization"
     assert_select "form[action=?]", organization_leave_path(organizations(:film_society))
   end
 

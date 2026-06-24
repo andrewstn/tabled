@@ -41,7 +41,10 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "h3", text: announcements(:pinned_all_members).title
     assert_select "p", text: "Pinned"
     assert_select "p", text: "Nothing needs follow-up right now."
-    assert_select "p", text: "Recent changes are available to organization organizers."
+    assert_select "p", text: "Recent changes are available to organization organizers.", count: 0
+    assert_select "p", text: "Log book", count: 0
+    assert_select "h2", text: "Recent activity", count: 0
+    assert_select "a[href=?]", organization_log_book_path(organizations(:film_society)), count: 0
     assert_select "h3", text: events(:past_planning_table).title
     assert_select "p", text: /2 members present or late/
     assert_select "a[href=?]", organization_members_path(organizations(:film_society)), text: /Member roster/
@@ -110,7 +113,9 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
 
     assert_select "p", text: "Alex updated organization settings.", count: 0
     assert_select "a[href=?]", organization_log_book_path(organizations(:film_society)), count: 0
-    assert_select "p", text: "Recent changes are available to organization organizers."
+    assert_select "p", text: "Log book", count: 0
+    assert_select "h2", text: "Recent activity", count: 0
+    assert_select "p", text: "Recent changes are available to organization organizers.", count: 0
   end
 
   test "coordinator sees semester report entry point" do
