@@ -111,6 +111,6 @@ class OrganizationsController < ApplicationController
   end
 
   def load_recent_activity
-    @recent_activity_entries = @organization.activity_log_entries.includes(:actor).recent_first.limit(6)
+    @recent_activity_entries = @organization.activity_log_entries.includes(:actor).recent_first.limit(3)
   end
 end

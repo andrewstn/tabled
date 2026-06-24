@@ -116,13 +116,15 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
   end
 
   test "dashboard shows recent activity from the current organization to organizers" do
-    ActivityLogEntry.create!(
-      organization: organizations(:film_society),
-      actor: users(:owner),
-      action: "event.created",
-      summary: "Alex created Camera Workshop.",
-      occurred_at: 1.minute.ago
-    )
+    4.times do |index|
+      ActivityLogEntry.create!(
+        organization: organizations(:film_society),
+        actor: users(:owner),
+        action: "event.created",
+        summary: "Alex created Camera Workshop #{index}.",
+        occurred_at: (index + 1).minutes.ago
+      )
+    end
     ActivityLogEntry.create!(
       organization: organizations(:garden_club),
       actor: users(:owner),
@@ -136,7 +138,9 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h2", "Recent activity"
-    assert_select "p", text: "Alex created Camera Workshop."
+    assert_select "li", count: 3
+    assert_select "p", text: "Alex created Camera Workshop 0."
+    assert_select "p", text: "Alex created Camera Workshop 3.", count: 0
     assert_select "p", text: "Alex created Garden Work Day.", count: 0
     assert_select "a[href=?]", organization_log_book_path(organizations(:film_society)), text: "Open log book →"
   end
