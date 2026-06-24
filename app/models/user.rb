@@ -12,6 +12,8 @@ class User < ApplicationRecord
     inverse_of: :marked_by, dependent: :nullify
   has_many :authored_announcements, class_name: "Announcement", foreign_key: :author_id,
     inverse_of: :author, dependent: :restrict_with_error
+  has_many :activity_log_entries, class_name: "ActivityLogEntry", foreign_key: :actor_id,
+    inverse_of: :actor, dependent: :nullify
 
   normalizes :email_address, with: ->(email) { email.strip.downcase }
 

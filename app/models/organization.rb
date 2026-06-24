@@ -7,6 +7,7 @@ class Organization < ApplicationRecord
   has_many :attendance_records, through: :events
   has_many :announcements, dependent: :destroy
   has_many :organization_join_links, dependent: :destroy
+  has_many :activity_log_entries, dependent: :destroy
 
   scope :active, -> { where(archived_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }

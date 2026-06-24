@@ -10,9 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_23_094000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_24_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "activity_log_entries", force: :cascade do |t|
+    t.string "action", null: false
+    t.bigint "actor_id"
+    t.datetime "created_at", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.bigint "organization_id", null: false
+    t.bigint "subject_id"
+    t.string "subject_type"
+    t.string "summary", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action"], name: "index_activity_log_entries_on_action"
+    t.index ["actor_id"], name: "index_activity_log_entries_on_actor_id"
+    t.index ["organization_id", "occurred_at"], name: "index_activity_log_entries_on_organization_id_and_occurred_at"
+    t.index ["organization_id"], name: "index_activity_log_entries_on_organization_id"
+    t.index ["subject_type", "subject_id"], name: "index_activity_log_entries_on_subject_type_and_subject_id"
+  end
 
   create_table "announcement_deliveries", force: :cascade do |t|
     t.bigint "announcement_id", null: false
@@ -182,6 +200,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_094000) do
     t.index "lower((email_address)::text)", name: "index_users_on_lower_email_address", unique: true
   end
 
+  add_foreign_key "activity_log_entries", "organizations"
+  add_foreign_key "activity_log_entries", "users", column: "actor_id"
   add_foreign_key "announcement_deliveries", "announcements"
   add_foreign_key "announcement_deliveries", "memberships"
   add_foreign_key "announcement_deliveries", "users"
