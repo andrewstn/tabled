@@ -7,7 +7,6 @@
     <span><%= link_to @event.title, organization_event_path(@organization, @event), class: "text-link" %></span>
   </div>
   <div class="p-6 sm:p-9">
-    <p class="eyebrow">Organization calendar</p>
     <h1 class="mt-2 text-3xl font-semibold">Edit gathering</h1>
     <p class="mt-2 max-w-xl text-sm leading-6 text-ink-soft">Keep the details current for everyone planning to attend.</p>
     <%= render "form", organization: @organization, event: @event %>
