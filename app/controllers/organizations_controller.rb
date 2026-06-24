@@ -32,6 +32,7 @@ class OrganizationsController < ApplicationController
     @can_view_activity = organization_policy.view_activity?
     @announcement_policy = AnnouncementPolicy.new(current_user, @organization)
     @bulletin_announcement = @organization.announcements.published_for(@membership).bulletin_order.first
+    load_open_check_in_events
     @recent_attendance_events = @organization.events.past
       .joins(:attendance_records)
       .distinct
@@ -85,14 +86,7 @@ class OrganizationsController < ApplicationController
   end
 
   def load_attendance_follow_ups
-    @attendance_follow_ups = []
-
-    @organization.events
-      .where(check_in_opens_at: ..Time.current)
-      .where("check_in_closes_at IS NULL OR check_in_closes_at > ?", Time.current)
-      .order(:starts_at)
-      .limit(3)
-      .each { |event| @attendance_follow_ups << [ :check_in_open, event ] }
+    @attendance_follow_ups = @open_check_in_events.map { |event| [ :check_in_open, event ] }
 
     @organization.events.past
       .where(starts_at: 30.days.ago..Time.current)
@@ -100,6 +94,14 @@ class OrganizationsController < ApplicationController
       .where(attendance_records: { id: nil })
       .limit(3)
       .each { |event| @attendance_follow_ups << [ :attendance_missing, event ] }
+  end
+
+  def load_open_check_in_events
+    @open_check_in_events = @organization.events
+      .where(check_in_opens_at: ..Time.current)
+      .where("check_in_closes_at IS NULL OR check_in_closes_at > ?", Time.current)
+      .order(:starts_at)
+      .limit(3)
   end
 
   def load_report_preview
