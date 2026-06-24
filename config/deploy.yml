@@ -2,12 +2,12 @@
 service: tabled
 
 # Name of the container image (use your-user/app-name on external registries).
-image: tabled
+image: ghcr.io/your-github-user/tabled
 
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - your-server.example.com
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -22,7 +22,7 @@ servers:
 #
 # proxy:
 #   ssl: true
-#   host: app.example.com
+#   host: app.your-domain.example
 
 # Where you keep your container images.
 registry:
@@ -40,7 +40,13 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
+    - TABLED_DATABASE_PASSWORD
   clear:
+    TABLED_HOST: app.your-domain.example
+    TABLED_PROTOCOL: https
+    TABLED_ASSUME_SSL: true
+    TABLED_FORCE_SSL: true
+
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
     SOLID_QUEUE_IN_PUMA: true
@@ -56,7 +62,7 @@ env:
     # DB_HOST: 192.168.0.2
 
     # Log everything from Rails
-    # RAILS_LOG_LEVEL: debug
+    RAILS_LOG_LEVEL: info
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
 # "bin/kamal logs -r job" will tail logs from the first server in the job section.
