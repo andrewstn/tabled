@@ -58,6 +58,9 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     get new_session_path
     assert_select "aside[aria-label='About member access'] a[href=?]", new_user_path, text: /Create your account/
     assert_select "input[aria-describedby='signin-email-hint']"
+    assert_select "p", text: "Demo workspace"
+    assert_select "dd", text: "demo-owner@example.test"
+    assert_select "dd", text: "tabled-demo-password"
 
     get new_user_path
     assert_select "aside[aria-label='About Tabled accounts'] a[href=?]", new_session_path, text: /member sign-in/
