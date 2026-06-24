@@ -5,7 +5,7 @@ class RsvpsControllerTest < ActionDispatch::IntegrationTest
     rsvps(:member_maybe_film_night).destroy!
     sign_in_as(users(:member))
 
-    assert_difference("Rsvp.count") do
+    assert_difference([ "Rsvp.count", "ActivityLogEntry.count" ]) do
       post organization_event_rsvp_path(organizations(:film_society), events(:upcoming_film_night)), params: {
         rsvp: { status: "attending" }
       }
@@ -13,18 +13,36 @@ class RsvpsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to organization_event_path(organizations(:film_society), events(:upcoming_film_night))
     assert_predicate memberships(:film_member).rsvps.find_by(event: events(:upcoming_film_night)), :attending?
+    assert_equal "rsvp.changed", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "member can update their own RSVP" do
     sign_in_as(users(:member))
 
     assert_no_difference("Rsvp.count") do
+      assert_difference("ActivityLogEntry.count") do
+        patch organization_event_rsvp_path(organizations(:film_society), events(:upcoming_film_night)), params: {
+          rsvp: { status: "not_attending" }
+        }
+      end
+    end
+
+    assert_equal "rsvp.changed", ActivityLogEntry.order(:created_at).last.action
+    assert_predicate rsvps(:member_maybe_film_night).reload, :not_attending?
+  end
+
+  test "failed RSVP does not log activity" do
+    event = events(:upcoming_film_night)
+    event.update!(capacity: 1)
+    sign_in_as(users(:member))
+
+    assert_no_difference("ActivityLogEntry.count") do
       patch organization_event_rsvp_path(organizations(:film_society), events(:upcoming_film_night)), params: {
-        rsvp: { status: "not_attending" }
+        rsvp: { status: "attending" }
       }
     end
 
-    assert_predicate rsvps(:member_maybe_film_night).reload, :not_attending?
+    assert_redirected_to organization_event_path(organizations(:film_society), event)
   end
 
   test "member cannot RSVP to another organization event" do

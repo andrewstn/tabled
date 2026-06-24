@@ -26,6 +26,14 @@ class EventCheckInsController < ApplicationController
     )
 
     if marker.save
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "attendance.checked_in",
+        subject: marker.attendance_record,
+        summary: "#{current_user.name} checked in for #{@event.title}.",
+        metadata: { event_title: @event.title, status: marker.attendance_record.status }
+      )
       redirect_to organization_event_path(@organization, @event), notice: "You’re checked in."
     else
       redirect_to organization_event_path(@organization, @event), alert: marker.attendance_record.errors.full_messages.to_sentence

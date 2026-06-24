@@ -32,6 +32,14 @@ class RsvpsController < ApplicationController
     )
 
     if updater.save
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "rsvp.changed",
+        subject: updater.rsvp,
+        summary: "#{current_user.name} RSVP’d #{updater.rsvp.status} for #{@event.title}.",
+        metadata: { event_title: @event.title, status: updater.rsvp.status }
+      )
       redirect_to organization_event_path(@organization, @event), notice: "RSVP saved."
     else
       redirect_to organization_event_path(@organization, @event), alert: updater.rsvp.errors.full_messages.to_sentence

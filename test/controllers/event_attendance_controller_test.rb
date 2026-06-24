@@ -45,7 +45,7 @@ class EventAttendanceControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:owner))
     event = events(:upcoming_film_night)
 
-    assert_difference("AttendanceRecord.count") do
+    assert_difference([ "AttendanceRecord.count", "ActivityLogEntry.count" ]) do
       patch organization_event_attendance_record_path(organizations(:film_society), event, memberships(:film_member)), params: {
         attendance_record: { status: "present", note: "At the camera table" }
       }
@@ -60,15 +60,19 @@ class EventAttendanceControllerTest < ActionDispatch::IntegrationTest
       event,
       anchor: "attendance-member-#{memberships(:film_member).id}"
     )
+    assert_equal "attendance.marked", ActivityLogEntry.order(:created_at).last.action
 
     assert_no_difference("AttendanceRecord.count") do
-      patch organization_event_attendance_record_path(organizations(:film_society), event, memberships(:film_member)), params: {
-        attendance_record: { status: "absent", note: "" }
-      }
+      assert_difference("ActivityLogEntry.count") do
+        patch organization_event_attendance_record_path(organizations(:film_society), event, memberships(:film_member)), params: {
+          attendance_record: { status: "absent", note: "" }
+        }
+      end
     end
 
     assert_predicate record.reload, :absent?
     assert_nil record.checked_in_at
+    assert_equal "attendance.marked", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "attendance sheet paginates organization members" do
@@ -170,7 +174,9 @@ class EventAttendanceControllerTest < ActionDispatch::IntegrationTest
   test "organizer can export attendance CSV" do
     sign_in_as(users(:owner))
 
-    get organization_event_attendance_path(organizations(:film_society), events(:past_planning_table), format: :csv)
+    assert_difference("ActivityLogEntry.count") do
+      get organization_event_attendance_path(organizations(:film_society), events(:past_planning_table), format: :csv)
+    end
 
     assert_response :success
     assert_equal "text/csv", response.media_type
@@ -181,6 +187,7 @@ class EventAttendanceControllerTest < ActionDispatch::IntegrationTest
     assert_equal "late", member_row["Attendance status"]
     assert_predicate member_row["Checked in at"], :present?
     assert_equal users(:owner).name, member_row["Marked by"]
+    assert_equal "attendance.exported", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "member cannot export attendance CSV" do

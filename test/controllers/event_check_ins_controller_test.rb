@@ -10,7 +10,7 @@ class EventCheckInsControllerTest < ActionDispatch::IntegrationTest
   test "member can self check in with valid code during open window" do
     sign_in_as(users(:member))
 
-    assert_difference("AttendanceRecord.count") do
+    assert_difference([ "AttendanceRecord.count", "ActivityLogEntry.count" ]) do
       post organization_event_check_in_path(organizations(:film_society), @event), params: { check_in_code: @code }
     end
 
@@ -19,6 +19,8 @@ class EventCheckInsControllerTest < ActionDispatch::IntegrationTest
     assert_equal users(:member), record.marked_by
     assert_not_nil record.checked_in_at
     assert_equal "You’re checked in.", flash[:notice]
+    assert_equal "attendance.checked_in", ActivityLogEntry.order(:created_at).last.action
+    assert_not ActivityLogEntry.order(:created_at).last.metadata.key?("check_in_code")
   end
 
   test "self check in updates an existing attendance record to present" do
@@ -26,12 +28,25 @@ class EventCheckInsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:member))
 
     assert_no_difference("AttendanceRecord.count") do
-      post organization_event_check_in_path(organizations(:film_society), @event), params: { check_in_code: @code.downcase }
+      assert_difference("ActivityLogEntry.count") do
+        post organization_event_check_in_path(organizations(:film_society), @event), params: { check_in_code: @code.downcase }
+      end
     end
 
+    assert_equal "attendance.checked_in", ActivityLogEntry.order(:created_at).last.action
     assert_predicate existing.reload, :present?
     assert_equal "Previously excused", existing.note
     assert_not_nil existing.checked_in_at
+  end
+
+  test "invalid self check in does not log activity" do
+    sign_in_as(users(:member))
+
+    assert_no_difference("ActivityLogEntry.count") do
+      post organization_event_check_in_path(organizations(:film_society), @event), params: { check_in_code: "WRONG1" }
+    end
+
+    assert_response :redirect
   end
 
   test "member cannot check in with invalid code" do

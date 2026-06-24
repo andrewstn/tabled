@@ -5,13 +5,19 @@ class EventCheckInSettingsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:owner))
     event = events(:upcoming_film_night)
 
-    patch organization_event_check_in_settings_path(organizations(:film_society), event), params: { operation: "open", duration_minutes: 30 }
+    assert_difference("ActivityLogEntry.count") do
+      patch organization_event_check_in_settings_path(organizations(:film_society), event), params: { operation: "open", duration_minutes: 30 }
+    end
 
     assert_redirected_to organization_event_path(organizations(:film_society), event)
     assert_equal 6, flash[:check_in_code].length
     assert_predicate event.reload, :check_in_open?
     assert event.valid_check_in_code?(flash[:check_in_code])
     assert_not_equal flash[:check_in_code], event.check_in_code_digest
+    entry = ActivityLogEntry.order(:created_at).last
+    assert_equal "check_in.opened", entry.action
+    assert_not entry.metadata.key?("code")
+    assert_not entry.metadata.key?("check_in_code")
   end
 
   test "organizer can close and regenerate check in" do
@@ -21,11 +27,17 @@ class EventCheckInSettingsControllerTest < ActionDispatch::IntegrationTest
     old_digest = event.check_in_code_digest
     sign_in_as(users(:owner))
 
-    patch organization_event_check_in_settings_path(organizations(:film_society), event), params: { operation: "regenerate" }
+    assert_difference("ActivityLogEntry.count") do
+      patch organization_event_check_in_settings_path(organizations(:film_society), event), params: { operation: "regenerate" }
+    end
     assert_not_equal old_digest, event.reload.check_in_code_digest
+    assert_equal "check_in.regenerated", ActivityLogEntry.order(:created_at).last.action
 
-    patch organization_event_check_in_settings_path(organizations(:film_society), event), params: { operation: "close" }
+    assert_difference("ActivityLogEntry.count") do
+      patch organization_event_check_in_settings_path(organizations(:film_society), event), params: { operation: "close" }
+    end
     assert_equal :closed, event.reload.check_in_state
+    assert_equal "check_in.closed", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "member cannot manage check in" do

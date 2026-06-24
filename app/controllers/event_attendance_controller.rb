@@ -19,6 +19,14 @@ class EventAttendanceController < ApplicationController
       format.csv do
         @memberships = memberships
         load_event_records(@memberships)
+        ActivityLog.record(
+          organization: @organization,
+          actor: current_user,
+          action: "attendance.exported",
+          subject: @event,
+          summary: "#{current_user.name} exported attendance for #{@event.title}.",
+          metadata: { event_title: @event.title, format: "csv" }
+        )
         send_data attendance_csv,
           filename: "event-#{@event.id}-attendance.csv",
           type: "text/csv; charset=utf-8"
@@ -37,6 +45,14 @@ class EventAttendanceController < ApplicationController
     )
 
     if marker.save
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "attendance.marked",
+        subject: marker.attendance_record,
+        summary: "#{current_user.name} marked #{membership.user.name} #{marker.attendance_record.status} for #{@event.title}.",
+        metadata: { event_title: @event.title, member_name: membership.user.name, status: marker.attendance_record.status }
+      )
       redirect_to attendance_sheet_path(membership), notice: "Attendance updated."
     else
       redirect_to attendance_sheet_path(membership), alert: marker.attendance_record.errors.full_messages.to_sentence
