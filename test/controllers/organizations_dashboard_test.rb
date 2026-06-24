@@ -57,6 +57,8 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", edit_organization_path(organizations(:film_society)), text: "Organization settings", count: 0
     assert_select "a[href=?]", new_organization_invitation_path(organizations(:film_society)), count: 0
     assert_select "a[href=?]", new_organization_announcement_path(organizations(:film_society)), count: 0
+    assert_select "summary", text: "Membership options"
+    assert_select "a[href=?]", organization_communication_preferences_path(organizations(:film_society)), text: "Communication preferences →"
   end
 
   test "owner sees member onboarding actions backed by pending invitations" do
@@ -75,6 +77,8 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
       assert_select "a[href=?]", organization_invitations_path(organizations(:film_society)), count: 0
       assert_select "a[href=?]", edit_organization_path(organizations(:film_society)), count: 0
     end
+    assert_select "a[href=?]", edit_organization_path(organizations(:film_society)), text: "Open organization settings →"
+    assert_select "a[href=?]", organization_communication_preferences_path(organizations(:film_society)), text: "Communication preferences →"
     assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), text: "Semester report"
     assert_select "h2", text: "Semester report"
     assert_select "p", text: /members · \d+ gathering recorded/
