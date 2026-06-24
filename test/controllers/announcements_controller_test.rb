@@ -1,17 +1,50 @@
 require "test_helper"
 
 class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
-  test "member sees published all-member announcements in pinned order" do
+  test "member sees published all-member announcements in newest-first order" do
     sign_in_as(users(:member))
 
     get organization_announcements_path(organizations(:film_society))
 
     assert_response :success
     assert_select "h1", "Bulletin"
-    assert_select "#published-bulletin article:first-child h3", announcements(:pinned_all_members).title
+    assert_select "#published-bulletin article:first-child h3", announcements(:recent_all_members).title
+    assert_select "h3", announcements(:pinned_all_members).title
     assert_select "h3", announcements(:recent_all_members).title
     assert_select "h3", { text: announcements(:officer_notes).title, count: 0 }
     assert_select "h2", { text: "Drafts", count: 0 }
+  end
+
+  test "member can page through published announcements" do
+    7.times do |index|
+      organizations(:film_society).announcements.create!(
+        author: users(:owner),
+        title: "Paged bulletin #{format("%02d", index)}",
+        body: "A paged bulletin item.",
+        audience: :all_members,
+        status: :published,
+        published_at: index.minutes.ago
+      )
+    end
+    sign_in_as(users(:member))
+
+    get organization_announcements_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "#published-bulletin article", count: 6
+    assert_select "#published-bulletin article:first-child h3", "Paged bulletin 00"
+    assert_select "nav[aria-label='Pagination']", text: /Showing 1–6 of 9/
+    assert_select "a[href$='#published-announcements']", text: "Next"
+
+    get organization_announcements_path(organizations(:film_society)), params: { page: 2 }
+
+    assert_response :success
+    assert_select "#published-bulletin article", count: 3
+    assert_select "h3", "Paged bulletin 06"
+    assert_select "h3", announcements(:recent_all_members).title
+    assert_select "h3", announcements(:pinned_all_members).title
+    assert_select "nav[aria-label='Pagination']", text: /Showing 7–9 of 9/
+    assert_select "a[href$='#published-announcements']", text: "Previous"
   end
 
   test "owner sees drafts" do

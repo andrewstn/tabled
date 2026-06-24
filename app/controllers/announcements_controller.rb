@@ -9,10 +9,12 @@ class AnnouncementsController < ApplicationController
   def index
     @membership = current_user.memberships.find_by!(organization: @organization)
     @announcement_policy = AnnouncementPolicy.new(current_user, @organization)
-    @published_announcements = @organization.announcements
+    published_announcements = @organization.announcements
       .published_for(@membership)
       .includes(:author)
-      .bulletin_order
+      .order(published_at: :desc, created_at: :desc)
+    @published_paginator = Paginator.new(published_announcements, page: params[:page], per_page: 6)
+    @published_announcements = @published_paginator.records
     @draft_announcements = @organization.announcements.draft.includes(:author).order(updated_at: :desc) if @announcement_policy.manage?
   end
 
