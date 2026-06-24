@@ -146,11 +146,14 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
   test "owner can update member role" do
     sign_in_as(users(:owner))
 
-    patch organization_member_path(organizations(:film_society), memberships(:film_member)),
-      params: { membership: { role: "coordinator" } }
+    assert_difference("ActivityLogEntry.count") do
+      patch organization_member_path(organizations(:film_society), memberships(:film_member)),
+        params: { membership: { role: "coordinator" } }
+    end
 
     assert_redirected_to organization_members_path(organizations(:film_society))
     assert memberships(:film_member).reload.coordinator?
+    assert_equal "member.role_changed", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "member cannot update a role" do
@@ -190,10 +193,21 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:owner))
 
     assert_difference("Membership.count", -1) do
-      delete organization_member_path(organizations(:film_society), memberships(:film_member))
+      assert_difference("ActivityLogEntry.count") do
+        delete organization_member_path(organizations(:film_society), memberships(:film_member))
+      end
     end
 
     assert_redirected_to organization_members_path(organizations(:film_society))
+    assert_equal "member.removed", ActivityLogEntry.order(:created_at).last.action
+  end
+
+  test "member removal log is organization scoped" do
+    sign_in_as(users(:owner))
+
+    assert_difference("organizations(:film_society).activity_log_entries.count") do
+      delete organization_member_path(organizations(:film_society), memberships(:film_member))
+    end
   end
 
   test "officer can remove a member" do

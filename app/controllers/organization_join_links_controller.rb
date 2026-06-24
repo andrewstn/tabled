@@ -16,6 +16,14 @@ class OrganizationJoinLinksController < ApplicationController
     @join_link = @organization.organization_join_links.new(join_link_params.merge(created_by: current_user, role: :member))
 
     if @join_link.save
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "recruitment_link.created",
+        subject: @join_link,
+        summary: "#{current_user.name} created the #{@join_link.label} recruitment link.",
+        metadata: { label: @join_link.label, role: @join_link.role, max_uses: @join_link.max_uses }
+      )
       redirect_to organization_join_links_path(@organization), notice: "Recruitment link created."
     else
       render :new, status: :unprocessable_entity
@@ -24,6 +32,14 @@ class OrganizationJoinLinksController < ApplicationController
 
   def destroy
     @join_link.update!(active: false)
+    ActivityLog.record(
+      organization: @organization,
+      actor: current_user,
+      action: "recruitment_link.disabled",
+      subject: @join_link,
+      summary: "#{current_user.name} disabled the #{@join_link.label} recruitment link.",
+      metadata: { label: @join_link.label }
+    )
     redirect_to organization_join_links_path(@organization), notice: "Recruitment link disabled."
   end
 

@@ -25,6 +25,14 @@ class InvitationsController < ApplicationController
 
     if issuer.create
       InvitationMailer.with(invitation: issuer.invitation, token: issuer.invitation.token).invite.deliver_now
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "member.invited",
+        subject: issuer.invitation,
+        summary: "#{current_user.name} invited #{issuer.invitation.email} as a #{issuer.invitation.role}.",
+        metadata: { role: issuer.invitation.role }
+      )
       redirect_to organization_invitations_path(@organization), notice: "Invitation sent."
     else
       @invitation = issuer.invitation
@@ -38,6 +46,14 @@ class InvitationsController < ApplicationController
 
     if @invitation.pending?
       @invitation.update!(revoked_at: Time.current)
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "member.invitation_revoked",
+        subject: @invitation,
+        summary: "#{current_user.name} revoked the invitation for #{@invitation.email}.",
+        metadata: { role: @invitation.role }
+      )
       redirect_to organization_invitations_path(@organization), notice: "Invitation revoked."
     else
       redirect_to organization_invitations_path(@organization), alert: "That invitation is no longer pending."

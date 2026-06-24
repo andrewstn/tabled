@@ -38,10 +38,21 @@ class MembershipsController < ApplicationController
 
   def update
     new_role = membership_params[:role]
+    old_role = @membership.role
     policy = MembershipPolicy.new(current_user, @organization, @membership)
     return head :forbidden unless policy.update_role?(new_role)
 
     if MembershipRoleUpdater.new(membership: @membership, role: new_role).update
+      if old_role != @membership.role
+        ActivityLog.record(
+          organization: @organization,
+          actor: current_user,
+          action: "member.role_changed",
+          subject: @membership,
+          summary: "#{current_user.name} changed #{@membership.user.name} from #{old_role} to #{@membership.role}.",
+          metadata: { from_role: old_role, to_role: @membership.role }
+        )
+      end
       redirect_to organization_members_path(@organization), notice: "Member role updated."
     else
       redirect_to organization_members_path(@organization), alert: @membership.errors.full_messages.to_sentence
@@ -56,6 +67,14 @@ class MembershipsController < ApplicationController
     destination = @membership.user == current_user ? root_path : organization_members_path(@organization)
 
     if MembershipRemover.new(membership: @membership).remove
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "member.removed",
+        subject: @membership,
+        summary: "#{current_user.name} removed #{member_name} from the roster.",
+        metadata: { member_name: member_name, role: @membership.role }
+      )
       redirect_to destination, notice: "#{member_name} was removed from the roster."
     else
       redirect_to organization_members_path(@organization), alert: @membership.errors.full_messages.to_sentence

@@ -4,7 +4,7 @@ class OrganizationJoinLinksControllerTest < ActionDispatch::IntegrationTest
   test "owner can create and view a recruitment link" do
     sign_in_as(users(:owner))
 
-    assert_difference("OrganizationJoinLink.count") do
+    assert_difference([ "OrganizationJoinLink.count", "ActivityLogEntry.count" ]) do
       post organization_join_links_path(organizations(:film_society)), params: {
         organization_join_link: { label: "Autumn Fair", max_uses: 50 }
       }
@@ -13,6 +13,8 @@ class OrganizationJoinLinksControllerTest < ActionDispatch::IntegrationTest
     link = OrganizationJoinLink.order(:created_at).last
     assert_equal "member", link.role
     assert_equal users(:owner), link.created_by
+    assert_equal "recruitment_link.created", ActivityLogEntry.order(:created_at).last.action
+    assert_not ActivityLogEntry.order(:created_at).last.metadata.key?("token")
     assert_redirected_to organization_join_links_path(organizations(:film_society))
 
     get organization_join_links_path(organizations(:film_society))
@@ -59,8 +61,11 @@ class OrganizationJoinLinksControllerTest < ActionDispatch::IntegrationTest
     other = create_join_link(organization: organizations(:garden_club))
     sign_in_as(users(:owner))
 
-    delete organization_join_link_path(organizations(:film_society), link)
+    assert_difference("ActivityLogEntry.count") do
+      delete organization_join_link_path(organizations(:film_society), link)
+    end
     assert_not link.reload.active?
+    assert_equal "recruitment_link.disabled", ActivityLogEntry.order(:created_at).last.action
 
     delete organization_join_link_path(organizations(:film_society), other)
     assert_response :not_found

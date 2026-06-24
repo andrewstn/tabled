@@ -49,7 +49,7 @@ class OrganizationJoinAcceptancesControllerTest < ActionDispatch::IntegrationTes
     user = create_non_member
     sign_in_as(user)
 
-    assert_difference([ "Membership.count", "link.reload.uses_count" ], 1) do
+    assert_difference([ "Membership.count", "link.reload.uses_count", "ActivityLogEntry.count" ], 1) do
       patch organization_join_path(link.token)
     end
 
@@ -57,6 +57,8 @@ class OrganizationJoinAcceptancesControllerTest < ActionDispatch::IntegrationTes
     assert_equal "member", membership.role
     assert_redirected_to organization_path(organizations(:film_society))
     assert_not user.memberships.exists?(organization: organizations(:garden_club))
+    assert_equal "member.joined_recruitment_link", ActivityLogEntry.order(:created_at).last.action
+    assert_not ActivityLogEntry.order(:created_at).last.metadata.key?("token")
   end
 
   test "existing member does not create a membership or use the link" do

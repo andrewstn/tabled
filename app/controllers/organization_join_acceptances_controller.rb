@@ -11,6 +11,14 @@ class OrganizationJoinAcceptancesController < ApplicationController
     accepter = OrganizationJoinLinkAccepter.new(join_link: @join_link, user: current_user)
 
     if accepter.accept
+      ActivityLog.record(
+        organization: @join_link.organization,
+        actor: current_user,
+        action: "member.joined_recruitment_link",
+        subject: accepter.membership,
+        summary: "#{current_user.name} joined through #{@join_link.label}.",
+        metadata: { link_label: @join_link.label, role: accepter.membership.role }
+      )
       redirect_to organization_path(@join_link.organization), notice: "You joined #{@join_link.organization.name}."
     elsif accepter.already_joined?
       redirect_to organization_path(@join_link.organization), notice: "You’re already a member of #{@join_link.organization.name}."

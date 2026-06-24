@@ -31,15 +31,45 @@ class RosterImportsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:owner))
 
     assert_difference("Invitation.count", 2) do
-      post organization_roster_import_path(organizations(:film_society)), params: {
-        roster_import: { csv_file: fixture_file_upload("roster_import.csv", "text/csv") }
-      }
+      assert_difference("ActivityLogEntry.count") do
+        post organization_roster_import_path(organizations(:film_society)), params: {
+          roster_import: { csv_file: fixture_file_upload("roster_import.csv", "text/csv") }
+        }
+      end
     end
+
+    entry = ActivityLogEntry.order(:created_at).last
+    assert_equal "roster.imported", entry.action
+    assert_equal 2, entry.metadata["created_count"]
 
     assert_response :success
     assert_select "h2", "Import results"
     assert_select "p", text: /2 invitations created/
     assert_equal "coordinator", organizations(:film_society).invitations.find_by!(email: "csv-coordinator@example.test").role
+  end
+
+  test "import upload logs skipped and invalid row counts" do
+    file = Tempfile.new([ "roster-import", ".csv" ])
+    file.write <<~CSV
+      name,email,role
+      Existing,#{users(:member).email_address},member
+      Broken,not-an-email,member
+    CSV
+    file.rewind
+    sign_in_as(users(:owner))
+
+    assert_difference("ActivityLogEntry.count") do
+      post organization_roster_import_path(organizations(:film_society)), params: {
+        roster_import: { csv_file: Rack::Test::UploadedFile.new(file.path, "text/csv") }
+      }
+    end
+
+    entry = ActivityLogEntry.order(:created_at).last
+    assert_equal "roster.imported", entry.action
+    assert_equal 1, entry.metadata["skipped_count"]
+    assert_equal 1, entry.metadata["invalid_count"]
+  ensure
+    file&.close!
   end
 
   test "import upload shows skipped and invalid rows" do

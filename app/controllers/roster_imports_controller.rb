@@ -17,6 +17,17 @@ class RosterImportsController < ApplicationController
       invited_by: current_user,
       csv_content: roster_import_params[:csv_file].read
     ).import
+    ActivityLog.record(
+      organization: @organization,
+      actor: current_user,
+      action: "roster.imported",
+      summary: "#{current_user.name} imported a roster CSV with #{helpers.pluralize(@result.created_count, "invitation")} created.",
+      metadata: {
+        created_count: @result.created_count,
+        skipped_count: @result.skipped_count,
+        invalid_count: @result.invalid_count
+      }
+    )
     flash.now[:notice] = "#{helpers.pluralize(@result.created_count, "invitation")} created." if @result.created_count.positive?
     render :new, status: :ok
   end

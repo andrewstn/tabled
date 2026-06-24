@@ -5,7 +5,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:owner))
 
     assert_emails 1 do
-      assert_difference("Invitation.count") do
+      assert_difference([ "Invitation.count", "ActivityLogEntry.count" ]) do
         post organization_invitations_path(organizations(:film_society)),
           params: { invitation: { email: " NEW.PERSON@Example.com ", role: "member" } }
       end
@@ -15,6 +15,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "new.person@example.com", invitation.email
     assert_equal users(:owner), invitation.invited_by
     assert invitation.pending?
+    assert_equal "member.invited", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "officer can invite a coordinator" do
@@ -76,10 +77,13 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
   test "owner can revoke a pending invitation" do
     sign_in_as(users(:owner))
 
-    delete organization_invitation_path(organizations(:film_society), invitations(:pending_member))
+    assert_difference("ActivityLogEntry.count") do
+      delete organization_invitation_path(organizations(:film_society), invitations(:pending_member))
+    end
 
     assert_redirected_to organization_invitations_path(organizations(:film_society))
     assert invitations(:pending_member).reload.revoked?
+    assert_equal "member.invitation_revoked", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "member cannot revoke an invitation" do
