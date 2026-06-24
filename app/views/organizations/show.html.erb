@@ -82,12 +82,9 @@
       </section>
 
       <section class="workspace-section">
-        <div class="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p class="eyebrow">Events</p>
-            <h2 class="mt-1 text-2xl font-semibold">Upcoming gatherings</h2>
-          </div>
-          <% if @can_create_events %><%= link_to "Add gathering", new_organization_event_path(@organization), class: "button-secondary" %><% end %>
+        <div>
+          <p class="eyebrow">Events</p>
+          <h2 class="mt-1 text-2xl font-semibold">Upcoming gatherings</h2>
         </div>
 
         <% if @upcoming_events.any? %>

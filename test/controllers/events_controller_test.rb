@@ -13,6 +13,16 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h3", events(:upcoming_film_night).title
     assert_select "h3", events(:past_planning_table).title
     assert_select ".role-tag", text: "Maybe"
+    assert_select "a[href=?]", new_organization_event_path(organizations(:film_society)), count: 0
+  end
+
+  test "organizer can add a gathering from the gatherings page" do
+    sign_in_as(users(:owner))
+
+    get organization_events_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "a[href=?]", new_organization_event_path(organizations(:film_society)), text: "Add gathering"
   end
 
   test "non-member cannot view organization gatherings" do
