@@ -1,6 +1,6 @@
 require "application_system_test_case"
 
-class AuthenticationTest < ApplicationSystemTestCase
+class AuthenticationSystemTest < ApplicationSystemTestCase
   test "a member signs in and opens their organizations" do
     visit new_session_path
 
