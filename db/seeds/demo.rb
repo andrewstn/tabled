@@ -43,7 +43,7 @@ Membership.find_by!(organization: organization, user: demo_users.fetch("nina.mem
   recruitment_emails_enabled: false
 )
 
-scale_memberships = 28.times.map do |index|
+scale_memberships = 8.times.map do |index|
   email_address = format("film.member.%02d@example.test", index + 1)
   user = User.find_or_initialize_by(email_address: email_address)
   user.name = format("Film Society Member %02d", index + 1)
@@ -406,5 +406,5 @@ ActivityLog.record!(
   metadata: { organization_name: archived_organization.name, demo_seed: true }
 )
 
-puts "Seeded Buckeye Film Society with a 32-person roster, report-ready attendance records, communication preferences, settings data, log book activity, and recruitment links."
+puts "Seeded Buckeye Film Society with a 12-person roster, report-ready attendance records, communication preferences, settings data, log book activity, and recruitment links."
 puts "Sign in as demo-owner@example.test with tabled-demo-password."
