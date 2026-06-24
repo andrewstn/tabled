@@ -2,6 +2,19 @@
 
 Tabled is a production-minded Ruby on Rails application for the practical work of a student organization semester: members, officers, meetings, attendance, announcements, and internal operations.
 
+It is built as a portfolio-quality Rails app for the kind of work student officers actually inherit each semester: keeping rosters current, recording attendance, communicating with members, preserving reports, and leaving the next officer team a readable organization record.
+
+## Core features
+
+- Organization-scoped workspaces with owner, officer, coordinator, and member roles
+- Member rosters, invitations, reusable recruitment links, and CSV roster import
+- Gatherings with RSVPs, check-in windows, manual attendance, and CSV exports
+- Organization bulletin posts with targeted audiences and email delivery records
+- Communication preferences scoped per organization membership
+- Semester reports with participation and event summary exports
+- Workspace administration: settings, ownership transfer, leave flow, archive/restore
+- Organizer-only Log Book for important member, gathering, attendance, communication, report, and settings activity
+
 ## Stack
 
 - Ruby 3.4.9
@@ -9,6 +22,18 @@ Tabled is a production-minded Ruby on Rails application for the practical work o
 - PostgreSQL
 - Hotwire (Turbo and Stimulus)
 - Tailwind CSS
+
+## Screenshots
+
+Screenshots are intentionally not committed yet. Suggested captures for a recruiter review are:
+
+- Dashboard
+- Member roster
+- Event detail
+- Attendance sheet
+- Bulletin
+- Semester report
+- Log Book
 
 ## Local setup
 
@@ -53,6 +78,21 @@ The import creates pending invitations for valid rows. Rows for existing members
 
 Invitation and optional announcement emails stay local in development and are written beneath `tmp/mails`.
 
+## Environment variables
+
+Local development works without extra environment variables when PostgreSQL is running. Production-style deploys should provide:
+
+- `RAILS_MASTER_KEY` — decrypts Rails credentials; never commit `config/master.key`
+- `TABLED_DATABASE_PASSWORD` — production PostgreSQL password for `config/database.yml`
+- `TABLED_HOST` — canonical production host, used for host authorization and mailer links
+- `TABLED_PROTOCOL` — usually `https`
+- `TABLED_ASSUME_SSL` — defaults to `true`
+- `TABLED_FORCE_SSL` — defaults to `true`
+- `RAILS_LOG_LEVEL` — defaults to `info`
+- `SOLID_QUEUE_IN_PUMA` — `true` for the simple single-server Kamal deployment
+
+Optional SMTP settings can be added later through environment variables or Rails credentials. The current production configuration documents SMTP but does not commit a provider or any secrets.
+
 ## Tests and checks
 
 Run the full test suite:
@@ -73,6 +113,42 @@ Run style and security checks with:
 bin/rubocop
 bin/brakeman --no-pager
 ```
+
+## Deployment notes
+
+The repository includes a production Dockerfile and Kamal configuration. Before deploying:
+
+1. Replace the placeholder image, server, registry, and host values in `config/deploy.yml`.
+2. Export required secrets in your shell or password manager:
+
+   ```bash
+   export RAILS_MASTER_KEY=...
+   export TABLED_DATABASE_PASSWORD=...
+   ```
+
+3. Confirm `TABLED_HOST` matches the public hostname.
+4. Run `bin/kamal setup` for the first deploy, then `bin/kamal deploy` for later deploys.
+5. Run `bin/kamal app exec "bin/rails db:seed"` only if you want the demo workspace in that environment.
+
+The `/up` health check is available for platform probes. Production uses Solid Queue, Solid Cache, and Solid Cable with separate configured databases. Local Active Storage is deliberate for the current portfolio/demo deployment; a durable object store can be added later if user uploads become part of the product.
+
+## Architecture notes
+
+- Organization scoping is enforced through slug-based organization lookup, membership checks, and organization-scoped associations.
+- Authorization is role-based: owners/officers manage most organization operations; coordinators can help with organizer workflows like gatherings, reports, attendance, and the Log Book; regular members have member-facing access.
+- Invitations store secure token digests. Recruitment links use signed IDs instead of persisted raw tokens.
+- Attendance separates organizer-marked records from member self check-in. Check-in codes are digest-backed and only shown when opened or regenerated.
+- Announcements support all-member, officers, event RSVP, and checked-in attendee audiences. Email delivery respects membership-scoped communication preferences.
+- Activity logging goes through `ActivityLog`, stores readable summaries and minimal metadata, and filters sensitive metadata keys.
+- Reports, roster imports, and CSV exports are organization-scoped and covered by authorization tests.
+
+## Security notes
+
+- Raw passwords, invitation tokens, recruitment link tokens, check-in codes, and credentials are not logged.
+- `config/master.key`, `.env*`, logs, temp files, and generated assets are ignored.
+- Archived organizations block new activity, including stale invitations and recruitment links.
+- Non-members should receive not-found responses instead of private organization data.
+- The demo credentials are placeholder-only and safe for a public demo environment.
 
 ## Current scope
 
