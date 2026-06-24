@@ -22,11 +22,9 @@
       <div><dt class="font-bold text-moss-dark">Email</dt><dd class="mt-1"><%= @membership.user.email_address %></dd></div>
       <div><dt class="font-bold text-moss-dark">Role</dt><dd class="mt-1"><span class="role-tag"><%= @membership.role.humanize %></span></dd></div>
       <div><dt class="font-bold text-moss-dark">Joined</dt><dd class="mt-1"><%= @membership.created_at.to_date.to_fs(:long) %></dd></div>
-      <% if @participation_row %>
-        <div><dt class="font-bold text-moss-dark">Attendance rate</dt><dd class="mt-1"><%= @participation_row.attendance_rate_label %></dd></div>
-        <div><dt class="font-bold text-moss-dark">Attended</dt><dd class="mt-1"><%= @participation_row.attended_count %> present · <%= @participation_row.late_count %> late</dd></div>
-        <div><dt class="font-bold text-moss-dark">Other records</dt><dd class="mt-1"><%= @participation_row.excused_count %> excused · <%= @participation_row.absent_count %> absent</dd></div>
-      <% end %>
+      <div><dt class="font-bold text-moss-dark">Attendance rate</dt><dd class="mt-1"><%= @attendance_summary.attendance_rate_label %></dd></div>
+      <div><dt class="font-bold text-moss-dark">Attended</dt><dd class="mt-1"><%= @attendance_summary.attended_count %> present · <%= @attendance_summary.late_count %> late</dd></div>
+      <div><dt class="font-bold text-moss-dark">Other records</dt><dd class="mt-1"><%= @attendance_summary.excused_count %> excused · <%= @attendance_summary.absent_count %> absent</dd></div>
     </dl>
 
     <% if @show_private_member_details %>

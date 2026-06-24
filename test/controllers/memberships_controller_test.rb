@@ -117,6 +117,44 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".role-tag", text: "Late"
   end
 
+  test "member record attendance summary matches displayed attendance records" do
+    membership = create_member(name: "History Match", email: "history-match@example.test")
+    events(:upcoming_film_night).attendance_records.create!(
+      membership: membership,
+      marked_by: users(:owner),
+      status: :present,
+      checked_in_at: 2.minutes.ago
+    )
+    events(:past_planning_table).attendance_records.create!(
+      membership: membership,
+      marked_by: users(:owner),
+      status: :present,
+      checked_in_at: 3.days.ago + 10.minutes
+    )
+    organizer_only_event = Event.create!(
+      organization: organizations(:film_society),
+      created_by: users(:owner),
+      title: "Organizer-only Attendance",
+      starts_at: 1.day.ago,
+      ends_at: 1.day.ago + 1.hour
+    )
+    organizer_only_event.attendance_records.create!(
+      membership: memberships(:film_owner),
+      marked_by: users(:owner),
+      status: :present
+    )
+    sign_in_as(users(:owner))
+
+    get organization_member_path(organizations(:film_society), membership)
+
+    assert_response :success
+    assert_select "h3", events(:upcoming_film_night).title
+    assert_select "h3", events(:past_planning_table).title
+    assert_select "dd", text: "100%"
+    assert_select "dd", text: "2 present · 0 late"
+    assert_select "dd", text: "0 excused · 0 absent"
+  end
+
   test "member can view their own attendance history" do
     sign_in_as(users(:member))
 
