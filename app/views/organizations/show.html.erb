@@ -42,20 +42,20 @@
           </dl>
         <% end %>
       </div>
-      <nav aria-label="Organization sections" class="flex flex-wrap items-center gap-3">
-        <%= link_to "Bulletin", organization_announcements_path(@organization), class: "text-link text-sm" %>
-        <%= link_to "Gatherings", organization_events_path(@organization), class: "text-link text-sm" %>
-        <%= link_to "Member roster", organization_members_path(@organization), class: "text-link text-sm" %>
+      <nav aria-label="Organization sections" class="flex max-w-full flex-wrap items-center gap-x-3 gap-y-2 text-sm sm:justify-end">
+        <%= link_to "Bulletin", organization_announcements_path(@organization), class: "text-link whitespace-nowrap" %>
+        <%= link_to "Gatherings", organization_events_path(@organization), class: "text-link whitespace-nowrap" %>
+        <%= link_to "Member roster", organization_members_path(@organization), class: "text-link whitespace-nowrap" %>
         <% unless @can_view_reports || @can_view_activity %>
-          <%= link_to "Communication preferences", organization_communication_preferences_path(@organization), class: "text-link text-sm" %>
+          <%= link_to "Communication preferences", organization_communication_preferences_path(@organization), class: "text-link whitespace-nowrap" %>
         <% end %>
         <% if @can_view_reports %>
-          <%= link_to "Semester report", organization_reports_path(@organization), class: "text-link text-sm" %>
+          <%= link_to "Semester report", organization_reports_path(@organization), class: "text-link whitespace-nowrap" %>
         <% end %>
         <% if @can_view_activity %>
-          <%= link_to "Log book", organization_log_book_path(@organization), class: "text-link text-sm" %>
+          <%= link_to "Log book", organization_log_book_path(@organization), class: "text-link whitespace-nowrap" %>
         <% end %>
-        <span class="role-tag"><%= @membership.role.humanize %></span>
+        <span class="role-tag shrink-0"><%= @membership.role.humanize %></span>
       </nav>
     </div>
   </header>
