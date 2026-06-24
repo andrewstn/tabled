@@ -139,7 +139,25 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     get organization_path(organizations(:film_society))
 
     assert_response :success
-    assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), text: "Semester report"
+    assert_select "nav[aria-label='Organization sections']" do
+      assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), text: "Semester report"
+      assert_select "a[href=?]", organization_log_book_path(organizations(:film_society)), text: "Log book"
+      assert_select "a[href=?]", organization_communication_preferences_path(organizations(:film_society)), count: 0
+    end
+  end
+
+  test "officer sees report and log book navigation" do
+    memberships(:film_member).update!(role: :officer)
+    sign_in_as(users(:member))
+
+    get organization_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "nav[aria-label='Organization sections']" do
+      assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), text: "Semester report"
+      assert_select "a[href=?]", organization_log_book_path(organizations(:film_society)), text: "Log book"
+      assert_select "a[href=?]", organization_communication_preferences_path(organizations(:film_society)), count: 0
+    end
   end
 
   test "dashboard shows bulletin empty state from real data" do
