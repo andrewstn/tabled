@@ -29,7 +29,9 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "a[href=?]", organization_join_links_path(organizations(:film_society)), text: "Recruitment links (1)"
     assert_select "a[href=?]", new_organization_roster_import_path(organizations(:film_society)), text: "Import roster"
-    assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), text: "Semester report"
+    assert_select "a[href=?]", organization_invitations_path(organizations(:film_society)), text: "1 pending invitation · Review"
+    assert_select "a[href=?]", roster_organization_reports_path(organizations(:film_society), format: :csv), text: "Export roster CSV"
+    assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), text: "Semester report", count: 0
   end
 
   test "ordinary member does not see recruitment link management" do
@@ -39,6 +41,8 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "a[href=?]", organization_join_links_path(organizations(:film_society)), count: 0
     assert_select "a[href=?]", new_organization_roster_import_path(organizations(:film_society)), count: 0
+    assert_select "a[href=?]", organization_invitations_path(organizations(:film_society)), count: 0
+    assert_select "a[href=?]", roster_organization_reports_path(organizations(:film_society), format: :csv), count: 0
     assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), count: 0
   end
 

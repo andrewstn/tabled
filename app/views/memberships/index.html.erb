@@ -16,13 +16,11 @@
       <div class="flex flex-wrap gap-3 text-sm">
         <%= link_to "Invite member", new_organization_invitation_path(@organization), class: "button-primary" %>
         <%= link_to "Import roster", new_organization_roster_import_path(@organization), class: "button-secondary" %>
-        <%= link_to "Pending invitations (#{@pending_invitation_count})", organization_invitations_path(@organization), class: "button-secondary" %>
+        <%= link_to "#{pluralize(@pending_invitation_count, "pending invitation")} · Review", organization_invitations_path(@organization), class: "button-secondary" %>
         <%= link_to "Recruitment links (#{@active_join_link_count})", organization_join_links_path(@organization), class: "button-secondary" %>
-      </div>
-    <% end %>
-    <% if @can_view_reports %>
-      <div class="text-sm">
-        <%= link_to "Semester report", organization_reports_path(@organization), class: "text-link" %>
+        <% if @can_view_reports %>
+          <%= link_to "Export roster CSV", roster_organization_reports_path(@organization, format: :csv), class: "button-secondary" %>
+        <% end %>
       </div>
     <% end %>
   </header>
