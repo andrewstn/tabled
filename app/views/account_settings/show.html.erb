@@ -9,7 +9,7 @@
   <header class="border-b-2 border-ink/20 px-5 py-6 sm:px-8">
     <p class="eyebrow">Account settings</p>
     <h1 class="mt-2 text-3xl font-semibold">Account settings</h1>
-    <p class="mt-2 max-w-xl text-sm leading-6 text-ink-soft">Update the name used across your organizations.</p>
+    <p class="mt-2 max-w-xl text-sm leading-6 text-ink-soft">Update the name, email, and password used across your organizations.</p>
   </header>
 
   <section class="p-5 sm:p-8">
@@ -20,8 +20,31 @@
         <%= form.text_field :name, required: true, autocomplete: "name", class: "form-input" %>
       </div>
 
+      <div>
+        <%= form.label :email_address, "Email address", class: "form-label" %>
+        <%= form.email_field :email_address, required: true, autocomplete: "email", class: "form-input" %>
+      </div>
+
       <div class="border-l-4 border-amber bg-amber-pale/35 px-4 py-3 text-sm leading-6 text-ink-soft">
-        Email and password changes are not available here yet.
+        Enter your current password to change your email or password. You can leave the password fields blank to keep your current password.
+      </div>
+
+      <div>
+        <%= form.label :current_password, "Current password", class: "form-label" %>
+        <%= form.password_field :current_password, autocomplete: "current-password", class: "form-input" %>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <%= form.label :password, "New password", class: "form-label" %>
+          <%= form.password_field :password, minlength: 12, autocomplete: "new-password", class: "form-input" %>
+          <p class="mt-1.5 text-xs text-ink-soft">12 characters minimum.</p>
+        </div>
+
+        <div>
+          <%= form.label :password_confirmation, "Confirm new password", class: "form-label" %>
+          <%= form.password_field :password_confirmation, autocomplete: "new-password", class: "form-input" %>
+        </div>
       </div>
 
       <div class="flex flex-wrap gap-3 border-t border-rule pt-5">
