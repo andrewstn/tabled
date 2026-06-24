@@ -4,13 +4,16 @@ class OwnershipTransfersControllerTest < ActionDispatch::IntegrationTest
   test "owner can transfer ownership to existing member" do
     sign_in_as(users(:owner))
 
-    patch organization_ownership_transfer_path(organizations(:film_society)), params: {
-      membership_id: memberships(:film_member).id
-    }
+    assert_difference("ActivityLogEntry.count") do
+      patch organization_ownership_transfer_path(organizations(:film_society)), params: {
+        membership_id: memberships(:film_member).id
+      }
+    end
 
     assert_redirected_to edit_organization_path(organizations(:film_society))
     assert_predicate memberships(:film_member).reload, :owner?
     assert_predicate memberships(:film_owner).reload, :owner?
+    assert_equal "ownership.transferred", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "non-owner cannot transfer ownership" do
@@ -28,9 +31,11 @@ class OwnershipTransfersControllerTest < ActionDispatch::IntegrationTest
     other_membership = Membership.create!(organization: organizations(:garden_club), user: users(:owner), role: :member)
     sign_in_as(users(:owner))
 
-    patch organization_ownership_transfer_path(organizations(:film_society)), params: {
-      membership_id: other_membership.id
-    }
+    assert_no_difference("ActivityLogEntry.count") do
+      patch organization_ownership_transfer_path(organizations(:film_society)), params: {
+        membership_id: other_membership.id
+      }
+    end
 
     assert_redirected_to edit_organization_path(organizations(:film_society))
     assert_equal "Choose a current member to make an owner.", flash[:alert]

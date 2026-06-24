@@ -9,6 +9,14 @@ class OwnershipTransfersController < ApplicationController
     )
 
     if transfer.transfer
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "ownership.transferred",
+        subject: transfer.membership,
+        summary: "#{current_user.name} made #{transfer.membership.user.name} an owner.",
+        metadata: { member_name: transfer.membership.user.name }
+      )
       redirect_to edit_organization_path(@organization), notice: "#{transfer.membership.user.name} is now an owner."
     else
       redirect_to edit_organization_path(@organization), alert: "Choose a current member to make an owner."

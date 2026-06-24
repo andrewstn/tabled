@@ -44,6 +44,14 @@ class OrganizationsController < ApplicationController
 
   def update
     if @organization.update(organization_params)
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "settings.updated",
+        subject: @organization,
+        summary: "#{current_user.name} updated organization settings.",
+        metadata: { changed_fields: organization_params.keys }
+      )
       redirect_to organization_path(@organization), notice: "Organization details updated."
     else
       render :edit, status: :unprocessable_entity

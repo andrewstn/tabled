@@ -4,11 +4,27 @@ class OrganizationArchivesController < ApplicationController
 
   def update
     @organization.archive!
+    ActivityLog.record(
+      organization: @organization,
+      actor: current_user,
+      action: "organization.archived",
+      subject: @organization,
+      summary: "#{current_user.name} archived #{@organization.name}.",
+      metadata: { organization_name: @organization.name }
+    )
     redirect_to organization_path(@organization), notice: "#{@organization.name} is archived."
   end
 
   def destroy
     @organization.restore!
+    ActivityLog.record(
+      organization: @organization,
+      actor: current_user,
+      action: "organization.restored",
+      subject: @organization,
+      summary: "#{current_user.name} restored #{@organization.name}.",
+      metadata: { organization_name: @organization.name }
+    )
     redirect_to organization_path(@organization), notice: "#{@organization.name} is restored."
   end
 

@@ -4,10 +4,13 @@ class OrganizationArchivesControllerTest < ActionDispatch::IntegrationTest
   test "owner can archive organization" do
     sign_in_as(users(:owner))
 
-    patch organization_archive_path(organizations(:film_society))
+    assert_difference("ActivityLogEntry.count") do
+      patch organization_archive_path(organizations(:film_society))
+    end
 
     assert_redirected_to organization_path(organizations(:film_society))
     assert_predicate organizations(:film_society).reload, :archived?
+    assert_equal "organization.archived", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "non-owner cannot archive organization" do
@@ -24,10 +27,13 @@ class OrganizationArchivesControllerTest < ActionDispatch::IntegrationTest
     organizations(:film_society).archive!
     sign_in_as(users(:owner))
 
-    delete organization_archive_path(organizations(:film_society))
+    assert_difference("ActivityLogEntry.count") do
+      delete organization_archive_path(organizations(:film_society))
+    end
 
     assert_redirected_to organization_path(organizations(:film_society))
     assert_not_predicate organizations(:film_society).reload, :archived?
+    assert_equal "organization.restored", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "archived organization is hidden from normal organization lists" do

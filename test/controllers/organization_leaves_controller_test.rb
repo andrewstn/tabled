@@ -5,18 +5,23 @@ class OrganizationLeavesControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:member))
 
     assert_difference("Membership.count", -1) do
-      delete organization_leave_path(organizations(:film_society))
+      assert_difference("ActivityLogEntry.count") do
+        delete organization_leave_path(organizations(:film_society))
+      end
     end
 
     assert_redirected_to root_path
     assert_nil users(:member).memberships.find_by(organization: organizations(:film_society))
+    assert_equal "member.left", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "last owner cannot leave organization" do
     sign_in_as(users(:owner))
 
     assert_no_difference("Membership.count") do
-      delete organization_leave_path(organizations(:film_society))
+      assert_no_difference("ActivityLogEntry.count") do
+        delete organization_leave_path(organizations(:film_society))
+      end
     end
 
     assert_redirected_to organization_path(organizations(:film_society))
@@ -28,11 +33,14 @@ class OrganizationLeavesControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:owner))
 
     assert_difference("Membership.count", -1) do
-      delete organization_leave_path(organizations(:film_society))
+      assert_difference("ActivityLogEntry.count") do
+        delete organization_leave_path(organizations(:film_society))
+      end
     end
 
     assert_redirected_to root_path
     assert_predicate memberships(:film_member).reload, :owner?
+    assert_equal "member.left", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "non-member cannot leave organization" do
