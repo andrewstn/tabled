@@ -159,21 +159,25 @@
 
           <div class="mt-6" aria-labelledby="event-roster">
             <h2 id="event-roster" class="text-xl font-semibold">Event roster</h2>
-            <% [["Attending", "attending"], ["Maybe", "maybe"], ["Not attending", "not_attending"]].each do |label, status| %>
-              <section class="mt-5" aria-labelledby="roster-<%= status %>">
-                <h3 id="roster-<%= status %>" class="text-sm font-bold text-moss-dark"><%= label %></h3>
+            <div class="mt-4 divide-y divide-rule border-y border-rule">
+              <% [["Attending", "attending"], ["Not attending", "not_attending"], ["Maybe", "maybe"]].each do |label, status| %>
                 <% responses = @rsvps_by_status.fetch(status, []) %>
-                <% if responses.any? %>
-                  <ul class="mt-2 divide-y divide-rule/70 border-y border-rule text-sm">
-                    <% responses.sort_by { |response| response.membership.user.name.downcase }.each do |response| %>
-                      <li class="py-2"><%= response.membership.user.name %></li>
-                    <% end %>
-                  </ul>
-                <% else %>
-                  <p class="mt-2 text-sm text-ink-soft">No responses yet.</p>
-                <% end %>
-              </section>
-            <% end %>
+                <details class="py-3">
+                  <summary id="roster-<%= status %>" class="cursor-pointer list-none text-sm font-bold text-moss-dark underline decoration-moss/30 underline-offset-4 focus:outline-2 focus:outline-moss/50">
+                    <%= label %> · <%= pluralize(responses.size, "member") %>
+                  </summary>
+                  <% if responses.any? %>
+                    <ul class="mt-3 divide-y divide-rule/70 border-y border-rule text-sm">
+                      <% responses.sort_by { |response| response.membership.user.name.downcase }.each do |response| %>
+                        <li class="py-2"><%= response.membership.user.name %></li>
+                      <% end %>
+                    </ul>
+                  <% else %>
+                    <p class="mt-3 text-sm text-ink-soft">No responses yet.</p>
+                  <% end %>
+                </details>
+              <% end %>
+            </div>
           </div>
         <% end %>
       </section>

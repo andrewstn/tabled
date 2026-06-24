@@ -74,6 +74,10 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h2", "Event roster"
+    assert_select "details", count: 3
+    assert_select "summary", text: "Attending · 1 member"
+    assert_select "summary", text: "Not attending · 0 members"
+    assert_select "summary", text: "Maybe · 1 member"
     assert_select "li", text: users(:owner).name
     assert_select "li", text: users(:member).name
     assert_select "dt", text: "Attending"
