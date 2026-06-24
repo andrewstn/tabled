@@ -23,6 +23,9 @@ class OrganizationsController < ApplicationController
     @can_manage_members = organization_policy.manage?
     @can_view_reports = ReportPolicy.new(current_user, @organization).show?
     @pending_invitation_count = @organization.invitations.pending.count if @can_manage_members
+    dashboard_members = @organization.memberships.joins(:user).includes(:user).order("users.name", "memberships.id")
+    @member_paginator = Paginator.new(dashboard_members, page: params[:page], per_page: 10)
+    @dashboard_memberships = @member_paginator.records
     @upcoming_events = @organization.events.upcoming.includes(:rsvps).limit(3)
     @dashboard_rsvps = @membership.rsvps.where(event: @upcoming_events).index_by(&:event_id)
     @can_create_events = EventPolicy.new(current_user, @organization).create?

@@ -88,6 +88,32 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "p", text: "No notes in the log book yet."
   end
 
+  test "dashboard member preview paginates around the table" do
+    11.times do |index|
+      user = User.create!(
+        name: "Dashboard Member #{format("%02d", index)}",
+        email_address: "dashboard-member-#{index}@example.test",
+        password: "password1234"
+      )
+      Membership.create!(organization: organizations(:film_society), user: user, role: :member)
+    end
+    sign_in_as(users(:owner))
+
+    get organization_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select ".member-row", count: 10
+    assert_select "nav[aria-label='Pagination']", text: /Showing 1–10 of 13/
+    assert_select "a", text: "Next"
+
+    get organization_path(organizations(:film_society)), params: { page: 2 }
+
+    assert_response :success
+    assert_select ".member-row", count: 3
+    assert_select "nav[aria-label='Pagination']", text: /Showing 11–13 of 13/
+    assert_select ".member-row", text: /Dashboard Member/
+  end
+
   test "dashboard shows recent activity from the current organization to organizers" do
     ActivityLogEntry.create!(
       organization: organizations(:film_society),
