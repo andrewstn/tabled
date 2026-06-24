@@ -97,13 +97,17 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     Membership.create!(organization: organizations(:garden_club), user: outsider, role: :member)
     sign_in_as(users(:owner))
 
-    get roster_organization_reports_path(organizations(:film_society), format: :csv)
+    assert_difference("ActivityLogEntry.count") do
+      get roster_organization_reports_path(organizations(:film_society), format: :csv)
+    end
 
     assert_response :success
     rows = CSV.parse(response.body, headers: true)
     assert_equal [ "Name", "Email", "Role", "Joined at" ], rows.headers
     assert_includes rows["Email"], users(:owner).email_address
     assert_not_includes rows["Email"], outsider.email_address
+    assert_equal "report.exported", ActivityLogEntry.order(:created_at).last.action
+    assert_equal "roster", ActivityLogEntry.order(:created_at).last.metadata["report"]
   end
 
   test "participation CSV export is organization scoped" do
@@ -111,13 +115,16 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     Membership.create!(organization: organizations(:garden_club), user: outsider, role: :member)
     sign_in_as(users(:owner))
 
-    get participation_organization_reports_path(organizations(:film_society), format: :csv)
+    assert_difference("ActivityLogEntry.count") do
+      get participation_organization_reports_path(organizations(:film_society), format: :csv)
+    end
 
     assert_response :success
     rows = CSV.parse(response.body, headers: true)
     assert_equal "RSVP attending count", rows.headers.fetch(4)
     assert_includes rows["Email"], users(:owner).email_address
     assert_not_includes rows["Email"], outsider.email_address
+    assert_equal "participation", ActivityLogEntry.order(:created_at).last.metadata["report"]
   end
 
   test "event summary CSV export is organization scoped" do
@@ -130,7 +137,9 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     Membership.create!(organization: organizations(:garden_club), user: users(:owner), role: :officer)
     sign_in_as(users(:owner))
 
-    get events_organization_reports_path(organizations(:film_society), format: :csv)
+    assert_difference("ActivityLogEntry.count") do
+      get events_organization_reports_path(organizations(:film_society), format: :csv)
+    end
 
     assert_response :success
     rows = CSV.parse(response.body, headers: true)
@@ -138,6 +147,7 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     assert_includes rows["Event title"], events(:past_planning_table).title
     assert_not_includes rows["Event title"], events(:upcoming_film_night).title
     assert_not_includes rows["Event title"], "Garden records night"
+    assert_equal "event summary", ActivityLogEntry.order(:created_at).last.metadata["report"]
   end
 
   test "member cannot export reports" do

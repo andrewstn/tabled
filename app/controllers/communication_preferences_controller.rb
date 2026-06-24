@@ -7,6 +7,14 @@ class CommunicationPreferencesController < ApplicationController
 
   def update
     if @membership.update(preference_params)
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "communication_preferences.updated",
+        subject: @membership,
+        summary: "#{current_user.name} updated their communication preferences.",
+        metadata: { membership_id: @membership.id }
+      )
       redirect_to organization_communication_preferences_path(@organization), notice: "Communication preferences updated."
     else
       render :show, status: :unprocessable_entity

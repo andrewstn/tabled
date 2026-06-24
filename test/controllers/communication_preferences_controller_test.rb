@@ -15,19 +15,24 @@ class CommunicationPreferencesControllerTest < ActionDispatch::IntegrationTest
     membership = memberships(:film_member)
     sign_in_as(users(:member))
 
-    patch organization_communication_preferences_path(organizations(:film_society)), params: {
-      membership: {
-        announcement_emails_enabled: "0",
-        event_reminder_emails_enabled: "0",
-        recruitment_emails_enabled: "0"
+    assert_difference("ActivityLogEntry.count") do
+      patch organization_communication_preferences_path(organizations(:film_society)), params: {
+        membership: {
+          announcement_emails_enabled: "0",
+          event_reminder_emails_enabled: "0",
+          recruitment_emails_enabled: "0"
+        }
       }
-    }
+    end
 
     assert_redirected_to organization_communication_preferences_path(organizations(:film_society))
     membership.reload
     assert_not_predicate membership, :announcement_emails_enabled?
     assert_not_predicate membership, :event_reminder_emails_enabled?
     assert_not_predicate membership, :recruitment_emails_enabled?
+    entry = ActivityLogEntry.order(:created_at).last
+    assert_equal "communication_preferences.updated", entry.action
+    assert_not entry.metadata.key?("announcement_emails_enabled")
   end
 
   test "member cannot update another member preferences through submitted ids" do

@@ -147,7 +147,7 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
   test "owner can create a draft announcement" do
     sign_in_as(users(:owner))
 
-    assert_difference("Announcement.count") do
+    assert_difference([ "Announcement.count", "ActivityLogEntry.count" ]) do
       post organization_announcements_path(organizations(:film_society)), params: {
         announcement: { title: "Room reminder", body: "Meet in room 214.", audience: "all_members", status: "draft" }
       }
@@ -157,6 +157,7 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     assert_predicate announcement, :draft?
     assert_equal users(:owner), announcement.author
     assert_nil announcement.published_at
+    assert_equal "announcement.drafted", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "announcement form shows delivery preview" do
@@ -186,7 +187,7 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
   test "owner can create event targeted announcement from form" do
     sign_in_as(users(:owner))
 
-    assert_difference("Announcement.count") do
+    assert_difference([ "Announcement.count", "ActivityLogEntry.count" ]) do
       post organization_announcements_path(organizations(:film_society)), params: {
         announcement: { title: "RSVP note", body: "For RSVPs.", audience: "event_rsvps", target_event_id: events(:upcoming_film_night).id, status: "published" }
       }
@@ -195,6 +196,7 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     announcement = Announcement.order(:created_at).last
     assert_equal "event_rsvps", announcement.audience
     assert_equal events(:upcoming_film_night), announcement.target_event
+    assert_equal "announcement.published", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "officer can create a draft announcement" do
@@ -224,13 +226,16 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     announcement = announcements(:officer_notes)
     sign_in_as(users(:owner))
 
-    patch organization_announcement_path(organizations(:film_society), announcement), params: {
-      announcement: { title: announcement.title, body: announcement.body, audience: "officers", pinned: "0", status: "published" }
-    }
+    assert_difference("ActivityLogEntry.count") do
+      patch organization_announcement_path(organizations(:film_society), announcement), params: {
+        announcement: { title: announcement.title, body: announcement.body, audience: "officers", pinned: "0", status: "published" }
+      }
+    end
 
     assert_redirected_to organization_announcement_path(organizations(:film_society), announcement)
     assert_predicate announcement.reload, :published?
     assert_not_nil announcement.published_at
+    assert_equal "announcement.published", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "editing a published announcement preserves published at" do
@@ -238,12 +243,28 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     published_at = announcement.published_at
     sign_in_as(users(:owner))
 
-    patch organization_announcement_path(organizations(:film_society), announcement), params: {
-      announcement: { title: "Updated details", body: announcement.body, audience: "all_members", pinned: "1", status: "draft" }
-    }
+    assert_difference("ActivityLogEntry.count") do
+      patch organization_announcement_path(organizations(:film_society), announcement), params: {
+        announcement: { title: "Updated details", body: announcement.body, audience: "all_members", pinned: "1", status: "draft" }
+      }
+    end
 
     assert_predicate announcement.reload, :published?
     assert_equal published_at, announcement.published_at
+    assert_equal "announcement.updated", ActivityLogEntry.order(:created_at).last.action
+  end
+
+  test "owner can remove an announcement and activity is logged" do
+    sign_in_as(users(:owner))
+
+    assert_difference("Announcement.count", -1) do
+      assert_difference("ActivityLogEntry.count") do
+        delete organization_announcement_path(organizations(:film_society), announcements(:officer_notes))
+      end
+    end
+
+    assert_redirected_to organization_announcements_path(organizations(:film_society))
+    assert_equal "announcement.removed", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "invalid announcement renders errors" do
@@ -261,26 +282,32 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:owner))
 
     assert_no_emails do
-      post organization_announcements_path(organizations(:film_society)), params: {
-        send_email: "1",
-        announcement: { title: "Draft reminder", body: "Still being written.", audience: "all_members", status: "draft" }
-      }
+      assert_difference("ActivityLogEntry.count") do
+        post organization_announcements_path(organizations(:film_society)), params: {
+          send_email: "1",
+          announcement: { title: "Draft reminder", body: "Still being written.", audience: "all_members", status: "draft" }
+        }
+      end
     end
 
     assert_nil Announcement.order(:created_at).last.emailed_at
+    assert_equal "announcement.drafted", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "published announcement can be emailed when selected" do
     sign_in_as(users(:owner))
 
     assert_emails organizations(:film_society).memberships.count do
-      post organization_announcements_path(organizations(:film_society)), params: {
-        send_email: "1",
-        announcement: { title: "Tonight's room", body: "Meet in the screening room.", audience: "all_members", status: "published" }
-      }
+      assert_difference("ActivityLogEntry.count", 2) do
+        post organization_announcements_path(organizations(:film_society)), params: {
+          send_email: "1",
+          announcement: { title: "Tonight's room", body: "Meet in the screening room.", audience: "all_members", status: "published" }
+        }
+      end
     end
 
     assert_not_nil Announcement.order(:created_at).last.emailed_at
+    assert_equal "announcement.emailed", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "disabling announcement emails prevents optional announcement email delivery" do

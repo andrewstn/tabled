@@ -9,18 +9,21 @@ class ReportsController < ApplicationController
   end
 
   def roster
+    record_export_activity("roster")
     send_data roster_csv,
       filename: "#{@organization.slug}-roster.csv",
       type: "text/csv; charset=utf-8"
   end
 
   def participation
+    record_export_activity("participation")
     send_data participation_csv,
       filename: "#{@organization.slug}-participation.csv",
       type: "text/csv; charset=utf-8"
   end
 
   def events
+    record_export_activity("event summary")
     send_data event_summary_csv,
       filename: "#{@organization.slug}-event-summary.csv",
       type: "text/csv; charset=utf-8"
@@ -119,5 +122,15 @@ class ReportsController < ApplicationController
 
   def safe_csv_cell(value)
     value.to_s.match?(/\A[=+\-@]/) ? "'#{value}" : value
+  end
+
+  def record_export_activity(report_name)
+    ActivityLog.record(
+      organization: @organization,
+      actor: current_user,
+      action: "report.exported",
+      summary: "#{current_user.name} exported the #{report_name} report.",
+      metadata: { report: report_name, format: "csv" }
+    )
   end
 end
