@@ -79,8 +79,8 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: "Semester report"
     assert_select "p", text: /members · \d+ gathering recorded/
     assert_select "a[href=?]", new_organization_event_path(organizations(:film_society)), text: "Add gathering"
-    assert_select "a[href=?]", new_organization_announcement_path(organizations(:film_society)), text: "Post announcement"
-    assert_select "span", text: "1 draft"
+    assert_select "a[href=?]", new_organization_announcement_path(organizations(:film_society)), count: 0
+    assert_select "span", text: "1 draft", count: 0
     assert_select "p", text: "No notes in the log book yet."
   end
 

@@ -164,12 +164,6 @@
             <p class="mt-1 text-sm leading-6 text-ink-soft">Announcements will be pinned here when officers have something to share.</p>
           </div>
         <% end %>
-        <% if @announcement_policy.create? %>
-          <div class="mt-4 border-t border-rule pt-3 text-sm">
-            <%= link_to "Post announcement", new_organization_announcement_path(@organization), class: "text-link font-bold" %>
-            <% if @draft_announcement_count.positive? %><span class="ml-2 text-xs text-ink-soft"><%= pluralize(@draft_announcement_count, "draft") %></span><% end %>
-          </div>
-        <% end %>
       </section>
 
       <section class="border-b border-rule p-5 sm:p-6">

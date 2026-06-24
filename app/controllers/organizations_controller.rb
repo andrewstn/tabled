@@ -29,7 +29,6 @@ class OrganizationsController < ApplicationController
     @can_view_activity = organization_policy.view_activity?
     @announcement_policy = AnnouncementPolicy.new(current_user, @organization)
     @bulletin_announcement = @organization.announcements.published_for(@membership).bulletin_order.first
-    @draft_announcement_count = @organization.announcements.draft.count if @announcement_policy.manage?
     @recent_attendance_events = @organization.events.past
       .joins(:attendance_records)
       .distinct

@@ -22,6 +22,7 @@ class AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h2", "Drafts"
     assert_select "h3", announcements(:officer_notes).title
+    assert_select "a[href=?]", new_organization_announcement_path(organizations(:film_society)), text: "Post announcement"
   end
 
   test "non-member cannot view bulletin" do
