@@ -1,7 +1,8 @@
 class OrganizationsController < ApplicationController
-  before_action :set_organization, only: %i[show edit update]
+  before_action :set_organization, only: %i[show edit update destroy]
   before_action :require_organization_membership, only: :show
   before_action :require_organization_manager, only: %i[edit update]
+  before_action :require_archived_organization_owner, only: :destroy
 
   def new
     @organization = Organization.new
@@ -63,6 +64,12 @@ class OrganizationsController < ApplicationController
     end
   end
 
+  def destroy
+    organization_name = @organization.name
+    @organization.destroy!
+    redirect_to root_path, notice: "#{organization_name} was permanently deleted."
+  end
+
   private
 
   def set_organization
@@ -75,6 +82,11 @@ class OrganizationsController < ApplicationController
 
   def require_organization_manager
     head :forbidden unless organization_policy.manage?
+  end
+
+  def require_archived_organization_owner
+    raise ActiveRecord::RecordNotFound unless organization_policy.show?
+    head :forbidden unless organization_policy.destroy?
   end
 
   def organization_policy

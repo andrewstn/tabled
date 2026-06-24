@@ -26,4 +26,8 @@ class OrganizationPolicy
   def restore?
     archive?
   end
+
+  def destroy?
+    archive? && @membership.organization.archived?
+  end
 end

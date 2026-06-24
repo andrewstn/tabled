@@ -76,6 +76,13 @@
           <h3 class="font-bold">Restore organization</h3>
           <p class="mt-1 text-sm leading-6 text-ink-soft">Restoring reopens the workspace for new events, announcements, invitations, and roster imports.</p>
           <%= button_to "Restore organization", organization_archive_path(@organization), method: :delete, class: "button-secondary mt-4" %>
+          <div class="mt-6 border-t border-brick/30 pt-4">
+            <h3 class="font-bold text-brick">Delete organization permanently</h3>
+            <p class="mt-1 text-sm leading-6 text-ink-soft">This erases the organization and its members, gatherings, attendance records, announcements, invitations, recruitment links, reports data, and log book entries. This cannot be undone.</p>
+            <%= button_to "Delete organization permanently", organization_path(@organization), method: :delete,
+              class: "mt-4 text-sm font-bold text-brick underline decoration-brick/40 underline-offset-4",
+              form: { data: { turbo_confirm: "Permanently delete #{@organization.name}? This cannot be undone." } } %>
+          </div>
         <% else %>
           <h3 class="font-bold">Archive organization</h3>
           <p class="mt-1 text-sm leading-6 text-ink-soft">Archiving keeps the records but closes the workspace for new activity.</p>

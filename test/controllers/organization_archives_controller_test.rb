@@ -36,14 +36,16 @@ class OrganizationArchivesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "organization.restored", ActivityLogEntry.order(:created_at).last.action
   end
 
-  test "archived organization is hidden from normal organization lists" do
+  test "archived organization stays visible from organization lists" do
     organizations(:film_society).archive!
     sign_in_as(users(:owner))
 
     get root_path
 
     assert_response :success
-    assert_select "a[href=?]", organization_path(organizations(:film_society)), count: 0
+    assert_select "h2", "Archived organizations"
+    assert_select "a[href=?]", organization_path(organizations(:film_society)), text: /#{organizations(:film_society).name}/
+    assert_select ".role-tag", text: "Archived"
   end
 
   test "owner can view archived organization directly" do
@@ -54,6 +56,53 @@ class OrganizationArchivesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "p", text: "This organization is archived."
+  end
+
+  test "owner sees permanent delete action for archived organization" do
+    organizations(:film_society).archive!
+    sign_in_as(users(:owner))
+
+    get edit_organization_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "h3", "Delete organization permanently"
+    assert_select "form[action=?]", organization_path(organizations(:film_society))
+  end
+
+  test "owner can permanently delete archived organization" do
+    organizations(:film_society).archive!
+    sign_in_as(users(:owner))
+
+    assert_difference("Organization.count", -1) do
+      delete organization_path(organizations(:film_society))
+    end
+
+    assert_redirected_to root_path
+    assert_nil Organization.find_by(slug: "buckeye-film-society")
+  end
+
+  test "owner cannot permanently delete active organization" do
+    sign_in_as(users(:owner))
+
+    assert_no_difference("Organization.count") do
+      delete organization_path(organizations(:film_society))
+    end
+
+    assert_response :forbidden
+    assert Organization.exists?(organizations(:film_society).id)
+  end
+
+  test "non-owner cannot permanently delete archived organization" do
+    organizations(:film_society).archive!
+    memberships(:film_member).update!(role: :officer)
+    sign_in_as(users(:member))
+
+    assert_no_difference("Organization.count") do
+      delete organization_path(organizations(:film_society))
+    end
+
+    assert_response :forbidden
+    assert Organization.exists?(organizations(:film_society).id)
   end
 
   test "non-member cannot access archived organization data" do

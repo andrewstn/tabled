@@ -9,19 +9,42 @@
     <p class="eyebrow">Welcome, <%= current_user.name %></p>
     <h1 class="mt-2 text-3xl font-semibold">Your organizations</h1>
 
-    <% if current_user.organizations.active.any? %>
+    <% active_organizations = current_user.organizations.active.order(:name) %>
+    <% archived_organizations = current_user.organizations.archived.order(:name) %>
+
+    <% if active_organizations.any? || archived_organizations.any? %>
       <p class="mt-2 text-sm text-ink-soft">Choose an organization to work in.</p>
-      <nav aria-label="Organization workspaces" class="mt-7 border-t border-rule">
-        <% current_user.organizations.active.order(:name).each do |organization| %>
-          <%= link_to organization_path(organization), class: "organization-row" do %>
-            <span class="font-bold"><%= organization.name %></span>
-            <span class="flex items-center gap-3">
-              <span class="role-tag"><%= current_user.memberships.find_by(organization: organization).role.humanize %></span>
-              <span aria-hidden="true" class="text-moss-dark">→</span>
-            </span>
+      <% if active_organizations.any? %>
+        <nav aria-label="Organization workspaces" class="mt-7 border-t border-rule">
+          <% active_organizations.each do |organization| %>
+            <%= link_to organization_path(organization), class: "organization-row" do %>
+              <span class="font-bold"><%= organization.name %></span>
+              <span class="flex items-center gap-3">
+                <span class="role-tag"><%= current_user.memberships.find_by(organization: organization).role.humanize %></span>
+                <span aria-hidden="true" class="text-moss-dark">→</span>
+              </span>
+            <% end %>
           <% end %>
-        <% end %>
-      </nav>
+        </nav>
+      <% end %>
+      <% if archived_organizations.any? %>
+        <section class="mt-7 border-t border-rule pt-5" aria-labelledby="archived-organizations">
+          <h2 id="archived-organizations" class="text-lg font-semibold">Archived organizations</h2>
+          <p class="mt-1 text-sm text-ink-soft">Archived workspaces stay readable until an owner restores or permanently deletes them.</p>
+          <nav aria-label="Archived organization workspaces" class="mt-4 border-t border-rule">
+            <% archived_organizations.each do |organization| %>
+              <%= link_to organization_path(organization), class: "organization-row" do %>
+                <span class="font-bold"><%= organization.name %></span>
+                <span class="flex items-center gap-3">
+                  <span class="role-tag">Archived</span>
+                  <span class="role-tag"><%= current_user.memberships.find_by(organization: organization).role.humanize %></span>
+                  <span aria-hidden="true" class="text-moss-dark">→</span>
+                </span>
+              <% end %>
+            <% end %>
+          </nav>
+        </section>
+      <% end %>
       <div class="mt-7 border-t border-rule pt-5">
         <%= link_to "+ Add another organization", new_organization_path, class: "text-link text-sm" %>
       </div>
