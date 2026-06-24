@@ -1,6 +1,16 @@
 require "test_helper"
 
 class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
+  test "organizations page keeps the create organization link" do
+    sign_in_as(users(:owner))
+
+    get root_path
+
+    assert_response :success
+    assert_select "h1", "Your organizations"
+    assert_select "a[href=?]", new_organization_path, text: "+ Add another organization"
+  end
+
   test "a member sees the organization dashboard and their role" do
     organizations(:film_society).update!(
       contact_email: "film@example.test",
@@ -171,9 +181,11 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     get organization_path(organizations(:film_society))
 
     assert_select "nav[aria-label='Your organizations']" do
+      assert_select "a[href=?]", root_path, text: "Your organizations"
       assert_select "a[href=?]", organization_path(organizations(:film_society))
       assert_select "a[href=?]", organization_path(organizations(:garden_club))
       assert_select "a[aria-current='page'][href=?]", organization_path(organizations(:film_society))
+      assert_select "a[href=?]", new_organization_path, count: 0
       assert_select "a[href=?]", edit_organization_path(organizations(:film_society)), count: 0
     end
   end
