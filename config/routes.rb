@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     resources :members, controller: "memberships", only: %i[index show update destroy]
     resource :archive, only: %i[update destroy], controller: "organization_archives"
     resource :leave, only: :destroy, controller: "organization_leaves"
+    resource :log_book, only: :show, controller: "activity_log_entries"
     resource :communication_preferences, only: %i[show update]
     resource :ownership_transfer, only: :update
     resource :reports, only: :show, controller: "reports" do

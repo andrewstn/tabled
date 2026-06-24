@@ -1,0 +1,74 @@
+<% content_for :title, "Log book · #{@organization.name} · Tabled" %>
+
+<article class="binder-page w-full">
+  <div class="document-meta">
+    <span><%= link_to @organization.name, organization_path(@organization), class: "text-link" %></span>
+    <span>Organization record</span>
+    <span>Current semester · <%= current_semester_label %></span>
+  </div>
+
+  <header class="flex flex-wrap items-end justify-between gap-5 border-b-2 border-ink/20 px-5 py-6 sm:px-8">
+    <div>
+      <p class="eyebrow">Log book</p>
+      <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Log book</h1>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">A record of important changes across this organization.</p>
+    </div>
+    <div class="text-sm">
+      <%= link_to "Back to workspace", organization_path(@organization), class: "text-link" %>
+    </div>
+  </header>
+
+  <section class="border-b border-rule px-5 py-5 sm:px-8" aria-label="Log book filters">
+    <%= form_with url: organization_log_book_path(@organization), method: :get, class: "grid gap-4 sm:grid-cols-[16rem_auto] sm:items-end" do |form| %>
+      <div>
+        <%= form.label :action_filter, "Activity type", class: "form-label" %>
+        <%= form.select :action_filter, options_for_select([["All activity", ""]] + @action_options.map { |action| [action.tr("._", " ").titleize, action] }, @action_filter), {}, class: "form-input" %>
+      </div>
+      <div class="flex gap-3">
+        <%= form.submit "Filter log book", class: "button-primary" %>
+        <% if @action_filter.present? %>
+          <%= link_to "Clear", organization_log_book_path(@organization), class: "button-secondary" %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="workspace-section" aria-labelledby="activity-entries">
+    <div class="workspace-section-heading">
+      <p class="eyebrow">Recent activity</p>
+      <h2 id="activity-entries" class="mt-1 text-2xl font-semibold">Organization record</h2>
+    </div>
+
+    <% if @activity_log_entries.any? %>
+      <ol class="mt-6 divide-y divide-rule border-y border-rule">
+        <% @activity_log_entries.each do |entry| %>
+          <li class="grid gap-3 py-4 sm:grid-cols-[10rem_1fr]">
+            <div class="text-xs text-ink-soft">
+              <p class="font-bold uppercase tracking-wide"><%= entry.category_label %></p>
+              <p class="mt-1"><%= entry.occurred_at.to_fs(:long) %></p>
+            </div>
+            <div>
+              <p class="text-base font-semibold text-ink"><%= entry.summary %></p>
+              <p class="mt-1 text-sm text-ink-soft">
+                <% if entry.actor %>
+                  Updated by <%= entry.actor.name %>
+                <% else %>
+                  Recorded by Tabled
+                <% end %>
+                <span aria-hidden="true"> · </span>
+                <span><%= entry.action_label %></span>
+              </p>
+            </div>
+          </li>
+        <% end %>
+      </ol>
+
+      <%= render "shared/pagination", paginator: @paginator %>
+    <% else %>
+      <div class="mt-6 border-l-4 border-amber bg-amber-pale/35 px-4 py-3">
+        <p class="font-bold">No notes in the log book yet.</p>
+        <p class="mt-1 text-sm text-ink-soft">Recent changes will appear here as officers manage the workspace.</p>
+      </div>
+    <% end %>
+  </section>
+</article>

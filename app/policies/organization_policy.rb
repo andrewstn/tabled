@@ -11,6 +11,10 @@ class OrganizationPolicy
     @membership&.owner? || @membership&.officer?
   end
 
+  def view_activity?
+    @membership&.owner? || @membership&.officer? || @membership&.coordinator?
+  end
+
   def transfer_ownership?
     @membership&.owner?
   end
