@@ -160,5 +160,3 @@ Only run `bin/kamal app exec "bin/rails db:seed"` in an environment where the sm
 - Recurring events, QR-code generation, calendar integrations, attachments, charts, XLSX import, read receipts, social profiles, avatars, bios, and public user profile pages are intentionally out of scope.
 - Existing production-style records are not historically backfilled into the Log Book.
 - Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
-
-See [docs/project_brief.md](docs/project_brief.md) for broader product and visual direction.
