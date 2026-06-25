@@ -1,43 +1,51 @@
 # Tabled
 
-Tabled is a production-minded Ruby on Rails application for the practical work of a student organization semester: members, officers, meetings, attendance, announcements, and internal operations.
+Tabled is a production-minded Ruby on Rails app for student organizations to manage rosters, gatherings, attendance, announcements, reports, and semester records.
 
-It is built as a portfolio-quality Rails app for the kind of work student officers actually inherit each semester: keeping rosters current, recording attendance, communicating with members, preserving reports, and leaving the next officer team a readable organization record.
+It is built as a portfolio-quality Rails application for the kind of operational work student officers actually inherit: keeping rosters current, inviting members, checking people in, communicating clearly, preserving reports, and handing the next officer team a readable record.
+
+## Screenshots
+
+Screenshots are not committed yet. Planned captures:
+
+- Organization dashboard
+- Member roster and member record
+- Gathering detail and attendance sheet
+- Bulletin
+- Semester report
+- Organization Log Book
+
+See [docs/screenshots](docs/screenshots) for the capture plan.
+
+## Why this exists
+
+Most student organizations run on a mix of spreadsheets, group chats, copied forms, and institutional memory. Tabled explores what a focused, campus-native operations tool could look like: practical enough for busy officers, structured enough to survive leadership turnover, and warm enough not to feel like another generic SaaS dashboard.
 
 ## Core features
 
-- Organization-scoped workspaces with owner, officer, coordinator, and member roles
-- Member rosters, invitations, reusable recruitment links, and CSV roster import
-- Gatherings with RSVPs, check-in windows, manual attendance, and CSV exports
-- Organization bulletin posts with targeted audiences and email delivery records
-- Communication preferences scoped per organization membership
-- Semester reports with participation and event summary exports
-- Workspace administration: settings, ownership transfer, leave flow, archive/restore
-- Organizer-only Log Book for important member, gathering, attendance, communication, report, and settings activity
+- Organization workspaces with owner, officer, coordinator, and member roles
+- Member rosters, member records, invitations, reusable join links, and CSV roster import
+- Gatherings with RSVPs, check-in windows, manual attendance, attendance notes, and CSV exports
+- Member-facing attendance history and communication preferences
+- Bulletin posts with audience targeting and email delivery records
+- Semester reports with roster, participation, and event summary exports
+- Workspace administration: settings, ownership transfer, leave flow, archive/restore, and permanent deletion for archived organizations
+- Organizer-only Log Book entries for important member, gathering, attendance, announcement, report, and settings activity
 
-## Stack
+## Tech stack
 
 - Ruby 3.4.9
 - Rails 8.1.3
 - PostgreSQL
-- Hotwire (Turbo and Stimulus)
-- Tailwind CSS
-
-## Screenshots
-
-Screenshots are intentionally not committed yet. Suggested captures for a recruiter review are:
-
-- Dashboard
-- Member roster
-- Event detail
-- Attendance sheet
-- Bulletin
-- Semester report
-- Log Book
+- Hotwire: Turbo and Stimulus
+- Tailwind CSS through `tailwindcss-rails`
+- Solid Queue, Solid Cache, and Solid Cable
+- Minitest, Capybara, Selenium, RuboCop, Brakeman, and Bundler Audit
+- Docker and Kamal deployment configuration
 
 ## Local setup
 
-Install Ruby 3.4.9 and PostgreSQL, make sure PostgreSQL is running, then:
+Install Ruby 3.4.9 and PostgreSQL. Make sure PostgreSQL is running, then:
 
 ```bash
 bundle install
@@ -45,14 +53,26 @@ bin/rails db:create db:migrate db:seed
 bin/dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The seed data includes an owner account for local exploration:
+Open [http://localhost:3000](http://localhost:3000).
+
+The default seed creates a small Buckeye Film Society demo workspace. Sign in with:
 
 - Email: `demo-owner@example.test`
 - Password: `tabled-demo-password`
 
-The default seed is the small demo seed. It is idempotent and creates a polished Buckeye Film Society workspace with a 12-person roster, organization settings data, owner/officer/coordinator/member roles, varied communication preferences, pending invitations, recruitment links, four gatherings, varied RSVP and attendance records, all-member/officer/event-targeted bulletin posts, an officer draft, announcement delivery records, activity log entries, and one archived demo organization hidden from normal workspace lists.
+Development emails are written under `tmp/mails`.
 
-For local screenshots, pagination checks, and UI stress testing, load the opt-in large demo seed:
+## Seed data
+
+The default seed is intentionally small and idempotent:
+
+```bash
+bin/rails db:seed
+```
+
+It creates a polished demo organization with members, roles, invitations, recruitment links, gatherings, RSVP and attendance records, bulletin posts, delivery records, activity log entries, and one archived demo organization.
+
+For local screenshots, pagination checks, and large-roster UI testing, load the opt-in large demo seed:
 
 ```bash
 SEED=large_demo bin/rails db:seed
@@ -60,76 +80,55 @@ SEED=large_demo bin/rails db:seed
 bin/rails seed:large_demo
 ```
 
-The large demo seed creates deterministic fake data only: seven organizations, hundreds of `example.com` demo users, a large Buckeye Film Society roster, many gatherings, RSVPs, attendance records, announcements, recruitment links, invitations, archived organization state, and Log Book entries. It is guarded from accidental production use unless `ALLOW_LARGE_DEMO_SEED=true` is set intentionally. The default `bin/rails db:seed` path remains small and safe for demo deployment.
-
-To try recruitment locally, sign in as the demo owner, open **Member roster → Recruitment links**, and copy the active Autumn Involvement Fair URL. Open that URL in a private browser window to follow the sign-up and join flow. Reusable links always add members; they cannot grant elevated roles. QR generation is intentionally not included yet.
-
-To try reporting locally, sign in as the demo owner and open **Semester report** from the organization dashboard or member roster. Use the report actions to download roster, participation, or event summary CSV files.
-
-To try communication preferences locally, sign in as any demo member and open **Communication preferences** from the organization dashboard. These settings are scoped to that member’s Buckeye Film Society membership.
-
-To try targeted announcement audiences, sign in as the demo owner and open **Bulletin → Post announcement**. Choose All members, Officers, Event RSVPs, or Checked-in attendees. Event audiences require a selected gathering. If you choose to email a published announcement, delivery records are created for sent and skipped recipients based on members’ announcement email preferences.
-
-To try workspace administration, sign in as the demo owner and open **Organization settings**. You can update organization details, transfer ownership to another current member, archive the organization, or restore an archived organization. The previous owner remains an owner after transfer. Archived organizations keep their records but block new activity and are hidden from normal workspace lists.
-
-To try the Log Book, sign in as the demo owner and open **Log book** from the Recent activity dashboard section. Owners, officers, and coordinators can view the organization-wide record of important changes; regular members cannot view the full Log Book.
-
-To try account settings, use **Account settings** in the signed-in header. This page updates the account name, email, and password used across organizations; social profiles, avatars, bios, and public user pages are intentionally out of scope.
-
-To try roster import locally, open **Member roster → Import roster** and upload a CSV with these headers:
-
-```csv
-name,email,role
-Sample Member,sample.member@example.test,member
-Sample Coordinator,sample.coordinator@example.test,coordinator
-```
-
-The import creates pending invitations for valid rows. Rows for existing members or duplicate pending invitations are skipped. Blank roles default to `member`; `owner` rows are rejected.
-
-Invitation and optional announcement emails stay local in development and are written beneath `tmp/mails`.
+The large seed creates deterministic fake data only. It is guarded from accidental production use unless `ALLOW_LARGE_DEMO_SEED=true` is set intentionally.
 
 ## Environment variables
 
-Local development works without extra environment variables when PostgreSQL is running. Production-style deploys should provide:
+Local development works without extra environment variables when PostgreSQL is available.
+
+Production-style deploys should provide:
 
 - `RAILS_MASTER_KEY` — decrypts Rails credentials; never commit `config/master.key`
-- `TABLED_DATABASE_PASSWORD` — production PostgreSQL password for `config/database.yml`
-- `TABLED_HOST` — canonical production host, used for host authorization and mailer links
+- `TABLED_DATABASE_PASSWORD` — production PostgreSQL password
+- `TABLED_HOST` — canonical production host for host authorization and mailer links
 - `TABLED_PROTOCOL` — usually `https`
 - `TABLED_ASSUME_SSL` — defaults to `true`
 - `TABLED_FORCE_SSL` — defaults to `true`
 - `RAILS_LOG_LEVEL` — defaults to `info`
-- `SOLID_QUEUE_IN_PUMA` — `true` for the simple single-server Kamal deployment
+- `SOLID_QUEUE_IN_PUMA` — `true` for the simple single-server Kamal setup
 
-Optional SMTP settings can be added later through environment variables or Rails credentials. The current production configuration documents SMTP but does not commit a provider or any secrets.
+Optional SMTP settings can be added through environment variables or Rails credentials. The current production configuration documents SMTP but does not commit a provider or any secrets.
 
 ## Tests and checks
 
-Run the full test suite:
+Run the Rails test suite:
 
 ```bash
 bin/rails test
 ```
 
-Run browser-backed system tests with:
+Run browser-backed system tests:
 
 ```bash
 bin/rails test:system
 ```
 
-Run style and security checks with:
+Run style, security, and dependency checks:
 
 ```bash
 bin/rubocop
 bin/brakeman --no-pager
+bin/bundler-audit
 ```
 
 ## Deployment notes
 
-The repository includes a production Dockerfile and Kamal configuration. Before deploying:
+The repository includes a production Dockerfile and Kamal configuration.
+
+Before deploying:
 
 1. Replace the placeholder image, server, registry, and host values in `config/deploy.yml`.
-2. Export required secrets in your shell or password manager:
+2. Export required secrets or add them to your deployment secret manager:
 
    ```bash
    export RAILS_MASTER_KEY=...
@@ -137,89 +136,29 @@ The repository includes a production Dockerfile and Kamal configuration. Before 
    ```
 
 3. Confirm `TABLED_HOST` matches the public hostname.
-4. Run `bin/kamal setup` for the first deploy, then `bin/kamal deploy` for later deploys.
-5. Run `bin/kamal app exec "bin/rails db:seed"` only if you want the small demo workspace in that environment. Do not run the large demo seed in production unless you intentionally set `ALLOW_LARGE_DEMO_SEED=true`.
+4. Run `bin/kamal setup` for the first deploy.
+5. Run `bin/kamal deploy` for later deploys.
 
 The `/up` health check is available for platform probes. Production uses Solid Queue, Solid Cache, and Solid Cable with separate configured databases. Local Active Storage is deliberate for the current portfolio/demo deployment; a durable object store can be added later if user uploads become part of the product.
 
+Only run `bin/kamal app exec "bin/rails db:seed"` in an environment where the small demo workspace is desired. Do not run the large demo seed in production unless that is intentional and `ALLOW_LARGE_DEMO_SEED=true` is set.
+
 ## Architecture notes
 
-- Organization scoping is enforced through slug-based organization lookup, membership checks, and organization-scoped associations.
-- Authorization is role-based: owners/officers manage most organization operations; coordinators can help with organizer workflows like gatherings, reports, attendance, and the Log Book; regular members have member-facing access.
-- Invitations store secure token digests. Recruitment links use signed IDs instead of persisted raw tokens.
-- Attendance separates organizer-marked records from member self check-in. Check-in codes are digest-backed and only shown when opened or regenerated.
-- Announcements support all-member, officers, event RSVP, and checked-in attendee audiences. Email delivery respects membership-scoped communication preferences.
-- Activity logging goes through `ActivityLog`, stores readable summaries and minimal metadata, and filters sensitive metadata keys.
-- Reports, roster imports, and CSV exports are organization-scoped and covered by authorization tests.
+- Organization scoping is enforced through slug-based lookup, membership checks, and organization-scoped associations.
+- Authorization is role-based: owners and officers manage most operations; coordinators help with organizer workflows; members receive member-facing access.
+- Invitations store secure token digests. Reusable join links use signed IDs instead of persisted raw tokens.
+- Attendance separates organizer-marked records from member self check-in.
+- Announcements support all-member, officers, event RSVP, and checked-in attendee audiences.
+- Activity logging goes through `ActivityLog`, stores readable summaries, and filters sensitive metadata keys.
+- Archived organizations keep their records, block new activity, remain reachable from the organizations page, and can be permanently deleted by owners.
 
-## Security notes
+## Known limitations and future work
 
-- Raw passwords, invitation tokens, recruitment link tokens, check-in codes, and credentials are not logged.
-- `config/master.key`, `.env*`, logs, temp files, and generated assets are ignored.
-- Archived organizations block new activity, including stale invitations and recruitment links.
-- Non-members should receive not-found responses instead of private organization data.
-- The demo credentials are placeholder-only and safe for a public demo environment.
+- Production SMTP provider setup is not included yet.
+- Local Active Storage is used for the current demo deployment.
+- Recurring events, QR-code generation, calendar integrations, attachments, charts, XLSX import, read receipts, social profiles, avatars, bios, and public user profile pages are intentionally out of scope.
+- Existing production-style records are not historically backfilled into the Log Book.
+- Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
 
-## Current scope
-
-Milestones 1 through 10 establish the multi-tenant organization workspace, active semester calendar, event sign-in record, organization bulletin, practical large-roster recruitment workflow, semester reporting, CSV exports, roster import, communication preferences, event-targeted announcements, delivery records, workspace administration, and organization Log Book:
-
-- Account signup and session authentication
-- Organizations with stable, human-readable URLs
-- Memberships with owner, officer, coordinator, and member roles
-- Transactional organization creation
-- Organization dashboards and workspace switching
-- Membership-scoped access and manager-only settings
-- A member directory with joined dates and roles
-- Owner/officer role management and member removal
-- Expiring, revocable invitations with secure token digests
-- Invitation acceptance for existing users and new account signup
-- Development-safe invitation email delivery
-- Organization-scoped upcoming and past gatherings
-- Owner/officer event management, with coordinator create/edit access
-- Member RSVP choices for attending, maybe, and not attending
-- Capacity and RSVP-deadline enforcement with organizer overrides
-- Private organizer event rosters and response summaries
-- Real upcoming gathering data on the organization dashboard
-- Organizer attendance sheets with present, late, excused, and absent records
-- Manual attendance marking with arrival times, notes, and the marking organizer
-- Digest-backed, time-limited member self check-in codes
-- Organization-scoped member attendance history
-- Organizer-only event attendance CSV export
-- Real attendance follow-ups and recent roll calls on the dashboard
-- Organization bulletins with pinned and recent announcements
-- Private officer drafts and officers-only posts
-- Owner/officer announcement drafting, publishing, editing, and removal
-- Optional audience-scoped announcement email delivery
-- Real bulletin content on the organization dashboard
-- Database-backed member roster search and role filtering
-- RSVP and attendance-status filtering for attendance sheets
-- Stable, query-preserving pagination for roster and attendance workflows
-- Reusable member-only recruitment links with expiration, use limits, and organizer controls
-- Public join pages with sign-in and account-creation return paths
-- Organizer-only semester reports with member participation and event summaries
-- Roster, participation, and event summary CSV exports
-- CSV roster import that creates pending invitations and reports skipped or invalid rows
-- Membership-scoped communication preferences
-- Event-targeted announcement audiences for RSVP and checked-in attendee groups
-- Announcement email delivery previews and organizer-visible delivery summaries
-- Delivery records for sent and preference-skipped announcement emails
-- Practical organization settings and read-only workspace slugs
-- Owner-only ownership transfer that keeps the previous owner in place
-- Self-service leave organization flow with last-owner protection
-- Owner-only archive and restore flows for organization workspaces
-- Minimal account settings for editing account name
-- Organization-scoped member records for roster and attendance context
-- Organization-scoped Log Book entries for important member, gathering, attendance, announcement, report, and settings activity
-- Organizer-only Log Book visibility for owners, officers, and coordinators
-- Idempotent local demo data
-
-Activity logging records readable summaries for important organization actions, but it intentionally avoids raw invitation tokens, recruitment link tokens, passwords, check-in codes, and sensitive credentials. Existing production-style records are not historically backfilled; activity appears for actions recorded after the Log Book feature exists, plus local demo seed entries.
-
-Event reminder scheduling, digest emails, push notifications, SMS, comments, reactions, attachments, production email providers, recurring events, QR-code generation, geolocation, complex analytics, calendar integrations, persistent import batches, XLSX import, automatic import emails, charts, read receipts, social-style profiles, avatars, bios, public user profile pages, and historical activity backfill are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
-
-## Product and visual direction
-
-Tabled should feel like a club office, campus bulletin board, practical sign-in sheet, and well-used organization binder. The interface uses warm paper surfaces, moss and amber accents, readable type, tactile controls, and specific campus language. Keep future work active, practical, and human—not archival or bureaucratic—and avoid generic SaaS cards, glass effects, AI-style gradients, and vague productivity copy.
-
-See [docs/project_brief.md](docs/project_brief.md) for the broader product brief.
+See [docs/project_brief.md](docs/project_brief.md) for broader product and visual direction.
