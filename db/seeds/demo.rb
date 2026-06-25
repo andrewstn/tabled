@@ -339,7 +339,7 @@ activity_entries = [
     actor: demo_users.fetch("demo-owner@example.test"),
     action: "settings.updated",
     subject: organization,
-    summary: "Avery updated organization settings.",
+    summary: "Avery Thompson updated organization settings.",
     occurred_at: 2.days.ago,
     metadata: { changed_fields: %w[meeting_note current_semester_label] }
   },
@@ -347,7 +347,7 @@ activity_entries = [
     actor: demo_users.fetch("maya.member@example.test"),
     action: "announcement.published",
     subject: organization.announcements.find_by!(title: "Camera Workshop sign-ups"),
-    summary: "Maya published Camera Workshop sign-ups.",
+    summary: "Maya Patel published Camera Workshop sign-ups.",
     occurred_at: 1.day.ago,
     metadata: { title: "Camera Workshop sign-ups", audience: "all_members" }
   },
@@ -355,7 +355,7 @@ activity_entries = [
     actor: demo_users.fetch("demo-owner@example.test"),
     action: "announcement.emailed",
     subject: delivered_announcement,
-    summary: "Avery emailed First Friday Film Night details.",
+    summary: "Avery Thompson emailed First Friday Film Night details.",
     occurred_at: 2.hours.ago,
     metadata: {
       title: delivered_announcement.title,
@@ -367,7 +367,7 @@ activity_entries = [
     actor: demo_users.fetch("theo.member@example.test"),
     action: "rsvp.changed",
     subject: events.fetch("First Friday Film Night").rsvps.find_by!(membership: Membership.find_by!(organization: organization, user: demo_users.fetch("theo.member@example.test"))),
-    summary: "Theo RSVP’d maybe for First Friday Film Night.",
+    summary: "Theo Brooks RSVP’d maybe for First Friday Film Night.",
     occurred_at: 18.hours.ago,
     metadata: { event_title: "First Friday Film Night", status: "maybe" }
   },
@@ -375,7 +375,7 @@ activity_entries = [
     actor: demo_users.fetch("demo-owner@example.test"),
     action: "attendance.marked",
     subject: planning_event.attendance_records.find_by!(membership: Membership.find_by!(organization: organization, user: demo_users.fetch("nina.member@example.test"))),
-    summary: "Avery marked Nina Alvarez excused for Short Film Planning Table.",
+    summary: "Avery Thompson marked Nina Alvarez excused for Short Film Planning Table.",
     occurred_at: 8.days.ago + 2.hours,
     metadata: { event_title: planning_event.title, member_name: "Nina Alvarez", status: "excused" }
   },
@@ -383,7 +383,7 @@ activity_entries = [
     actor: demo_users.fetch("demo-owner@example.test"),
     action: "check_in.opened",
     subject: planning_event,
-    summary: "Avery opened check-in for Short Film Planning Table.",
+    summary: "Avery Thompson opened check-in for Short Film Planning Table.",
     occurred_at: planning_event.check_in_opens_at,
     metadata: { event_title: planning_event.title, duration_minutes: 120 }
   },
@@ -391,7 +391,7 @@ activity_entries = [
     actor: demo_users.fetch("maya.member@example.test"),
     action: "member.role_changed",
     subject: Membership.find_by!(organization: organization, user: demo_users.fetch("theo.member@example.test")),
-    summary: "Maya changed Theo Brooks from member to coordinator.",
+    summary: "Maya Patel changed Theo Brooks from member to coordinator.",
     occurred_at: 3.days.ago,
     metadata: { from_role: "member", to_role: "coordinator" }
   },
@@ -399,14 +399,14 @@ activity_entries = [
     actor: demo_users.fetch("demo-owner@example.test"),
     action: "recruitment_link.created",
     subject: active_join_link,
-    summary: "Avery created the Autumn Involvement Fair recruitment link.",
+    summary: "Avery Thompson created the Autumn Involvement Fair recruitment link.",
     occurred_at: 4.days.ago,
     metadata: { label: active_join_link.label, role: "member", max_uses: active_join_link.max_uses }
   },
   {
     actor: demo_users.fetch("demo-owner@example.test"),
     action: "report.exported",
-    summary: "Avery exported the participation report.",
+    summary: "Avery Thompson exported the participation report.",
     occurred_at: 6.hours.ago,
     metadata: { report: "participation", format: "csv" }
   },
@@ -414,7 +414,7 @@ activity_entries = [
     actor: demo_users.fetch("nina.member@example.test"),
     action: "communication_preferences.updated",
     subject: Membership.find_by!(organization: organization, user: demo_users.fetch("nina.member@example.test")),
-    summary: "Nina updated their communication preferences.",
+    summary: "Nina Alvarez updated their communication preferences.",
     occurred_at: 5.hours.ago,
     metadata: {}
   }
@@ -437,7 +437,7 @@ ActivityLog.record!(
   actor: demo_users.fetch("demo-owner@example.test"),
   action: "organization.archived",
   subject: archived_organization,
-  summary: "Avery archived Archived Film Committee.",
+  summary: "Avery Thompson archived Archived Film Committee.",
   occurred_at: 30.days.ago,
   metadata: { organization_name: archived_organization.name, demo_seed: true }
 )
