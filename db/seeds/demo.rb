@@ -22,6 +22,30 @@ organization.update!(
   current_semester_label: "Fall 2026"
 )
 
+legacy_demo_emails = [
+  "prospective.member@example.com",
+  "new.officer@example.com"
+]
+
+organization.memberships
+  .joins(:user)
+  .where(users: { email_address: legacy_demo_emails })
+  .or(
+    organization.memberships
+      .joins(:user)
+      .where("users.email_address ~ ?", '^[^.@]+\.[^.@]+\.[0-9]{3}@example\.edu$')
+  )
+  .or(
+    organization.memberships
+      .joins(:user)
+      .where("users.email_address LIKE ?", "film.member.%@example.test")
+  )
+  .destroy_all
+
+organization.invitations
+  .where("lower(email) IN (?)", legacy_demo_emails)
+  .destroy_all
+
 roles_by_email = {
   "demo-owner@example.test" => :owner,
   "maya.member@example.test" => :officer,
@@ -43,10 +67,20 @@ Membership.find_by!(organization: organization, user: demo_users.fetch("nina.mem
   recruitment_emails_enabled: false
 )
 
-scale_memberships = 8.times.map do |index|
-  email_address = format("film.member.%02d@example.test", index + 1)
-  user = User.find_or_initialize_by(email_address: email_address)
-  user.name = format("Film Society Member %02d", index + 1)
+roster_people = [
+  { name: "Jordan Lee", email_address: "jordan.lee@example.edu" },
+  { name: "Priya Shah", email_address: "priya.shah@example.edu" },
+  { name: "Marcus Williams", email_address: "marcus.williams@example.edu" },
+  { name: "Ella Martinez", email_address: "ella.martinez@example.edu" },
+  { name: "Samira Hassan", email_address: "samira.hassan@example.edu" },
+  { name: "Owen Gallagher", email_address: "owen.gallagher@example.edu" },
+  { name: "Leah Kim", email_address: "leah.kim@example.edu" },
+  { name: "Diego Ramirez", email_address: "diego.ramirez@example.edu" }
+]
+
+scale_memberships = roster_people.each_with_index.map do |attributes, index|
+  user = User.find_or_initialize_by(email_address: attributes.fetch(:email_address))
+  user.name = attributes.fetch(:name)
   user.password = "tabled-demo-password"
   user.save!
 
@@ -66,8 +100,8 @@ scale_memberships = 8.times.map do |index|
 end
 
 pending_invitations = {
-  "prospective.member@example.com" => :member,
-  "new.officer@example.com" => :officer
+  "camille.bennett@example.edu" => :member,
+  "riley.nguyen@example.edu" => :officer
 }
 
 pending_invitations.each do |email_address, role|

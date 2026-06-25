@@ -17,9 +17,11 @@ LAST_NAMES = %w[
 ].freeze
 
 def large_demo_user(index)
-  email = format("large-demo-%03d@example.com", index)
+  first_name = FIRST_NAMES[index % FIRST_NAMES.size]
+  last_name = LAST_NAMES[(index / FIRST_NAMES.size) % LAST_NAMES.size]
+  email = "#{first_name}.#{last_name}.#{format('%03d', index)}@example.edu".downcase
   user = User.find_or_initialize_by(email_address: email)
-  user.name = "#{FIRST_NAMES[index % FIRST_NAMES.size]} #{LAST_NAMES[(index / FIRST_NAMES.size) % LAST_NAMES.size]}"
+  user.name = "#{first_name} #{last_name}"
   user.password = PASSWORD
   user.save!
   user
@@ -53,7 +55,7 @@ def large_demo_event(organization:, creator:, title:, starts_at:, index:)
   event = organization.events.find_or_initialize_by(title: title)
   event.update!(
     created_by: creator,
-    description: "Demo gathering ##{index + 1} for #{organization.name}.",
+    description: "A working #{organization.name.downcase} gathering for members to plan, participate, and record attendance.",
     location: [ "Student Union screening room", "Media lab 204", "Library group room", "Campus center lounge" ][index % 4],
     starts_at: starts_at,
     ends_at: starts_at + [ 60, 75, 90, 120 ][index % 4].minutes,
@@ -73,6 +75,21 @@ organizations = [
   [ "Student Design Studio", "student-design-studio", true ]
 ].each_with_index.to_h do |(name, slug, archived), index|
   [ slug, large_demo_organization(name: name, slug: slug, index: index, archived: archived) ]
+end
+
+organizations.values.each do |organization|
+  organization.memberships
+    .joins(:user)
+    .where("users.email_address LIKE ?", "large-demo-%@example.com")
+    .destroy_all
+
+  organization.invitations
+    .where("lower(email) LIKE ?", "#{organization.slug}-invite-%@example.com")
+    .destroy_all
+
+  organization.announcements
+    .where("title LIKE ?", "Large demo bulletin %")
+    .destroy_all
 end
 
 users = 260.times.map { |index| large_demo_user(index + 1) }
@@ -104,7 +121,7 @@ organizations.values.each do |organization|
   organization.activity_log_entries.where("metadata @> ?", { large_demo_seed: true }.to_json).destroy_all
 
   4.times do |index|
-    email = "#{organization.slug}-invite-#{index + 1}@example.com"
+    email = "#{organization.slug}-prospect-#{index + 1}@example.edu"
     invitation = organization.invitations.unresolved.where("lower(email) = ?", email).first_or_initialize
     invitation.assign_attributes(
       invited_by: owner,
@@ -176,7 +193,7 @@ events_by_organization.each do |slug, events|
         status: attendance_status,
         checked_in_at: attendance_status.in?(%w[present late]) ? event.starts_at + (member_index % 25).minutes : nil,
         marked_by: owner,
-        note: member_index % 17 == 0 ? "Large demo note for filtering and review." : nil
+        note: member_index % 17 == 0 ? "Checked in after class and followed up with the organizer." : nil
       )
     end
 
@@ -198,10 +215,10 @@ organizations.values.each do |organization|
   18.times do |index|
     audience = Announcement::AUDIENCES[index % Announcement::AUDIENCES.size]
     audience = "all_members" if target_events.empty? && Announcement::EVENT_AUDIENCES.include?(audience)
-    announcement = organization.announcements.find_or_initialize_by(title: "Large demo bulletin #{index + 1}")
+    announcement = organization.announcements.find_or_initialize_by(title: "Campus bulletin #{index + 1}")
     announcement.update!(
       author: author,
-      body: "A practical large-demo announcement for #{organization.name}.",
+      body: "Please review the details for this week’s #{organization.name.downcase} plans and update your RSVP if your availability changed.",
       audience: audience,
       target_event: Announcement::EVENT_AUDIENCES.include?(audience) ? target_events[index % target_events.size] : nil,
       status: index % 6 == 0 ? :draft : :published,
@@ -242,5 +259,5 @@ organizations.values.each do |organization|
   end
 end
 
-puts "Seeded large demo data: #{Organization.where(slug: organizations.keys).count} organizations, #{users.size} users, #{main_organization.memberships.count} Buckeye Film Society members."
-puts "Sign in with any large-demo user, for example large-demo-001@example.com / #{PASSWORD}."
+puts "Seeded large campus demo data: #{Organization.where(slug: organizations.keys).count} organizations, #{users.size} users, #{main_organization.memberships.count} Buckeye Film Society members."
+puts "Sign in with any seeded campus user, for example avery.adams.001@example.edu / #{PASSWORD}."
