@@ -1,10 +1,8 @@
 # Tabled Project Brief
 
-Tabled is a production-minded Ruby on Rails application for student organizations and small teams.
+Tabled is a production-minded Ruby on Rails application for student organizations and small teams. It helps officers manage the operational work of a semester: members, roles, gatherings, attendance, announcements, reports, and internal records.
 
-It helps student organization officers manage members, roles, events, attendance, announcements, and internal operations.
-
-The app should feel warm, campus-native, practical, and robust — not like a generic AI/B2B SaaS dashboard.
+The app should feel warm, campus-native, practical, and robust—not like a generic SaaS dashboard.
 
 ## Core idea
 
@@ -53,27 +51,19 @@ Avoid:
 - vague “optimize your workflow” copy
 - generic “all-in-one platform” positioning
 
-## MVP
+## Current product shape
 
-Milestone 1: Organization foundation
+- Accounts, sessions, and membership-scoped organization access
+- Owner, officer, coordinator, and member roles
+- Organization dashboards, settings, ownership transfer, archive/restore, and permanent delete for archived workspaces
+- Member roster, member records, invitations, reusable join links, and CSV roster import
+- Gatherings with RSVPs, attendance sheets, self check-in windows, and CSV exports
+- Organization bulletin posts with audience targeting and email delivery records
+- Communication preferences per organization membership
+- Semester reports with roster, participation, and event summary exports
+- Organizer-only Log Book entries for important workspace activity
+- Small and large deterministic seed modes for local demos and UI stress testing
 
-- Users can sign up, log in, and log out.
-- Users can create organizations.
-- Users can belong to multiple organizations through memberships.
-- Memberships have roles: owner, officer, coordinator, member.
-- Organization data is securely scoped.
-- Members can view organization dashboards.
-- Owners and officers can access settings.
-- App has local seed data.
+## Current boundaries
 
-Future milestones:
-
-- Invitations
-- Member directory
-- Events
-- RSVPs
-- Attendance and check-ins
-- Announcements
-- Activity log
-- CSV import/export
-- Recruiter-facing demo workspace
+Tabled does not currently include production SMTP provider setup, recurring events, QR-code generation, calendar integrations, attachments, charts, XLSX import, read receipts, social profiles, avatars, or public user profile pages.
