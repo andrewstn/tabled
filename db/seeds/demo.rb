@@ -6,7 +6,7 @@ demo_users = [
 ].to_h do |attributes|
   user = User.find_or_initialize_by(email_address: attributes[:email_address]).tap do |user|
     user.name = attributes[:name]
-    user.password = "tabled-demo-password" if user.new_record?
+    user.password = "tabled-demo-password"
     user.save!
   end
   [ attributes[:email_address], user ]
@@ -47,7 +47,7 @@ scale_memberships = 8.times.map do |index|
   email_address = format("film.member.%02d@example.test", index + 1)
   user = User.find_or_initialize_by(email_address: email_address)
   user.name = format("Film Society Member %02d", index + 1)
-  user.password = "tabled-demo-password" if user.new_record?
+  user.password = "tabled-demo-password"
   user.save!
 
   organization.memberships.find_or_initialize_by(user: user).tap do |membership|

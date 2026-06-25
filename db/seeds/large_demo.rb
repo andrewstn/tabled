@@ -20,7 +20,7 @@ def large_demo_user(index)
   email = format("large-demo-%03d@example.com", index)
   user = User.find_or_initialize_by(email_address: email)
   user.name = "#{FIRST_NAMES[index % FIRST_NAMES.size]} #{LAST_NAMES[(index / FIRST_NAMES.size) % LAST_NAMES.size]}"
-  user.password = PASSWORD if user.new_record?
+  user.password = PASSWORD
   user.save!
   user
 end
