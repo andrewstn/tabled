@@ -4,24 +4,20 @@ Tabled is a production-minded Ruby on Rails application for student organization
 
 It is focused on realistic student organization operations: keeping rosters current, inviting members, recording RSVPs and check-ins, communicating with members, exporting semester records, and giving future officers a readable handoff.
 
+Production deployment can be found at: <https://tabled-production.up.railway.app/>
+
 ## Screenshots
 
-Screenshots coming soon.
-
-Planned captures:
-
-- Organization dashboard
-- Member roster and member record
-- Gathering detail and attendance sheet
-- Bulletin
-- Semester report
-- Organization Log Book
-
-See [docs/screenshots](docs/screenshots) for the screenshot capture plan.
+![Organization Landing Page](docs/screenshots/landing.png)
+![Organization Dashboard](docs/screenshots/dash.png)
+![Gathering Screenshot](docs/screenshots/gathering.png)
+![Bulletin Screenshot](docs/screenshots/bulletin.png)
+![Semester Report Screenshot](docs/screenshots/report.png)
+![Log Book Screenshot](docs/screenshots/log.png)
 
 ## Why I built this
 
-Student organizations often run on spreadsheets, group chats, copied forms, and institutional memory. Tabled explores what a focused, campus-native operations tool could look like for officers who need to keep a semester moving without turning club work into generic business software.
+Student organizations often run on spreadsheets, group chats (such as GroupMe), copied forms, and institutional memory. Tabled explores what a focused, campus-native operations tool could look like for officers who need to keep a semester moving without turning club work into generic business software.
 
 The application goes beyond simple CRUD with role-based access, organization scoping, CSV import/export, attendance workflows, public demo protections, and deployment-oriented configuration.
 
@@ -80,7 +76,7 @@ The default seed is the small demo seed:
 bin/rails db:seed
 ```
 
-It creates a believable Buckeye Film Society workspace with members, roles, invitations, recruitment links, gatherings, RSVP and attendance records, bulletin posts, delivery records, Log Book entries, and one archived demo organization.
+It creates a Buckeye Film Society workspace with members, roles, invitations, recruitment links, gatherings, RSVP and attendance records, bulletin posts, delivery records, Log Book entries, and one archived demo organization.
 
 For local screenshots, pagination checks, and large-roster UI testing, load the opt-in large demo seed:
 
@@ -201,10 +197,9 @@ On Railway, run `bin/rails demo:refresh` manually after deploys or from a schedu
 
 ## Known limitations and future work
 
-- Production SMTP provider setup is not included yet.
+- Production SMTP provider setup is not included yet. Consequently, invitation emails do not work on production, but organizations can still be joined via recruitment links!
 - Local Active Storage is used for the current demo deployment.
-- Recurring gatherings, QR-code generation, calendar integrations, attachments, charts, XLSX import, read receipts, social profiles, avatars, bios, and public user profile pages are intentionally out of scope.
-- Existing production-style records are not historically backfilled into the Log Book.
+- Recurring gatherings, QR-code generation, calendar integrations, attachments, charts, XLSX import, read receipts, social profiles, avatars, bios, and public user profile pages are intentionally out of scope. I want Tabled to feel entirely focused on actual organizational functionality and less social-media-y.
 - Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
 
 See [docs/project_brief.md](docs/project_brief.md) for broader product and visual direction.
