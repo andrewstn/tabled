@@ -9,3 +9,11 @@ namespace :seed do
     load Rails.root.join("db/seeds/large_demo.rb")
   end
 end
+
+namespace :demo do
+  desc "Refresh the public demo workspace with current relative dates"
+  task refresh: :environment do
+    load Rails.root.join("db/seeds/demo.rb")
+    puts "Public demo workspace refreshed."
+  end
+end
