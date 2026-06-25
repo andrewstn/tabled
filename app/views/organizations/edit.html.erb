@@ -16,11 +16,13 @@
       <%= render "shared/form_errors", record: @organization %>
       <div>
         <%= form.label :name, "Organization name", class: "form-label" %>
-        <%= form.text_field :name, required: true, class: "form-input" %>
+        <%= form.text_field :name, required: true, maxlength: Organization::NAME_MAX_LENGTH, class: "form-input" %>
+        <p class="mt-2 text-sm text-ink-soft"><%= Organization::NAME_MAX_LENGTH %> characters maximum.</p>
       </div>
       <div>
         <%= form.label :description, "Organization description", class: "form-label" %>
-        <%= form.text_area :description, rows: 5, maxlength: 1000, class: "form-input resize-y" %>
+        <%= form.text_area :description, rows: 5, maxlength: Organization::DESCRIPTION_MAX_LENGTH, class: "form-input resize-y" %>
+        <p class="mt-2 text-sm text-ink-soft"><%= Organization::DESCRIPTION_MAX_LENGTH %> characters maximum.</p>
       </div>
       <div>
         <%= form.label :contact_email, "Contact email", class: "form-label" %>

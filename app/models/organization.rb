@@ -1,4 +1,7 @@
 class Organization < ApplicationRecord
+  NAME_MAX_LENGTH = 120
+  DESCRIPTION_MAX_LENGTH = 1_000
+
   has_many :memberships, dependent: :destroy
   has_many :users, through: :memberships
   has_many :invitations, dependent: :destroy
@@ -12,10 +15,10 @@ class Organization < ApplicationRecord
   scope :active, -> { where(archived_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
 
-  validates :name, presence: true, length: { maximum: 120 }
+  validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
   validates :slug, presence: true, uniqueness: true,
     format: { with: /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/, message: "may only contain lowercase letters, numbers, and hyphens" }
-  validates :description, length: { maximum: 1_000 }
+  validates :description, length: { maximum: DESCRIPTION_MAX_LENGTH }
   validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
   validates :website_url, format: { with: URI::DEFAULT_PARSER.make_regexp(%w[http https]), message: "must start with http:// or https://" }, allow_blank: true
   validates :meeting_note, length: { maximum: 255 }

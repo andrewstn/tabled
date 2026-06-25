@@ -5,6 +5,14 @@ class OrganizationsCreationTest < ActionDispatch::IntegrationTest
     post session_path, params: { email_address: users(:owner).email_address, password: "password1234" }
   end
 
+  test "new organization form includes length caps" do
+    get new_organization_path
+
+    assert_response :success
+    assert_select "input[name='organization[name]'][maxlength=?]", Organization::NAME_MAX_LENGTH.to_s
+    assert_select "textarea[name='organization[description]'][maxlength=?]", Organization::DESCRIPTION_MAX_LENGTH.to_s
+  end
+
   test "creates an organization with the current user as owner" do
     assert_difference([ "Organization.count", "Membership.count" ]) do
       post organizations_path, params: { organization: { name: "Campus Radio Club", description: "Student voices over the air." } }

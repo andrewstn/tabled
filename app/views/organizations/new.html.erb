@@ -8,12 +8,13 @@
     <%= render "shared/form_errors", record: @organization %>
     <div>
       <%= form.label :name, "Organization name", class: "form-label" %>
-      <%= form.text_field :name, required: true, autofocus: true, placeholder: "Buckeye Film Society", class: "form-input" %>
-      <p class="mt-2 text-sm text-ink-soft">Use the same name that appears on campus listings, flyers, and meeting notices.</p>
+      <%= form.text_field :name, required: true, autofocus: true, maxlength: Organization::NAME_MAX_LENGTH, placeholder: "Buckeye Film Society", class: "form-input" %>
+      <p class="mt-2 text-sm text-ink-soft">Use the same name that appears on campus listings, flyers, and meeting notices. <%= Organization::NAME_MAX_LENGTH %> characters maximum.</p>
     </div>
     <div>
       <%= form.label :description, "Organization description", class: "form-label" %>
-      <%= form.text_area :description, rows: 5, maxlength: 1000, placeholder: "What does the organization do, and who is it for?", class: "form-input resize-y" %>
+      <%= form.text_area :description, rows: 5, maxlength: Organization::DESCRIPTION_MAX_LENGTH, placeholder: "What does the organization do, and who is it for?", class: "form-input resize-y" %>
+      <p class="mt-2 text-sm text-ink-soft">Keep this readable for members. <%= Organization::DESCRIPTION_MAX_LENGTH %> characters maximum.</p>
     </div>
     <div class="flex flex-wrap items-center gap-4">
       <%= form.submit "Create organization", class: "button-primary" %>
