@@ -88,6 +88,38 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "p", text: "No notes in the log book yet."
   end
 
+  test "owner sees singular attendance follow up copy in semester report card" do
+    Event.create!(
+      organization: organizations(:film_society),
+      created_by: users(:owner),
+      title: "Unmarked workshop",
+      starts_at: 2.days.ago
+    )
+    sign_in_as(users(:owner))
+
+    get organization_path(organizations(:film_society))
+
+    assert_response :success
+    assert_includes response.body, "1 event still needs attendance."
+  end
+
+  test "owner sees plural attendance follow up copy in semester report card" do
+    2.times do |index|
+      Event.create!(
+        organization: organizations(:film_society),
+        created_by: users(:owner),
+        title: "Unmarked workshop #{index + 1}",
+        starts_at: (index + 2).days.ago
+      )
+    end
+    sign_in_as(users(:owner))
+
+    get organization_path(organizations(:film_society))
+
+    assert_response :success
+    assert_includes response.body, "2 events still need attendance."
+  end
+
   test "dashboard member preview paginates around the table" do
     11.times do |index|
       user = User.create!(
