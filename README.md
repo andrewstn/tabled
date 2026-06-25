@@ -2,7 +2,7 @@
 
 Tabled is a production-minded Ruby on Rails application for student organizations to manage rosters, gatherings, attendance, announcements, reports, and semester records.
 
-It was built as a portfolio-quality Rails app focused on realistic student organization operations: keeping rosters current, inviting members, recording RSVPs and check-ins, communicating with members, exporting semester records, and giving future officers a readable handoff.
+It is focused on realistic student organization operations: keeping rosters current, inviting members, recording RSVPs and check-ins, communicating with members, exporting semester records, and giving future officers a readable handoff.
 
 ## Screenshots
 
@@ -23,7 +23,7 @@ See [docs/screenshots](docs/screenshots) for the screenshot capture plan.
 
 Student organizations often run on spreadsheets, group chats, copied forms, and institutional memory. Tabled explores what a focused, campus-native operations tool could look like for officers who need to keep a semester moving without turning club work into generic business software.
 
-The project is also a production-minded Rails portfolio piece: it goes beyond simple CRUD with role-based access, organization scoping, CSV import/export, attendance workflows, public demo protections, and deployment-oriented configuration.
+The application goes beyond simple CRUD with role-based access, organization scoping, CSV import/export, attendance workflows, public demo protections, and deployment-oriented configuration.
 
 ## Core features
 
@@ -126,7 +126,7 @@ Local development works without extra environment variables when PostgreSQL is a
 | `TABLED_PROTOCOL` | Protocol for generated mailer links, usually `https`. |
 | `TABLED_ASSUME_SSL` | Controls `config.assume_ssl`; defaults to `true` in production. |
 | `TABLED_FORCE_SSL` | Controls `config.force_ssl`; defaults to `true` in production. |
-| `TABLED_PUBLIC_DEMO` | Set to `true` for the public portfolio demo so seeded demo accounts are read-only. |
+| `TABLED_PUBLIC_DEMO` | Set to `true` for a public demo so seeded demo accounts are read-only. |
 | `TABLED_SOLID_QUEUE_IN_PUMA` | Set to `true` only after Solid Queue tables are prepared and Puma should run the queue supervisor. |
 | `RAILS_LOG_LEVEL` | Rails log level; defaults to `info`. |
 | `RAILS_MAX_THREADS` | Puma thread count and database max connection baseline. |
@@ -162,7 +162,7 @@ Railway deployment is also supported by the app shape: use the Dockerfile or Rai
 
 ## Public demo maintenance
 
-For a public resume/portfolio deployment, set:
+For a public demo deployment, set:
 
 ```bash
 TABLED_PUBLIC_DEMO=true
@@ -206,15 +206,5 @@ On Railway, run `bin/rails demo:refresh` manually after deploys or from a schedu
 - Recurring gatherings, QR-code generation, calendar integrations, attachments, charts, XLSX import, read receipts, social profiles, avatars, bios, and public user profile pages are intentionally out of scope.
 - Existing production-style records are not historically backfilled into the Log Book.
 - Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
-
-## Repository metadata
-
-Suggested GitHub description:
-
-> Production-minded Rails app for student organizations to manage rosters, gatherings, attendance, announcements, reports, and semester records.
-
-Suggested GitHub topics:
-
-`ruby-on-rails`, `rails`, `postgresql`, `tailwindcss`, `student-organizations`, `attendance-tracking`, `role-based-access-control`, `csv-import-export`, `portfolio-project`
 
 See [docs/project_brief.md](docs/project_brief.md) for broader product and visual direction.
