@@ -7,6 +7,7 @@ demo_users = [
   user = User.find_or_initialize_by(email_address: attributes[:email_address]).tap do |user|
     user.name = attributes[:name]
     user.password = "tabled-demo-password"
+    user.demo_account = true
     user.save!
   end
   [ attributes[:email_address], user ]
@@ -82,6 +83,7 @@ scale_memberships = roster_people.each_with_index.map do |attributes, index|
   user = User.find_or_initialize_by(email_address: attributes.fetch(:email_address))
   user.name = attributes.fetch(:name)
   user.password = "tabled-demo-password"
+  user.demo_account = true
   user.save!
 
   organization.memberships.find_or_initialize_by(user: user).tap do |membership|

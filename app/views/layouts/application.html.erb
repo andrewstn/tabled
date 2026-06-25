@@ -50,6 +50,15 @@
       <% end %>
     </header>
 
+    <% if public_demo_mode? && authenticated? && current_user.demo_account? %>
+      <div class="border-b border-amber/50 bg-amber-pale/45">
+        <div class="mx-auto max-w-6xl px-5 py-3 text-sm leading-6 text-ink-soft">
+          <strong class="text-ink">Public demo mode:</strong>
+          You can explore Tabled, but changes are disabled so the shared demo workspace stays intact for everyone.
+        </div>
+      </div>
+    <% end %>
+
     <% if flash.any? %>
       <div class="mx-auto max-w-6xl px-5 pt-5">
         <% flash.each do |type, message| %>

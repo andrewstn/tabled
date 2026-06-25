@@ -23,6 +23,7 @@ def large_demo_user(index)
   user = User.find_or_initialize_by(email_address: email)
   user.name = "#{first_name} #{last_name}"
   user.password = PASSWORD
+  user.demo_account = true
   user.save!
   user
 end

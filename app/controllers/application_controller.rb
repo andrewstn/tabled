@@ -1,7 +1,8 @@
 class ApplicationController < ActionController::Base
   before_action :require_authentication
+  before_action :prevent_public_demo_mutation
 
-  helper_method :authenticated?, :current_user
+  helper_method :authenticated?, :current_user, :public_demo_mode?
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
@@ -35,6 +36,20 @@ class ApplicationController < ActionController::Base
     return unless @organization&.archived?
 
     redirect_to organization_path(@organization), alert: "Restore this organization before making changes."
+  end
+
+  def public_demo_mode?
+    ActiveModel::Type::Boolean.new.cast(ENV.fetch("TABLED_PUBLIC_DEMO", "false"))
+  end
+
+  def prevent_public_demo_mutation
+    return unless public_demo_mode?
+    return unless authenticated?
+    return unless current_user.demo_account?
+    return if request.get? || request.head?
+    return if controller_path == "sessions"
+
+    redirect_back fallback_location: root_path, alert: "Public demo mode keeps this workspace read-only so it stays intact for everyone."
   end
 
   def terminate_session
