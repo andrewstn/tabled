@@ -19,7 +19,7 @@ See [docs/screenshots](docs/screenshots) for the capture plan.
 
 ## Why this exists
 
-Most student organizations run on a mix of spreadsheets, group chats, copied forms, and institutional memory. Tabled explores what a focused, campus-native operations tool could look like: practical enough for busy officers, structured enough to survive leadership turnover, and warm enough not to feel like another generic SaaS dashboard.
+Most student organizations run on a mix of spreadsheets, group chats, copied forms, and institutional memory. Tabled explores what a focused, campus-native operations tool could look like: practical enough for busy officers and structured enough to survive leadership turnover.
 
 ## Core features
 
