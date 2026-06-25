@@ -94,8 +94,9 @@ Production-style deploys should provide:
 - `TABLED_PROTOCOL` — usually `https`
 - `TABLED_ASSUME_SSL` — defaults to `true`
 - `TABLED_FORCE_SSL` — defaults to `true`
+- `TABLED_PUBLIC_DEMO` — set to `true` for the public portfolio demo so seeded demo accounts are read-only
+- `TABLED_SOLID_QUEUE_IN_PUMA` — set to `true` only after Solid Queue tables are prepared and the web process should run the queue supervisor
 - `RAILS_LOG_LEVEL` — defaults to `info`
-- `SOLID_QUEUE_IN_PUMA` — `true` for the simple single-server Kamal setup
 
 Optional SMTP settings can be added through environment variables or Rails credentials. The current production configuration documents SMTP but does not commit a provider or any secrets.
 
@@ -143,6 +144,32 @@ The `/up` health check is available for platform probes. Production uses Solid Q
 
 Only run `bin/kamal app exec "bin/rails db:seed"` in an environment where the small demo workspace is desired. Do not run the large demo seed in production unless that is intentional and `ALLOW_LARGE_DEMO_SEED=true` is set.
 
+## Public demo maintenance
+
+For a public resume/portfolio deployment, set:
+
+```bash
+TABLED_PUBLIC_DEMO=true
+```
+
+Then seed the demo workspace once:
+
+```bash
+bin/rails db:seed
+```
+
+The seeded demo accounts are marked read-only in public demo mode. Visitors can sign in and explore the workspace, but unsafe changes are blocked so the shared demo stays intact.
+
+To keep the demo from aging as calendar dates move forward, refresh the public demo workspace periodically:
+
+```bash
+bin/rails demo:refresh
+```
+
+This reloads the small demo workspace with current relative dates, including upcoming gatherings, recent past gatherings, RSVP deadlines, announcement timestamps, and Log Book timestamps. It is safe to run repeatedly for the demo workspace.
+
+On Railway, run `bin/rails demo:refresh` manually after deploys or from a scheduled job if you want the public demo to stay fresh without manual upkeep. Keep `TABLED_SOLID_QUEUE_IN_PUMA=false` or unset until the Solid Queue production tables are prepared.
+
 ## Architecture notes
 
 - Organization scoping is enforced through slug-based lookup, membership checks, and organization-scoped associations.
@@ -151,6 +178,7 @@ Only run `bin/kamal app exec "bin/rails db:seed"` in an environment where the sm
 - Attendance separates organizer-marked records from member self check-in.
 - Announcements support all-member, officers, event RSVP, and checked-in attendee audiences.
 - Activity logging goes through `ActivityLog`, stores readable summaries, and filters sensitive metadata keys.
+- Public demo mode blocks unsafe requests for seeded demo accounts while leaving normal users and read-only browsing available.
 - Archived organizations keep their records, block new activity, remain reachable from the organizations page, and can be permanently deleted by owners.
 
 ## Known limitations and future work
