@@ -4,10 +4,11 @@ class Paginator
   attr_reader :page, :per_page, :total_count, :records
 
   def initialize(relation, page:, per_page: DEFAULT_PER_PAGE)
+    @relation = relation
     @per_page = per_page
     @total_count = relation.count
     @page = normalize_page(page)
-    @records = relation.offset(offset).limit(per_page)
+    @records = paginated_records
   end
 
   def total_pages
@@ -40,5 +41,11 @@ class Paginator
 
   def offset
     (page - 1) * per_page
+  end
+
+  def paginated_records
+    return @relation.offset(offset).limit(per_page) if @relation.respond_to?(:offset)
+
+    @relation.drop(offset).first(per_page)
   end
 end

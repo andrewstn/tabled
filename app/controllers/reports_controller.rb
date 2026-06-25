@@ -6,6 +6,8 @@ class ReportsController < ApplicationController
 
   def show
     @report = SemesterReport.new(organization: @organization)
+    @member_participation_paginator = Paginator.new(@report.member_participation, page: params[:page], per_page: 10)
+    @member_participation_rows = @member_participation_paginator.records
   end
 
   def roster

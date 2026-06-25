@@ -104,7 +104,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-rule/70">
-            <% @report.member_participation.each do |row| %>
+            <% @member_participation_rows.each do |row| %>
               <tr>
                 <th scope="row" class="px-3 py-4">
                   <span class="font-bold text-ink"><%= row.user.name %></span>
@@ -130,6 +130,7 @@
           </tbody>
         </table>
       </div>
+      <%= render "shared/pagination", paginator: @member_participation_paginator, anchor: "member-participation" %>
     </section>
 
     <section class="workspace-section" aria-labelledby="event-summary">

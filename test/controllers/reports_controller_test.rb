@@ -81,6 +81,29 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", text: "100%"
   end
 
+  test "report paginates member participation rows" do
+    11.times do |index|
+      user = create_user(name: "Report Member #{format("%02d", index)}", email: "report-member-#{index}@example.test")
+      Membership.create!(organization: organizations(:film_society), user: user, role: :member)
+    end
+    sign_in_as(users(:owner))
+
+    get organization_reports_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "section[aria-labelledby='member-participation'] tbody tr", count: 10
+    assert_select "nav[aria-label='Pagination']", text: /Showing 1–10 of 13/
+    assert_select "a[href$='#member-participation']", text: "Next"
+
+    get organization_reports_path(organizations(:film_society)), params: { page: 2 }
+
+    assert_response :success
+    assert_select "section[aria-labelledby='member-participation'] tbody tr", count: 3
+    assert_select "nav[aria-label='Pagination']", text: /Showing 11–13 of 13/
+    assert_select "a[href$='#member-participation']", text: "Previous"
+    assert_select "section[aria-labelledby='member-participation'] tbody", text: /Report Member/
+  end
+
   test "report shows held gathering summaries without upcoming events" do
     sign_in_as(users(:owner))
 
