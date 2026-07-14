@@ -1,5 +1,3 @@
-![Project Thumbnail](docs/screenshots/landing.png)
-
 # Tabled
 
 Tabled is a production-minded Ruby on Rails application for student organizations to manage rosters, gatherings, attendance, announcements, reports, and semester records.
@@ -10,6 +8,7 @@ Production deployment can be found at: <https://tabled-production.up.railway.app
 
 ## Screenshots
 
+![Landing Page](docs/screenshots/landing.png)
 ![Organization Dashboard](docs/screenshots/dash.png)
 ![Gathering Screenshot](docs/screenshots/gathering.png)
 ![Bulletin Screenshot](docs/screenshots/bulletin.png)
