@@ -21,7 +21,7 @@ class EventAttendanceTest < ApplicationSystemTestCase
     within frame_selector do
       click_button "Present"
       assert_selector ".role-tag", text: "Present"
-      assert_text "Saved to the event record."
+      assert_text "Attendance updated."
     end
 
     scroll_after = page.evaluate_script("window.scrollY")

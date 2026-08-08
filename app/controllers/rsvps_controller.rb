@@ -1,6 +1,7 @@
 class RsvpsController < ApplicationController
   before_action :set_organization_and_event
   before_action :require_organization_membership
+  before_action :require_active_organization
 
   def create
     save_rsvp
@@ -31,7 +32,15 @@ class RsvpsController < ApplicationController
     )
 
     if updater.save
-      redirect_to organization_event_path(@organization, @event), notice: "Your RSVP has been saved."
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "rsvp.changed",
+        subject: updater.rsvp,
+        summary: "#{current_user.name} RSVP’d #{updater.rsvp.status} for #{@event.title}.",
+        metadata: { event_title: @event.title, status: updater.rsvp.status }
+      )
+      redirect_to organization_event_path(@organization, @event), notice: "RSVP saved."
     else
       redirect_to organization_event_path(@organization, @event), alert: updater.rsvp.errors.full_messages.to_sentence
     end

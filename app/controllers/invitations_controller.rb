@@ -1,5 +1,6 @@
 class InvitationsController < ApplicationController
   before_action :set_organization
+  before_action :require_active_organization, except: :index
   before_action :require_invitation_manager
   before_action :set_invitation, only: :destroy
 
@@ -24,7 +25,15 @@ class InvitationsController < ApplicationController
 
     if issuer.create
       InvitationMailer.with(invitation: issuer.invitation, token: issuer.invitation.token).invite.deliver_now
-      redirect_to organization_invitations_path(@organization), notice: "Invitation sent to #{issuer.invitation.email}."
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "member.invited",
+        subject: issuer.invitation,
+        summary: "#{current_user.name} invited #{issuer.invitation.email} as a #{issuer.invitation.role}.",
+        metadata: { role: issuer.invitation.role }
+      )
+      redirect_to organization_invitations_path(@organization), notice: "Invitation sent."
     else
       @invitation = issuer.invitation
       set_permitted_roles
@@ -37,7 +46,15 @@ class InvitationsController < ApplicationController
 
     if @invitation.pending?
       @invitation.update!(revoked_at: Time.current)
-      redirect_to organization_invitations_path(@organization), notice: "Invitation for #{@invitation.email} was revoked."
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "member.invitation_revoked",
+        subject: @invitation,
+        summary: "#{current_user.name} revoked the invitation for #{@invitation.email}.",
+        metadata: { role: @invitation.role }
+      )
+      redirect_to organization_invitations_path(@organization), notice: "Invitation revoked."
     else
       redirect_to organization_invitations_path(@organization), alert: "That invitation is no longer pending."
     end

@@ -1,18 +1,57 @@
 # Tabled
 
-Tabled is a production-minded Ruby on Rails application for the practical work of a student organization semester: members, officers, meetings, attendance, announcements, and internal operations.
+Tabled is a production-minded Ruby on Rails application for student organizations to manage rosters, gatherings, attendance, announcements, reports, and semester records.
 
-## Stack
+It is focused on realistic student organization operations: keeping rosters current, inviting members, recording RSVPs and check-ins, communicating with members, exporting semester records, and giving future officers a readable handoff.
+
+Production deployment can be found at: <https://tabled-production.up.railway.app/>
+
+## Screenshots
+
+![Landing Page](docs/screenshots/landing.png)
+![Organization Dashboard](docs/screenshots/dash.png)
+![Gathering Screenshot](docs/screenshots/gathering.png)
+![Bulletin Screenshot](docs/screenshots/bulletin.png)
+![Semester Report Screenshot](docs/screenshots/report.png)
+![Log Book Screenshot](docs/screenshots/log.png)
+
+## Why I built this
+
+Student organizations often run on spreadsheets, group chats (such as GroupMe), copied forms, and institutional memory. Tabled explores what a focused, campus-native operations tool could look like for officers who need to keep a semester moving without turning club work into generic business software.
+
+The application goes beyond simple CRUD with role-based access, organization scoping, CSV import/export, attendance workflows, public demo protections, and deployment-oriented configuration.
+
+## Core features
+
+- Multi-tenant organization workspaces with owner, officer, coordinator, and member roles
+- Member rosters with search, filtering, pagination, and individual member records
+- Email invitations, secure invitation acceptance, and reusable member-only join links
+- CSV roster import that creates pending invitations and reports skipped or invalid rows
+- Gatherings with RSVPs, capacity/deadline behavior, self check-in windows, manual attendance, attendance notes, and CSV exports
+- Member-facing attendance history and organization-scoped communication preferences
+- Bulletin announcements with all-member, officer, RSVP, and checked-in attendee audiences
+- Optional announcement email delivery with delivery records and preference-based skips
+- Semester reports with roster, participation, and event summary CSV exports
+- Workspace administration: settings, ownership transfer, leave flow, archive/restore, and permanent deletion for archived organizations
+- Organizer-only Log Book/activity trail for important member, gathering, attendance, announcement, report, and settings activity
+- Small public demo seed, read-only public demo mode, and an opt-in large demo seed for screenshots and pagination testing
+
+## Tech stack
 
 - Ruby 3.4.9
 - Rails 8.1.3
 - PostgreSQL
-- Hotwire (Turbo and Stimulus)
-- Tailwind CSS
+- Hotwire: Turbo and Stimulus
+- Tailwind CSS via `tailwindcss-rails`
+- Import maps and Propshaft
+- Solid Queue, Solid Cache, and Solid Cable
+- Minitest, Capybara, and Selenium
+- RuboCop, Brakeman, and Bundler Audit
+- Dockerfile and Kamal deployment configuration
 
 ## Local setup
 
-Install Ruby 3.4.9 and PostgreSQL, make sure PostgreSQL is running, then:
+Install Ruby 3.4.9 and PostgreSQL. Make sure PostgreSQL is running, then:
 
 ```bash
 bundle install
@@ -20,74 +59,147 @@ bin/rails db:create db:migrate db:seed
 bin/dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The seed data includes an owner account for local exploration:
+Open [http://localhost:3000](http://localhost:3000).
+
+The default seed creates a Buckeye Film Society demo workspace. Sign in with:
 
 - Email: `demo-owner@example.test`
 - Password: `tabled-demo-password`
 
-The seed is idempotent and also creates officer, coordinator, and member accounts, two pending invitations, four gatherings, a mix of demo RSVPs, a closed check-in window, attendance records, two published bulletin posts, and an officer draft for Buckeye Film Society. One past gathering remains unmarked to demonstrate the officer follow-up workflow.
+Development email delivery is file-based; messages are written under `tmp/mails`.
 
-Invitation and optional announcement emails stay local in development and are written beneath `tmp/mails`.
+## Seed data
+
+The default seed is the small demo seed:
+
+```bash
+bin/rails db:seed
+```
+
+It creates a Buckeye Film Society workspace with members, roles, invitations, recruitment links, gatherings, RSVP and attendance records, bulletin posts, delivery records, Log Book entries, and one archived demo organization.
+
+For local screenshots, pagination checks, and large-roster UI testing, load the opt-in large demo seed:
+
+```bash
+SEED=large_demo bin/rails db:seed
+# or
+bin/rails seed:large_demo
+```
+
+The large seed creates deterministic fake campus data. It is blocked in production unless `ALLOW_LARGE_DEMO_SEED=true` is set intentionally.
 
 ## Tests and checks
 
-Run the full test suite:
+Run the Rails test suite:
 
 ```bash
 bin/rails test
 ```
 
-Run browser-backed system tests with:
+Run browser-backed system tests:
 
 ```bash
 bin/rails test:system
 ```
 
-Run style and security checks with:
+Run style, security, and dependency checks:
 
 ```bash
 bin/rubocop
 bin/brakeman --no-pager
+bin/bundler-audit
 ```
 
-## Current scope
+## Environment variables
 
-Milestones 1 through 5 establish the multi-tenant organization workspace, active semester calendar, event sign-in record, and organization bulletin:
+Local development works without extra environment variables when PostgreSQL is available.
 
-- Account signup and session authentication
-- Organizations with stable, human-readable URLs
-- Memberships with owner, officer, coordinator, and member roles
-- Transactional organization creation
-- Organization dashboards and workspace switching
-- Membership-scoped access and manager-only settings
-- A member directory with joined dates and roles
-- Owner/officer role management and member removal
-- Expiring, revocable invitations with secure token digests
-- Invitation acceptance for existing users and new account signup
-- Development-safe invitation email delivery
-- Organization-scoped upcoming and past gatherings
-- Owner/officer event management, with coordinator create/edit access
-- Member RSVP choices for attending, maybe, and not attending
-- Capacity and RSVP-deadline enforcement with organizer overrides
-- Private organizer event rosters and response summaries
-- Real upcoming gathering data on the organization dashboard
-- Organizer attendance sheets with present, late, excused, and absent records
-- Manual attendance marking with arrival times, notes, and the marking organizer
-- Digest-backed, time-limited member self check-in codes
-- Organization-scoped member attendance history
-- Organizer-only event attendance CSV export
-- Real attendance follow-ups and recent roll calls on the dashboard
-- Organization bulletins with pinned and recent announcements
-- Private officer drafts and officers-only posts
-- Owner/officer announcement drafting, publishing, editing, and removal
-- Optional audience-scoped announcement email delivery
-- Real bulletin content on the organization dashboard
-- Idempotent local demo data
+| Variable | Purpose |
+| --- | --- |
+| `RAILS_MASTER_KEY` | Decrypts Rails credentials in production. Never commit `config/master.key`. |
+| `TABLED_DATABASE_PASSWORD` | PostgreSQL password used by the production database config. |
+| `TABLED_HOST` | Canonical production host for host authorization and generated mailer links. |
+| `TABLED_PROTOCOL` | Protocol for generated mailer links, usually `https`. |
+| `TABLED_ASSUME_SSL` | Controls `config.assume_ssl`; defaults to `true` in production. |
+| `TABLED_FORCE_SSL` | Controls `config.force_ssl`; defaults to `true` in production. |
+| `TABLED_PUBLIC_DEMO` | Set to `true` for a public demo so seeded demo accounts are read-only. |
+| `TABLED_SOLID_QUEUE_IN_PUMA` | Set to `true` only after Solid Queue tables are prepared and Puma should run the queue supervisor. |
+| `RAILS_LOG_LEVEL` | Rails log level; defaults to `info`. |
+| `RAILS_MAX_THREADS` | Puma thread count and database max connection baseline. |
+| `WEB_CONCURRENCY` | Optional Puma worker process count. |
+| `JOB_CONCURRENCY` | Optional Solid Queue process count. |
+| `PORT` | Runtime port used by Puma; defaults to `3000`. |
+| `SEED` | Selects a seed file, such as `large_demo`; defaults to `demo`. |
+| `ALLOW_LARGE_DEMO_SEED` | Must be `true` to run the large demo seed in production. |
 
-Event-attendee announcement targeting, comments, reactions, attachments, notification preferences, production email providers, recurring events, QR codes, geolocation, complex analytics, calendar integrations, and activity history are intentionally outside the current scope. Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
+Optional SMTP settings can be added through environment variables or Rails credentials. The current production configuration documents SMTP but does not commit a provider or secrets.
 
-## Product and visual direction
+## Deployment notes
 
-Tabled should feel like a shared meeting table, club office, campus bulletin board, and well-used organization binder. The interface uses warm paper surfaces, moss and amber accents, readable type, tactile controls, and specific campus language. Keep future work active, practical, and human—not archival or bureaucratic—and avoid generic SaaS cards, glass effects, AI-style gradients, and vague productivity copy.
+The repository includes a production Dockerfile and Kamal configuration.
 
-See [docs/project_brief.md](docs/project_brief.md) for the broader product brief.
+For Kamal-style deployment:
+
+1. Replace the placeholder image, server, registry, and host values in `config/deploy.yml`.
+2. Export required secrets or add them to your deployment secret manager:
+
+   ```bash
+   export RAILS_MASTER_KEY=...
+   export TABLED_DATABASE_PASSWORD=...
+   ```
+
+3. Confirm `TABLED_HOST` matches the public hostname.
+4. Run `bin/kamal setup` for the first deploy.
+5. Run `bin/kamal deploy` for later deploys.
+
+The `/up` health check is available for platform probes. Production uses Solid Queue, Solid Cache, and Solid Cable with separate configured databases. Active Storage uses local disk in the current demo deployment; a durable object store can be added later if uploads become part of the product.
+
+Railway deployment is also supported by the app shape: use the Dockerfile or Rails service, provide production environment variables, attach PostgreSQL, and run the same database and demo tasks described below.
+
+## Public demo maintenance
+
+For a public demo deployment, set:
+
+```bash
+TABLED_PUBLIC_DEMO=true
+```
+
+Then seed the demo workspace once:
+
+```bash
+bin/rails db:seed
+```
+
+Seeded demo accounts are marked read-only in public demo mode. Visitors can sign in and explore the workspace, but unsafe changes are blocked so the shared demo stays intact.
+
+To keep the demo from aging as calendar dates move forward, refresh the public demo workspace periodically:
+
+```bash
+bin/rails demo:refresh
+```
+
+This reloads the small demo workspace with current relative dates, including upcoming gatherings, recent past gatherings, RSVP deadlines, announcement timestamps, and Log Book timestamps. It is safe to run repeatedly for the demo workspace.
+
+On Railway, run `bin/rails demo:refresh` manually after deploys or from a scheduled job if you want the public demo to stay fresh without manual upkeep. Keep `TABLED_SOLID_QUEUE_IN_PUMA=false` or unset until the Solid Queue production tables are prepared.
+
+## Architecture notes
+
+- Organization scoping is enforced through slug-based lookup, membership checks, and organization-scoped associations.
+- Authorization is role-based: owners and officers manage most organization operations; coordinators help with organizer workflows; members receive member-facing access.
+- Invitations store secure token digests. Reusable join links use signed IDs instead of persisted raw tokens.
+- RSVP records are separate from attendance records, so intent and actual participation can differ.
+- Check-in codes are digest-backed and only shown when opened or regenerated.
+- Announcements support all-member, officer, event RSVP, and checked-in attendee audiences. Email delivery respects membership-scoped communication preferences.
+- Roster import, report exports, attendance exports, and member records are organization-scoped and authorization-protected.
+- Activity logging goes through `ActivityLog`, stores readable summaries, and filters sensitive metadata keys.
+- Public demo mode blocks unsafe requests for seeded demo accounts while leaving normal users and read-only browsing available.
+- Archived organizations keep their records, block new activity, remain visible from the organizations page, and can be permanently deleted by owners.
+
+## Known limitations and future work
+
+- Production SMTP provider setup is not included yet. Consequently, invitation emails do not work on production, but organizations can still be joined via recruitment links!
+- Local Active Storage is used for the current demo deployment.
+- Recurring gatherings, QR-code generation, calendar integrations, attachments, charts, XLSX import, read receipts, social profiles, avatars, bios, and public user profile pages are intentionally out of scope. I want Tabled to feel entirely focused on actual organizational functionality and less social-media-y.
+- Check-in codes are shown only when opened or regenerated; Tabled does not retain a recoverable raw code.
+
+See [docs/project_brief.md](docs/project_brief.md) for broader product and visual direction.

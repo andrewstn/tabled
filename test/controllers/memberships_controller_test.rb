@@ -20,6 +20,32 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "organizer sees recruitment links from the roster" do
+    OrganizationJoinLink.create!(organization: organizations(:film_society), created_by: users(:owner), label: "Fair table", role: :member)
+    OrganizationJoinLink.create!(organization: organizations(:film_society), created_by: users(:owner), label: "Old table", role: :member, active: false)
+    sign_in_as(users(:owner))
+
+    get organization_members_path(organizations(:film_society))
+
+    assert_select "a[href=?]", organization_join_links_path(organizations(:film_society)), text: "Recruitment links (1)"
+    assert_select "a[href=?]", new_organization_roster_import_path(organizations(:film_society)), text: "Import roster"
+    assert_select "a[href=?]", organization_invitations_path(organizations(:film_society)), text: "1 pending invitation"
+    assert_select "a[href=?]", roster_organization_reports_path(organizations(:film_society), format: :csv), text: "Export roster CSV"
+    assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), text: "Semester report", count: 0
+  end
+
+  test "ordinary member does not see recruitment link management" do
+    sign_in_as(users(:member))
+
+    get organization_members_path(organizations(:film_society))
+
+    assert_select "a[href=?]", organization_join_links_path(organizations(:film_society)), count: 0
+    assert_select "a[href=?]", new_organization_roster_import_path(organizations(:film_society)), count: 0
+    assert_select "a[href=?]", organization_invitations_path(organizations(:film_society)), count: 0
+    assert_select "a[href=?]", roster_organization_reports_path(organizations(:film_society), format: :csv), count: 0
+    assert_select "a[href=?]", organization_reports_path(organizations(:film_society)), count: 0
+  end
+
   test "member roster paginates organization members" do
     28.times { |index| create_member(name: "Scale Member #{index}", email: "scale-#{index}@example.test") }
     sign_in_as(users(:member))
@@ -81,14 +107,56 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "organizer can view a member attendance history" do
+    memberships(:film_member).update!(announcement_emails_enabled: false)
     sign_in_as(users(:owner))
 
     get organization_member_path(organizations(:film_society), memberships(:film_member))
 
     assert_response :success
+    assert_select "h1", users(:member).name
+    assert_select "h2", "Roster details"
+    assert_select "p", text: "Announcement emails: Off"
     assert_select "h2", "Attendance history"
     assert_select "h3", events(:past_planning_table).title
     assert_select ".role-tag", text: "Late"
+  end
+
+  test "member record attendance summary matches displayed attendance records" do
+    membership = create_member(name: "History Match", email: "history-match@example.test")
+    events(:upcoming_film_night).attendance_records.create!(
+      membership: membership,
+      marked_by: users(:owner),
+      status: :present,
+      checked_in_at: 2.minutes.ago
+    )
+    events(:past_planning_table).attendance_records.create!(
+      membership: membership,
+      marked_by: users(:owner),
+      status: :present,
+      checked_in_at: 3.days.ago + 10.minutes
+    )
+    organizer_only_event = Event.create!(
+      organization: organizations(:film_society),
+      created_by: users(:owner),
+      title: "Organizer-only Attendance",
+      starts_at: 1.day.ago,
+      ends_at: 1.day.ago + 1.hour
+    )
+    organizer_only_event.attendance_records.create!(
+      membership: memberships(:film_owner),
+      marked_by: users(:owner),
+      status: :present
+    )
+    sign_in_as(users(:owner))
+
+    get organization_member_path(organizations(:film_society), membership)
+
+    assert_response :success
+    assert_select "h3", events(:upcoming_film_night).title
+    assert_select "h3", events(:past_planning_table).title
+    assert_select "dd", text: "100%"
+    assert_select "dd", text: "2 present · 0 late"
+    assert_select "dd", text: "0 excused · 0 absent"
   end
 
   test "member can view their own attendance history" do
@@ -97,6 +165,7 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
     get organization_member_path(organizations(:film_society), memberships(:film_member))
 
     assert_response :success
+    assert_select "p", text: /Announcement emails:/
   end
 
   test "member cannot view another member attendance history" do
@@ -107,14 +176,26 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  test "member record is organization scoped" do
+    other_membership = Membership.create!(organization: organizations(:garden_club), user: users(:owner), role: :member)
+    sign_in_as(users(:member))
+
+    get organization_member_path(organizations(:film_society), other_membership)
+
+    assert_response :not_found
+  end
+
   test "owner can update member role" do
     sign_in_as(users(:owner))
 
-    patch organization_member_path(organizations(:film_society), memberships(:film_member)),
-      params: { membership: { role: "coordinator" } }
+    assert_difference("ActivityLogEntry.count") do
+      patch organization_member_path(organizations(:film_society), memberships(:film_member)),
+        params: { membership: { role: "coordinator" } }
+    end
 
     assert_redirected_to organization_members_path(organizations(:film_society))
     assert memberships(:film_member).reload.coordinator?
+    assert_equal "member.role_changed", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "member cannot update a role" do
@@ -154,10 +235,21 @@ class MembershipsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:owner))
 
     assert_difference("Membership.count", -1) do
-      delete organization_member_path(organizations(:film_society), memberships(:film_member))
+      assert_difference("ActivityLogEntry.count") do
+        delete organization_member_path(organizations(:film_society), memberships(:film_member))
+      end
     end
 
     assert_redirected_to organization_members_path(organizations(:film_society))
+    assert_equal "member.removed", ActivityLogEntry.order(:created_at).last.action
+  end
+
+  test "member removal log is organization scoped" do
+    sign_in_as(users(:owner))
+
+    assert_difference("organizations(:film_society).activity_log_entries.count") do
+      delete organization_member_path(organizations(:film_society), memberships(:film_member))
+    end
   end
 
   test "officer can remove a member" do

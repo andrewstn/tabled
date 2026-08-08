@@ -15,8 +15,12 @@ class MembershipsController < ApplicationController
     memberships = memberships.where(role: @role_filter) if Membership::ROLES.include?(@role_filter)
     @paginator = Paginator.new(memberships, page: params[:page])
     @memberships = @paginator.records
+    @can_view_reports = ReportPolicy.new(current_user, @organization).show?
     @can_manage_members = OrganizationPolicy.new(current_user, @organization).manage?
-    @pending_invitation_count = @organization.invitations.pending.count if @can_manage_members
+    if @can_manage_members
+      @pending_invitation_count = @organization.invitations.pending.count
+      @active_join_link_count = @organization.organization_join_links.available.count
+    end
   end
 
   def show
@@ -28,15 +32,28 @@ class MembershipsController < ApplicationController
       .includes(:event, :marked_by)
       .order("events.starts_at DESC")
     @rsvps_by_event_id = @membership.rsvps.where(event_id: @attendance_records.map(&:event_id)).index_by(&:event_id)
+    @attendance_summary = MemberAttendanceSummary.new(@attendance_records)
+    @show_private_member_details = @membership.user == current_user || OrganizationPolicy.new(current_user, @organization).manage? || current_user.memberships.find_by(organization: @organization)&.coordinator?
   end
 
   def update
     new_role = membership_params[:role]
+    old_role = @membership.role
     policy = MembershipPolicy.new(current_user, @organization, @membership)
     return head :forbidden unless policy.update_role?(new_role)
 
     if MembershipRoleUpdater.new(membership: @membership, role: new_role).update
-      redirect_to organization_members_path(@organization), notice: "#{@membership.user.name} is now #{@membership.role.humanize.downcase}."
+      if old_role != @membership.role
+        ActivityLog.record(
+          organization: @organization,
+          actor: current_user,
+          action: "member.role_changed",
+          subject: @membership,
+          summary: "#{current_user.name} changed #{@membership.user.name} from #{old_role} to #{@membership.role}.",
+          metadata: { from_role: old_role, to_role: @membership.role }
+        )
+      end
+      redirect_to organization_members_path(@organization), notice: "Member role updated."
     else
       redirect_to organization_members_path(@organization), alert: @membership.errors.full_messages.to_sentence
     end
@@ -50,7 +67,15 @@ class MembershipsController < ApplicationController
     destination = @membership.user == current_user ? root_path : organization_members_path(@organization)
 
     if MembershipRemover.new(membership: @membership).remove
-      redirect_to destination, notice: "#{member_name} was removed from #{@organization.name}."
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "member.removed",
+        subject: @membership,
+        summary: "#{current_user.name} removed #{member_name} from the roster.",
+        metadata: { member_name: member_name, role: @membership.role }
+      )
+      redirect_to destination, notice: "#{member_name} was removed from the roster."
     else
       redirect_to organization_members_path(@organization), alert: @membership.errors.full_messages.to_sentence
     end

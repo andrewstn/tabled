@@ -13,6 +13,16 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h3", events(:upcoming_film_night).title
     assert_select "h3", events(:past_planning_table).title
     assert_select ".role-tag", text: "Maybe"
+    assert_select "a[href=?]", new_organization_event_path(organizations(:film_society)), count: 0
+  end
+
+  test "organizer can add a gathering from the gatherings page" do
+    sign_in_as(users(:owner))
+
+    get organization_events_path(organizations(:film_society))
+
+    assert_response :success
+    assert_select "a[href=?]", new_organization_event_path(organizations(:film_society)), text: "Add gathering"
   end
 
   test "non-member cannot view organization gatherings" do
@@ -35,7 +45,7 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".role-tag", text: "Maybe"
     assert_select "p", text: /Organizer access includes/, count: 0
     assert_select "h2", "Who’s coming"
-    assert_select "h2", "Your place"
+    assert_select "h2", "Your status"
     assert_select "#member-event-status dd", text: "Maybe"
     assert_select "#member-event-status dd", text: "You haven’t checked in yet."
     assert_select "#member-check-in-guidance", text: /Your organizer will share a code/
@@ -64,6 +74,10 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h2", "Event roster"
+    assert_select "details", count: 3
+    assert_select "summary", text: "Attending · 1 member"
+    assert_select "summary", text: "Not attending · 0 members"
+    assert_select "summary", text: "Maybe · 1 member"
     assert_select "li", text: users(:owner).name
     assert_select "li", text: users(:member).name
     assert_select "dt", text: "Attending"
@@ -175,7 +189,7 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
   test "owner can create a gathering" do
     sign_in_as(users(:owner))
 
-    assert_difference("Event.count") do
+    assert_difference([ "Event.count", "ActivityLogEntry.count" ]) do
       post organization_events_path(organizations(:film_society)), params: {
         event: { title: "Camera Workshop", starts_at: 1.week.from_now, location: "Media lab" }
       }
@@ -184,6 +198,7 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     event = Event.order(:created_at).last
     assert_redirected_to organization_event_path(organizations(:film_society), event)
     assert_equal users(:owner), event.created_by
+    assert_equal "event.created", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "officer can create a gathering" do
@@ -208,12 +223,15 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     end
     event = Event.order(:created_at).last
 
-    patch organization_event_path(organizations(:film_society), event), params: {
-      event: { title: "Campus location scout" }
-    }
+    assert_difference("ActivityLogEntry.count") do
+      patch organization_event_path(organizations(:film_society), event), params: {
+        event: { title: "Campus location scout" }
+      }
+    end
 
     assert_redirected_to organization_event_path(organizations(:film_society), event)
     assert_equal "Campus location scout", event.reload.title
+    assert_equal "event.updated", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "member cannot create a gathering" do
@@ -243,10 +261,21 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:owner))
 
     assert_difference("Event.count", -1) do
-      delete organization_event_path(organizations(:film_society), events(:past_planning_table))
+      assert_difference("ActivityLogEntry.count") do
+        delete organization_event_path(organizations(:film_society), events(:past_planning_table))
+      end
     end
 
+    assert_equal "event.removed", ActivityLogEntry.order(:created_at).last.action
     assert_redirected_to organization_events_path(organizations(:film_society))
+  end
+
+  test "event activity is scoped to the current organization" do
+    sign_in_as(users(:owner))
+
+    assert_difference("organizations(:film_society).activity_log_entries.count") do
+      delete organization_event_path(organizations(:film_society), events(:past_planning_table))
+    end
   end
 
   test "invalid gathering renders helpful errors" do

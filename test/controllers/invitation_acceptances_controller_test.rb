@@ -5,13 +5,14 @@ class InvitationAcceptancesControllerTest < ActionDispatch::IntegrationTest
     invitation = create_invitation(organization: organizations(:garden_club), email: users(:member).email_address)
     sign_in_as(users(:member))
 
-    assert_difference("Membership.count") do
+    assert_difference([ "Membership.count", "ActivityLogEntry.count" ]) do
       patch invitation_acceptance_path(invitation.token)
     end
 
     assert_redirected_to organization_path(organizations(:garden_club))
     assert invitation.reload.accepted?
     assert_equal "member", users(:member).memberships.find_by!(organization: organizations(:garden_club)).role
+    assert_equal "member.invitation_accepted", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "expired invitation cannot be accepted" do
@@ -39,6 +40,20 @@ class InvitationAcceptancesControllerTest < ActionDispatch::IntegrationTest
     assert_not invitation.reload.accepted?
   end
 
+  test "invitation cannot be accepted after organization is archived" do
+    invitation = create_invitation(organization: organizations(:garden_club), email: users(:member).email_address)
+    organizations(:garden_club).archive!
+    sign_in_as(users(:member))
+
+    assert_no_difference([ "Membership.count", "ActivityLogEntry.count" ]) do
+      patch invitation_acceptance_path(invitation.token)
+    end
+
+    assert_redirected_to invitation_acceptance_path(invitation.token)
+    assert_not invitation.reload.accepted?
+    assert_equal "This organization is archived", flash[:alert]
+  end
+
   test "invitation cannot create a duplicate membership" do
     invitation = create_invitation(organization: organizations(:garden_club), email: users(:member).email_address)
     Membership.create!(organization: organizations(:garden_club), user: users(:member), role: :member)
@@ -54,7 +69,7 @@ class InvitationAcceptancesControllerTest < ActionDispatch::IntegrationTest
   test "new invitee creates account and joins organization" do
     invitation = create_invitation(organization: organizations(:garden_club), email: "new.student@example.com")
 
-    assert_difference([ "User.count", "Membership.count" ]) do
+    assert_difference([ "User.count", "Membership.count", "ActivityLogEntry.count" ]) do
       post users_path, params: {
         invitation_token: invitation.token,
         user: {
@@ -68,6 +83,7 @@ class InvitationAcceptancesControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to organization_path(organizations(:garden_club))
     assert invitation.reload.accepted?
+    assert_equal "member.invitation_accepted", ActivityLogEntry.order(:created_at).last.action
   end
 
   test "new invitee is led to a prefilled account form" do

@@ -22,4 +22,14 @@ class PaginatorTest < ActiveSupport::TestCase
     assert_equal 1, Paginator.new(relation, page: -4, per_page: 1).page
     assert_equal relation.count, Paginator.new(relation, page: 999, per_page: 1).page
   end
+
+  test "paginates arrays of computed records" do
+    paginator = Paginator.new(%w[a b c d e], page: 2, per_page: 2)
+
+    assert_equal 2, paginator.page
+    assert_equal 5, paginator.total_count
+    assert_equal 3, paginator.first_item
+    assert_equal 4, paginator.last_item
+    assert_equal %w[c d], paginator.records
+  end
 end

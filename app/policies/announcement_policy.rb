@@ -11,6 +11,7 @@ class AnnouncementPolicy
   def show?
     return false unless @membership && announcement_in_organization?
     return manager? if @announcement.draft?
+    return true if manager?
 
     @announcement.published? && audience_visible?
   end
@@ -46,7 +47,7 @@ class AnnouncementPolicy
   end
 
   def audience_visible?
-    @announcement.all_members? || (@announcement.officers? && organizer?)
+    AnnouncementAudienceResolver.new(@announcement).visible_to?(@membership)
   end
 
   def announcement_in_organization?

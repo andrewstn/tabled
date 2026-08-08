@@ -10,9 +10,45 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_22_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_25_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "activity_log_entries", force: :cascade do |t|
+    t.string "action", null: false
+    t.bigint "actor_id"
+    t.datetime "created_at", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.bigint "organization_id", null: false
+    t.bigint "subject_id"
+    t.string "subject_type"
+    t.string "summary", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action"], name: "index_activity_log_entries_on_action"
+    t.index ["actor_id"], name: "index_activity_log_entries_on_actor_id"
+    t.index ["organization_id", "action", "occurred_at"], name: "index_activity_log_entries_on_organization_action_occurred_at"
+    t.index ["organization_id", "occurred_at"], name: "index_activity_log_entries_on_organization_id_and_occurred_at"
+    t.index ["organization_id"], name: "index_activity_log_entries_on_organization_id"
+    t.index ["subject_type", "subject_id"], name: "index_activity_log_entries_on_subject_type_and_subject_id"
+  end
+
+  create_table "announcement_deliveries", force: :cascade do |t|
+    t.bigint "announcement_id", null: false
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.bigint "membership_id", null: false
+    t.datetime "sent_at"
+    t.string "skipped_reason"
+    t.string "status", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["announcement_id", "membership_id"], name: "idx_on_announcement_id_membership_id_a7b4d846e6", unique: true
+    t.index ["announcement_id"], name: "index_announcement_deliveries_on_announcement_id"
+    t.index ["membership_id"], name: "index_announcement_deliveries_on_membership_id"
+    t.index ["user_id"], name: "index_announcement_deliveries_on_user_id"
+    t.check_constraint "status::text = ANY (ARRAY['sent'::character varying, 'skipped'::character varying]::text[])", name: "announcement_deliveries_status_check"
+  end
 
   create_table "announcements", force: :cascade do |t|
     t.string "audience", null: false
@@ -24,12 +60,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_100000) do
     t.boolean "pinned", default: false, null: false
     t.datetime "published_at"
     t.string "status", default: "draft", null: false
+    t.bigint "target_event_id"
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_announcements_on_author_id"
+    t.index ["organization_id", "audience", "status"], name: "index_announcements_on_organization_audience_status"
     t.index ["organization_id", "status", "pinned", "published_at"], name: "index_announcements_for_bulletin"
     t.index ["organization_id"], name: "index_announcements_on_organization_id"
-    t.check_constraint "audience::text = ANY (ARRAY['all_members'::character varying, 'officers'::character varying]::text[])", name: "announcements_audience_check"
+    t.index ["target_event_id"], name: "index_announcements_on_target_event_id"
+    t.check_constraint "audience::text = ANY (ARRAY['all_members'::character varying, 'officers'::character varying, 'event_rsvps'::character varying, 'event_attendees'::character varying]::text[])", name: "announcements_audience_check"
     t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'published'::character varying]::text[])", name: "announcements_status_check"
   end
 
@@ -43,6 +82,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_100000) do
     t.string "status", null: false
     t.datetime "updated_at", null: false
     t.index ["event_id", "membership_id"], name: "index_attendance_records_on_event_id_and_membership_id", unique: true
+    t.index ["event_id", "status"], name: "index_attendance_records_on_event_id_and_status"
     t.index ["event_id"], name: "index_attendance_records_on_event_id"
     t.index ["marked_by_id"], name: "index_attendance_records_on_marked_by_id"
     t.index ["membership_id", "created_at"], name: "index_attendance_records_on_membership_id_and_created_at"
@@ -94,23 +134,52 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_100000) do
   end
 
   create_table "memberships", force: :cascade do |t|
+    t.boolean "announcement_emails_enabled", default: true, null: false
     t.datetime "created_at", null: false
+    t.boolean "event_reminder_emails_enabled", default: true, null: false
     t.bigint "organization_id", null: false
+    t.boolean "recruitment_emails_enabled", default: true, null: false
     t.string "role", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["organization_id", "role"], name: "index_memberships_on_organization_id_and_role"
     t.index ["organization_id"], name: "index_memberships_on_organization_id"
     t.index ["user_id", "organization_id"], name: "index_memberships_on_user_id_and_organization_id", unique: true
     t.index ["user_id"], name: "index_memberships_on_user_id"
     t.check_constraint "role::text = ANY (ARRAY['owner'::character varying, 'officer'::character varying, 'coordinator'::character varying, 'member'::character varying]::text[])", name: "memberships_role_check"
   end
 
-  create_table "organizations", force: :cascade do |t|
+  create_table "organization_join_links", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
+    t.bigint "created_by_id", null: false
+    t.datetime "expires_at"
+    t.string "label", null: false
+    t.integer "max_uses"
+    t.bigint "organization_id", null: false
+    t.string "role", default: "member", null: false
+    t.datetime "updated_at", null: false
+    t.integer "uses_count", default: 0, null: false
+    t.index ["created_by_id"], name: "index_organization_join_links_on_created_by_id"
+    t.index ["organization_id", "active", "expires_at"], name: "index_join_links_on_organization_active_expires_at"
+    t.index ["organization_id", "active"], name: "index_organization_join_links_on_organization_id_and_active"
+    t.index ["organization_id"], name: "index_organization_join_links_on_organization_id"
+    t.check_constraint "max_uses IS NULL OR max_uses > 0", name: "join_links_positive_max_uses"
+    t.check_constraint "uses_count >= 0", name: "join_links_nonnegative_uses_count"
+  end
+
+  create_table "organizations", force: :cascade do |t|
+    t.datetime "archived_at"
+    t.string "contact_email"
+    t.datetime "created_at", null: false
+    t.string "current_semester_label"
     t.text "description"
+    t.string "meeting_note"
     t.string "name", null: false
     t.string "slug", null: false
     t.datetime "updated_at", null: false
+    t.string "website_url"
+    t.index ["archived_at"], name: "index_organizations_on_archived_at"
     t.index ["slug"], name: "index_organizations_on_slug", unique: true
   end
 
@@ -122,6 +191,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_100000) do
     t.string "status", null: false
     t.datetime "updated_at", null: false
     t.index ["event_id", "membership_id"], name: "index_rsvps_on_event_id_and_membership_id", unique: true
+    t.index ["event_id", "status"], name: "index_rsvps_on_event_id_and_status"
     t.index ["event_id"], name: "index_rsvps_on_event_id"
     t.index ["membership_id"], name: "index_rsvps_on_membership_id"
     t.check_constraint "status::text = ANY (ARRAY['attending'::character varying, 'maybe'::character varying, 'not_attending'::character varying]::text[])", name: "rsvps_status_check"
@@ -129,13 +199,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_100000) do
 
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "demo_account", default: false, null: false
     t.string "email_address", null: false
     t.string "name", null: false
     t.string "password_digest", null: false
     t.datetime "updated_at", null: false
     t.index "lower((email_address)::text)", name: "index_users_on_lower_email_address", unique: true
+    t.index ["demo_account"], name: "index_users_on_demo_account"
   end
 
+  add_foreign_key "activity_log_entries", "organizations"
+  add_foreign_key "activity_log_entries", "users", column: "actor_id"
+  add_foreign_key "announcement_deliveries", "announcements"
+  add_foreign_key "announcement_deliveries", "memberships"
+  add_foreign_key "announcement_deliveries", "users"
+  add_foreign_key "announcements", "events", column: "target_event_id"
   add_foreign_key "announcements", "organizations"
   add_foreign_key "announcements", "users", column: "author_id"
   add_foreign_key "attendance_records", "events"
@@ -147,6 +225,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_100000) do
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "memberships", "organizations"
   add_foreign_key "memberships", "users"
+  add_foreign_key "organization_join_links", "organizations"
+  add_foreign_key "organization_join_links", "users", column: "created_by_id"
   add_foreign_key "rsvps", "events"
   add_foreign_key "rsvps", "memberships"
 end

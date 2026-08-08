@@ -5,15 +5,28 @@ class EventAttendanceController < ApplicationController
   before_action :require_organization_membership
   before_action :set_event
   before_action :require_attendance_manager
+  before_action :require_active_organization, only: :update
 
   def show
-    @memberships = @organization.memberships.includes(:user).order("users.name")
-    @rsvps_by_membership_id = @event.rsvps.index_by(&:membership_id)
-    @attendance_by_membership_id = @event.attendance_records.includes(:marked_by).index_by(&:membership_id)
+    memberships = filtered_memberships
 
     respond_to do |format|
-      format.html
+      format.html do
+        @paginator = Paginator.new(memberships, page: params[:page])
+        @memberships = @paginator.records
+        load_event_records(@memberships)
+      end
       format.csv do
+        @memberships = memberships
+        load_event_records(@memberships)
+        ActivityLog.record(
+          organization: @organization,
+          actor: current_user,
+          action: "attendance.exported",
+          subject: @event,
+          summary: "#{current_user.name} exported attendance for #{@event.title}.",
+          metadata: { event_title: @event.title, format: "csv" }
+        )
         send_data attendance_csv,
           filename: "event-#{@event.id}-attendance.csv",
           type: "text/csv; charset=utf-8"
@@ -32,7 +45,15 @@ class EventAttendanceController < ApplicationController
     )
 
     if marker.save
-      redirect_to attendance_sheet_path(membership), notice: "Saved to the event record."
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "attendance.marked",
+        subject: marker.attendance_record,
+        summary: "#{current_user.name} marked #{membership.user.name} #{marker.attendance_record.status} for #{@event.title}.",
+        metadata: { event_title: @event.title, member_name: membership.user.name, status: marker.attendance_record.status }
+      )
+      redirect_to attendance_sheet_path(membership), notice: "Attendance updated."
     else
       redirect_to attendance_sheet_path(membership), alert: marker.attendance_record.errors.full_messages.to_sentence
     end
@@ -58,6 +79,47 @@ class EventAttendanceController < ApplicationController
 
   def attendance_params
     params.expect(attendance_record: %i[status note])
+  end
+
+  def filtered_memberships
+    memberships = @organization.memberships.joins(:user).includes(:user).order("users.name", "memberships.id")
+    @search_query = params[:q].to_s.strip
+    @rsvp_filter = params[:rsvp].to_s
+    @attendance_filter = params[:attendance].to_s
+
+    if @search_query.present?
+      pattern = "%#{ActiveRecord::Base.sanitize_sql_like(@search_query)}%"
+      memberships = memberships.where("users.name ILIKE :pattern OR users.email_address ILIKE :pattern", pattern: pattern)
+    end
+
+    memberships = filter_by_rsvp(memberships)
+    filter_by_attendance(memberships)
+  end
+
+  def filter_by_rsvp(memberships)
+    if Rsvp::STATUSES.include?(@rsvp_filter)
+      memberships.where(id: @event.rsvps.where(status: @rsvp_filter).select(:membership_id))
+    elsif @rsvp_filter == "no_response"
+      memberships.where.not(id: @event.rsvps.select(:membership_id))
+    else
+      memberships
+    end
+  end
+
+  def filter_by_attendance(memberships)
+    if AttendanceRecord::STATUSES.include?(@attendance_filter)
+      memberships.where(id: @event.attendance_records.where(status: @attendance_filter).select(:membership_id))
+    elsif @attendance_filter == "unmarked"
+      memberships.where.not(id: @event.attendance_records.select(:membership_id))
+    else
+      memberships
+    end
+  end
+
+  def load_event_records(memberships)
+    membership_ids = memberships.map(&:id)
+    @rsvps_by_membership_id = @event.rsvps.where(membership_id: membership_ids).index_by(&:membership_id)
+    @attendance_by_membership_id = @event.attendance_records.where(membership_id: membership_ids).includes(:marked_by).index_by(&:membership_id)
   end
 
   def attendance_csv
@@ -88,6 +150,7 @@ class EventAttendanceController < ApplicationController
     organization_event_attendance_path(
       @organization,
       @event,
+      **params.permit(:q, :rsvp, :attendance, :page).to_h,
       anchor: "attendance-member-#{membership.id}"
     )
   end

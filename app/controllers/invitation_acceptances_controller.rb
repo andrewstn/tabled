@@ -17,6 +17,14 @@ class InvitationAcceptancesController < ApplicationController
 
     accepter = InvitationAccepter.new(invitation: @invitation, user: current_user)
     if accepter.accept
+      ActivityLog.record(
+        organization: @invitation.organization,
+        actor: current_user,
+        action: "member.invitation_accepted",
+        subject: accepter.membership,
+        summary: "#{current_user.name} joined from an invitation as a #{accepter.membership.role}.",
+        metadata: { role: accepter.membership.role }
+      )
       redirect_to organization_path(@invitation.organization), notice: "You joined #{@invitation.organization.name}."
     else
       redirect_to invitation_acceptance_path(params[:token]), alert: @invitation.errors.full_messages.to_sentence

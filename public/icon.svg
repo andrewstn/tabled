@@ -1,3 +1,13 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Tabled" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="84" fill="#fffdf6"/>
+  <rect x="28" y="28" width="456" height="456" rx="62" fill="none" stroke="#c9bda9" stroke-width="24"/>
+  <text
+    x="256"
+    y="354"
+    fill="#48503b"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="302"
+    font-weight="700"
+    letter-spacing="-18"
+    text-anchor="middle">T</text>
 </svg>

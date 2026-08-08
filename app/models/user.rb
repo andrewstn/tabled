@@ -1,4 +1,7 @@
 class User < ApplicationRecord
+  attr_accessor :current_password
+
+  has_many :created_join_links, class_name: "OrganizationJoinLink", foreign_key: :created_by_id, inverse_of: :created_by, dependent: :restrict_with_error
   has_secure_password
 
   has_many :memberships, dependent: :destroy
@@ -11,10 +14,13 @@ class User < ApplicationRecord
     inverse_of: :marked_by, dependent: :nullify
   has_many :authored_announcements, class_name: "Announcement", foreign_key: :author_id,
     inverse_of: :author, dependent: :restrict_with_error
+  has_many :activity_log_entries, class_name: "ActivityLogEntry", foreign_key: :actor_id,
+    inverse_of: :actor, dependent: :nullify
 
   normalizes :email_address, with: ->(email) { email.strip.downcase }
 
   validates :name, presence: true, length: { maximum: 100 }
   validates :email_address, presence: true, uniqueness: { case_sensitive: false },
     format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :password, length: { minimum: 12 }, allow_nil: true
 end

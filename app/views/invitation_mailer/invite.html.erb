@@ -2,7 +2,7 @@
 
 <p><%= @invitation.invited_by.name %> invited you to join <%= @invitation.organization.name %> as <%= @invitation.role.humanize.downcase %>.</p>
 
-<p>Accept the invitation to join the organization workspace and take your place on the semester roster.</p>
+<p>Accept the invitation to join the organization workspace.</p>
 
 <p><%= link_to "Accept invitation", @acceptance_url %></p>
 

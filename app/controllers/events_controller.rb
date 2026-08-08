@@ -1,6 +1,7 @@
 class EventsController < ApplicationController
   before_action :set_organization
   before_action :require_organization_membership
+  before_action :require_active_organization, except: %i[index show]
   before_action :set_event, only: %i[show edit update destroy]
   before_action :require_event_creator, only: %i[new create]
   before_action :require_event_editor, only: %i[edit update]
@@ -35,7 +36,15 @@ class EventsController < ApplicationController
     @event = @organization.events.new(event_params.merge(created_by: current_user))
 
     if @event.save
-      redirect_to organization_event_path(@organization, @event), notice: "#{@event.title} was added to the calendar."
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "event.created",
+        subject: @event,
+        summary: "#{current_user.name} created #{@event.title}.",
+        metadata: { title: @event.title, starts_at: @event.starts_at&.iso8601 }
+      )
+      redirect_to organization_event_path(@organization, @event), notice: "Gathering added."
     else
       render :new, status: :unprocessable_entity
     end
@@ -46,6 +55,14 @@ class EventsController < ApplicationController
 
   def update
     if @event.update(event_params)
+      ActivityLog.record(
+        organization: @organization,
+        actor: current_user,
+        action: "event.updated",
+        subject: @event,
+        summary: "#{current_user.name} updated #{@event.title}.",
+        metadata: { title: @event.title, starts_at: @event.starts_at&.iso8601 }
+      )
       redirect_to organization_event_path(@organization, @event), notice: "Gathering details updated."
     else
       render :edit, status: :unprocessable_entity
@@ -55,7 +72,15 @@ class EventsController < ApplicationController
   def destroy
     title = @event.title
     @event.destroy!
-    redirect_to organization_events_path(@organization), notice: "#{title} was removed from the calendar."
+    ActivityLog.record(
+      organization: @organization,
+      actor: current_user,
+      action: "event.removed",
+      subject: @event,
+      summary: "#{current_user.name} removed #{title}.",
+      metadata: { title: title }
+    )
+    redirect_to organization_events_path(@organization), notice: "Gathering removed."
   end
 
   private

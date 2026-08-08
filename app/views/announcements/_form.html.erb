@@ -13,9 +13,24 @@
 
   <div>
     <%= form.label :audience, "Who should see this?", class: "form-label" %>
-    <%= form.select :audience, Announcement::AUDIENCES.map { |audience| [ audience == "all_members" ? "All members" : "Officers", audience ] }, {}, class: "form-input" %>
-    <p class="mt-1.5 text-xs text-ink-soft">Officers includes owners, officers, and coordinators.</p>
+    <%= form.select :audience, Announcement::AUDIENCES.map { |audience| [ Announcement.new(audience: audience).audience_label, audience ] }, {}, class: "form-input" %>
+    <p class="mt-1.5 text-xs text-ink-soft">Officers includes owners, officers, and coordinators. Event audiences use the selected gathering below.</p>
   </div>
+
+  <div>
+    <%= form.label :target_event_id, "Event audience", class: "form-label" %>
+    <%= form.collection_select :target_event_id, @target_events, :id, :title, { include_blank: "No event audience" }, class: "form-input" %>
+    <p class="mt-1.5 text-xs text-ink-soft">Required for Event RSVPs or Checked-in attendees.</p>
+  </div>
+
+  <% if @delivery_preview %>
+    <div class="border-l-4 border-moss bg-moss-pale/40 px-4 py-3 text-sm leading-6 text-ink-soft">
+      <p class="font-bold text-ink">Delivery preview</p>
+      <p class="mt-1">Visible to <%= pluralize(@delivery_preview.visible_count, "member") %>.</p>
+      <p>Email will be sent to <%= pluralize(@delivery_preview.email_recipient_count, "member") %> if selected.</p>
+      <p><%= pluralize(@delivery_preview.skipped_for_preferences_count, "member") %> have announcement emails turned off.</p>
+    </div>
+  <% end %>
 
   <div class="flex items-start gap-3">
     <%= form.check_box :pinned, class: "mt-1 size-4 accent-moss" %>
@@ -30,7 +45,7 @@
       <%= check_box_tag :send_email, "1", false, class: "mt-1 size-4 accent-moss" %>
       <div>
         <%= label_tag :send_email, "Send by email when published", class: "font-bold" %>
-        <p class="mt-1 text-xs text-ink-soft">Drafts are never emailed. Recipients follow the audience above.</p>
+        <p class="mt-1 text-xs text-ink-soft">Drafts are never emailed. Recipients follow the audience and communication preferences above.</p>
       </div>
     </div>
   <% end %>
