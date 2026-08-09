@@ -12,11 +12,16 @@
       <h1 class="text-3xl font-semibold sm:text-4xl">Semester report</h1>
       <p class="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">A practical record of members, gatherings, and attendance.</p>
     </div>
-    <div class="flex flex-wrap gap-3 text-sm" aria-label="Export records">
-      <%= link_to "Download roster CSV", roster_organization_reports_path(@organization, format: :csv), class: "button-secondary" %>
-      <%= link_to "Download participation CSV", participation_organization_reports_path(@organization, format: :csv), class: "button-secondary" %>
-      <%= link_to "Download event summary CSV", events_organization_reports_path(@organization, format: :csv), class: "button-secondary" %>
-    </div>
+    <details class="relative text-sm" aria-label="Export records">
+      <summary class="button-secondary list-none">Export records</summary>
+      <div class="absolute right-0 z-10 mt-2 w-64 border border-rule bg-sheet p-3 shadow-[2px_3px_0_rgba(93,77,50,0.09)]">
+        <div class="grid gap-2">
+          <%= link_to "Download roster CSV", roster_organization_reports_path(@organization, format: :csv), class: "text-link" %>
+          <%= link_to "Download participation CSV", participation_organization_reports_path(@organization, format: :csv), class: "text-link" %>
+          <%= link_to "Download event summary CSV", events_organization_reports_path(@organization, format: :csv), class: "text-link" %>
+        </div>
+      </div>
+    </details>
   </header>
 
   <% if @report.empty? %>
