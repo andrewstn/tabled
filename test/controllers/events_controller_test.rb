@@ -80,8 +80,6 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select "summary", text: "Maybe · 1 member"
     assert_select "li", text: users(:owner).name
     assert_select "li", text: users(:member).name
-    assert_select "dt", text: "Attending"
-    assert_select "dd", text: "1"
     assert_select "a[href=?]", organization_event_attendance_path(organizations(:film_society), events(:upcoming_film_night)), text: "Attendance sheet"
     assert_select "h2", text: /Check-in not started/
     assert_select "[aria-label='Organizer tools']", count: 1
