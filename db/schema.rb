@@ -47,7 +47,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_090000) do
     t.index ["announcement_id"], name: "index_announcement_deliveries_on_announcement_id"
     t.index ["membership_id"], name: "index_announcement_deliveries_on_membership_id"
     t.index ["user_id"], name: "index_announcement_deliveries_on_user_id"
-    t.check_constraint "status::text = ANY (ARRAY['sent'::character varying, 'skipped'::character varying]::text[])", name: "announcement_deliveries_status_check"
+    t.check_constraint "status::text = ANY (ARRAY['sent'::character varying::text, 'skipped'::character varying::text])", name: "announcement_deliveries_status_check"
   end
 
   create_table "announcements", force: :cascade do |t|
@@ -68,8 +68,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_090000) do
     t.index ["organization_id", "status", "pinned", "published_at"], name: "index_announcements_for_bulletin"
     t.index ["organization_id"], name: "index_announcements_on_organization_id"
     t.index ["target_event_id"], name: "index_announcements_on_target_event_id"
-    t.check_constraint "audience::text = ANY (ARRAY['all_members'::character varying, 'officers'::character varying, 'event_rsvps'::character varying, 'event_attendees'::character varying]::text[])", name: "announcements_audience_check"
-    t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'published'::character varying]::text[])", name: "announcements_status_check"
+    t.check_constraint "audience::text = ANY (ARRAY['all_members'::character varying::text, 'officers'::character varying::text, 'event_rsvps'::character varying::text, 'event_attendees'::character varying::text])", name: "announcements_audience_check"
+    t.check_constraint "status::text = ANY (ARRAY['draft'::character varying::text, 'published'::character varying::text])", name: "announcements_status_check"
   end
 
   create_table "attendance_records", force: :cascade do |t|
@@ -87,7 +87,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_090000) do
     t.index ["marked_by_id"], name: "index_attendance_records_on_marked_by_id"
     t.index ["membership_id", "created_at"], name: "index_attendance_records_on_membership_id_and_created_at"
     t.index ["membership_id"], name: "index_attendance_records_on_membership_id"
-    t.check_constraint "status::text = ANY (ARRAY['present'::character varying, 'late'::character varying, 'excused'::character varying, 'absent'::character varying]::text[])", name: "attendance_records_status_check"
+    t.check_constraint "status::text = ANY (ARRAY['present'::character varying::text, 'late'::character varying::text, 'excused'::character varying::text, 'absent'::character varying::text])", name: "attendance_records_status_check"
   end
 
   create_table "events", force: :cascade do |t|
@@ -130,7 +130,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_090000) do
     t.index ["invited_by_id"], name: "index_invitations_on_invited_by_id"
     t.index ["organization_id"], name: "index_invitations_on_organization_id"
     t.index ["token_digest"], name: "index_invitations_on_token_digest", unique: true
-    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying, 'officer'::character varying, 'coordinator'::character varying, 'member'::character varying]::text[])", name: "invitations_role_check"
+    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying::text, 'officer'::character varying::text, 'coordinator'::character varying::text, 'member'::character varying::text])", name: "invitations_role_check"
   end
 
   create_table "memberships", force: :cascade do |t|
@@ -146,7 +146,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_090000) do
     t.index ["organization_id"], name: "index_memberships_on_organization_id"
     t.index ["user_id", "organization_id"], name: "index_memberships_on_user_id_and_organization_id", unique: true
     t.index ["user_id"], name: "index_memberships_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying, 'officer'::character varying, 'coordinator'::character varying, 'member'::character varying]::text[])", name: "memberships_role_check"
+    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying::text, 'officer'::character varying::text, 'coordinator'::character varying::text, 'member'::character varying::text])", name: "memberships_role_check"
   end
 
   create_table "organization_join_links", force: :cascade do |t|
@@ -194,7 +194,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_090000) do
     t.index ["event_id", "status"], name: "index_rsvps_on_event_id_and_status"
     t.index ["event_id"], name: "index_rsvps_on_event_id"
     t.index ["membership_id"], name: "index_rsvps_on_membership_id"
-    t.check_constraint "status::text = ANY (ARRAY['attending'::character varying, 'maybe'::character varying, 'not_attending'::character varying]::text[])", name: "rsvps_status_check"
+    t.check_constraint "status::text = ANY (ARRAY['attending'::character varying::text, 'maybe'::character varying::text, 'not_attending'::character varying::text])", name: "rsvps_status_check"
   end
 
   create_table "users", force: :cascade do |t|
