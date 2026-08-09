@@ -137,8 +137,8 @@
     <aside class="border-t-2 border-ink/15 bg-paper-deep/35 lg:border-t-0">
       <section class="p-5 sm:p-6">
         <h2 class="text-xl font-semibold">RSVP summary</h2>
-        <p class="mt-4 font-serif text-3xl font-semibold"><%= @event.attending_count %></p>
-        <p class="text-sm text-ink-soft"><%= "member".pluralize(@event.attending_count) %> attending<% if @event.capacity.present? %> of <%= @event.capacity %> spots<% end %></p>
+        <p class="mt-2 font-serif text-3xl font-semibold leading-none"><%= @event.attending_count %></p>
+        <p class="mt-1 text-sm leading-5 text-ink-soft"><%= "member".pluralize(@event.attending_count) %> attending<% if @event.capacity.present? %> of <%= @event.capacity %> spots<% end %></p>
         <% if @event.full? %><p class="form-note mt-4">This gathering is full.</p><% end %>
         <% if @event.rsvp_deadline_passed? %><p class="mt-4 text-sm font-bold text-brick">RSVPs are closed.</p><% end %>
         <% if @event_policy.view_roster? %>
