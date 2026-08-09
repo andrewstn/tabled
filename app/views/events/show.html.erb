@@ -15,9 +15,9 @@
       </div>
       <% if @event_policy.update? || @event_policy.destroy? %>
         <div aria-label="Organizer tools">
-          <div class="flex flex-wrap items-center justify-end gap-2">
+          <div class="flex flex-wrap items-center justify-end gap-3">
             <% if @event_policy.manage_attendance? %><%= link_to "Attendance sheet", organization_event_attendance_path(@organization, @event), class: "button-secondary" %><% end %>
-            <% if @event_policy.update? %><%= link_to "Edit gathering", edit_organization_event_path(@organization, @event), class: "button-secondary" %><% end %>
+            <% if @event_policy.update? %><%= link_to "Edit gathering", edit_organization_event_path(@organization, @event), class: "text-link text-sm font-bold" %><% end %>
             <% if @event_policy.destroy? %>
               <div class="ml-1 border-l border-rule pl-3">
                 <%= button_to "Remove gathering", organization_event_path(@organization, @event), method: :delete, class: "cursor-pointer text-sm font-bold text-brick underline decoration-brick/40 underline-offset-4", form: { data: { turbo_confirm: "Remove #{@event.title} from the calendar?" } } %>
