@@ -29,12 +29,11 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_select "a[href='mailto:film@example.test']", text: "film@example.test"
     assert_select "a[href='https://film.example.test']", text: "https://film.example.test"
     assert_select "span", text: "Member"
-    assert_select "h2", text: "Around the table"
+    assert_select "h2", text: "Member roster"
     assert_select "h2", text: "Upcoming gatherings"
     assert_select "h2", text: "Recent roll call"
     assert_select "h2", text: "Bulletin"
     assert_select "h2", text: "What needs attention"
-    assert_select "p", text: /members around the table/, count: 0
     assert_select ".member-row .role-tag", count: 2
     assert_select "h3", text: events(:upcoming_film_night).title
     assert_select ".event-row .role-tag", text: "Maybe"
@@ -120,7 +119,7 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "2 events still need attendance."
   end
 
-  test "dashboard member preview paginates around the table" do
+  test "dashboard member preview paginates member roster" do
     11.times do |index|
       user = User.create!(
         name: "Dashboard Member #{format("%02d", index)}",
@@ -136,14 +135,14 @@ class OrganizationsDashboardTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".member-row", count: 10
     assert_select "nav[aria-label='Pagination']", text: /Showing 1–10 of 13/
-    assert_select "a[href$='#around-the-table']", text: "Next"
+    assert_select "a[href$='#member-roster']", text: "Next"
 
     get organization_path(organizations(:film_society)), params: { page: 2 }
 
     assert_response :success
     assert_select ".member-row", count: 3
     assert_select "nav[aria-label='Pagination']", text: /Showing 11–13 of 13/
-    assert_select "a[href$='#around-the-table']", text: "Previous"
+    assert_select "a[href$='#member-roster']", text: "Previous"
     assert_select ".member-row", text: /Dashboard Member/
   end
 

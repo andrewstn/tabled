@@ -9,7 +9,7 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
     follow_redirect!
     assert_select "h1", text: "Your organizations"
-    assert_select ".eyebrow", text: /Welcome, Sam Rivera/
+    assert_select ".document-meta span", text: "Signed in as Sam Rivera"
   end
 
   test "signs in and signs out" do

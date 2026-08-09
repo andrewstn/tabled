@@ -19,8 +19,7 @@
 
   <section id="published-announcements" class="workspace-section" aria-labelledby="published-announcements-heading">
     <div class="workspace-section-heading">
-      <p class="eyebrow">Pinned and posted</p>
-      <h2 id="published-announcements-heading" class="mt-1 text-2xl font-semibold">Announcements</h2>
+      <h2 id="published-announcements-heading" class="text-2xl font-semibold">Announcements</h2>
     </div>
 
     <% if @published_announcements.any? %>
@@ -30,7 +29,7 @@
             <% if announcement.pinned? %><p class="eyebrow text-amber">Pinned</p><% end %>
             <h3 class="<%= announcement.pinned? ? "mt-2" : "" %> text-xl font-semibold"><%= link_to announcement.title, organization_announcement_path(@organization, announcement), class: "text-link" %></h3>
             <p class="mt-3 line-clamp-4 whitespace-pre-line text-sm leading-6 text-ink-soft"><%= announcement.body %></p>
-            <p class="mt-4 border-t border-rule pt-3 text-xs text-ink-soft">Posted by <%= announcement.author.name %> · <%= announcement.published_at.to_date.to_fs(:long) %> · <%= announcement.audience_label %></p>
+            <p class="mt-3 text-xs leading-5 text-ink-soft"><%= announcement.published_at.to_date.to_fs(:long) %> · <%= announcement.audience_label %> · <%= announcement.author.name %></p>
           </article>
         <% end %>
       </div>
@@ -46,8 +45,7 @@
   <% if @draft_announcements %>
     <section class="workspace-section border-t border-rule" aria-labelledby="draft-announcements">
       <div class="workspace-section-heading">
-        <p class="eyebrow text-brick">Officer desk</p>
-        <h2 id="draft-announcements" class="mt-1 text-2xl font-semibold">Drafts</h2>
+        <h2 id="draft-announcements" class="text-2xl font-semibold">Drafts</h2>
       </div>
       <% if @draft_announcements.any? %>
         <div class="mt-5 divide-y divide-rule border-y border-rule">
@@ -59,7 +57,7 @@
           <% end %>
         </div>
       <% else %>
-        <p class="mt-5 text-sm text-ink-soft">No drafts are waiting on the officer desk.</p>
+        <p class="mt-5 text-sm text-ink-soft">No draft announcements yet.</p>
       <% end %>
     </section>
   <% end %>

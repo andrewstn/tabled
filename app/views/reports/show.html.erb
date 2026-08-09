@@ -9,15 +9,19 @@
 
   <header class="flex flex-wrap items-end justify-between gap-5 border-b-2 border-ink/20 px-5 py-6 sm:px-8">
     <div>
-      <p class="eyebrow">Semester record</p>
-      <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Semester report</h1>
+      <h1 class="text-3xl font-semibold sm:text-4xl">Semester report</h1>
       <p class="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">A practical record of members, gatherings, and attendance.</p>
     </div>
-    <div class="flex flex-wrap gap-3 text-sm" aria-label="Export records">
-      <%= link_to "Download roster CSV", roster_organization_reports_path(@organization, format: :csv), class: "button-secondary" %>
-      <%= link_to "Download participation CSV", participation_organization_reports_path(@organization, format: :csv), class: "button-secondary" %>
-      <%= link_to "Download event summary CSV", events_organization_reports_path(@organization, format: :csv), class: "button-secondary" %>
-    </div>
+    <details class="relative text-sm" aria-label="Export records">
+      <summary class="button-secondary list-none">Export records</summary>
+      <div class="absolute right-0 z-10 mt-2 w-64 border border-rule bg-sheet p-3 shadow-[2px_3px_0_rgba(93,77,50,0.09)]">
+        <div class="grid gap-2">
+          <%= link_to "Download roster CSV", roster_organization_reports_path(@organization, format: :csv), class: "text-link" %>
+          <%= link_to "Download participation CSV", participation_organization_reports_path(@organization, format: :csv), class: "text-link" %>
+          <%= link_to "Download event summary CSV", events_organization_reports_path(@organization, format: :csv), class: "text-link" %>
+        </div>
+      </div>
+    </details>
   </header>
 
   <% if @report.empty? %>
@@ -30,50 +34,48 @@
   <% else %>
     <section class="workspace-section" aria-labelledby="report-summary">
       <div class="workspace-section-heading">
-        <p class="eyebrow">Record summary</p>
-        <h2 id="report-summary" class="mt-1 text-2xl font-semibold">Current semester</h2>
+        <h2 id="report-summary" class="text-2xl font-semibold">Current semester</h2>
       </div>
 
-      <dl class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div class="border border-rule bg-sheet p-4">
-          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Current members</dt>
-          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.total_members %></dd>
+      <dl class="mt-5 grid gap-x-8 gap-y-5 border-y border-rule py-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
+          <dt class="text-sm font-bold text-moss-dark">Current members</dt>
+          <dd class="mt-1 font-serif text-3xl font-semibold leading-none"><%= @report.total_members %></dd>
         </div>
-        <div class="border border-rule bg-sheet p-4">
-          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Gatherings held</dt>
-          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.events_held %></dd>
+        <div>
+          <dt class="text-sm font-bold text-moss-dark">Gatherings held</dt>
+          <dd class="mt-1 font-serif text-3xl font-semibold leading-none"><%= @report.events_held %></dd>
         </div>
-        <div class="border border-rule bg-sheet p-4">
-          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Attendance recorded</dt>
-          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.events_with_attendance_recorded %></dd>
+        <div>
+          <dt class="text-sm font-bold text-moss-dark">Attendance recorded</dt>
+          <dd class="mt-1 font-serif text-3xl font-semibold leading-none"><%= @report.events_with_attendance_recorded %></dd>
         </div>
-        <div class="border border-rule bg-sheet p-4">
-          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Upcoming gatherings</dt>
-          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.upcoming_events %></dd>
+        <div>
+          <dt class="text-sm font-bold text-moss-dark">Upcoming gatherings</dt>
+          <dd class="mt-1 font-serif text-3xl font-semibold leading-none"><%= @report.upcoming_events %></dd>
         </div>
-        <div class="border border-rule bg-sheet p-4">
-          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Published bulletin posts</dt>
-          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.published_announcements %></dd>
+        <div>
+          <dt class="text-sm font-bold text-moss-dark">Published bulletin posts</dt>
+          <dd class="mt-1 font-serif text-3xl font-semibold leading-none"><%= @report.published_announcements %></dd>
         </div>
-        <div class="border border-rule bg-sheet p-4">
-          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Open onboarding</dt>
-          <dd class="mt-2 text-sm leading-6"><%= pluralize(@report.pending_invitations, "pending invitation") %> · <%= pluralize(@report.active_recruitment_links, "active recruitment link") %></dd>
+        <div>
+          <dt class="text-sm font-bold text-moss-dark">Open onboarding</dt>
+          <dd class="mt-1 text-sm leading-6"><%= pluralize(@report.pending_invitations, "pending invitation") %> · <%= pluralize(@report.active_recruitment_links, "active recruitment link") %></dd>
         </div>
       </dl>
     </section>
 
     <section class="workspace-section" aria-labelledby="attendance-summary">
       <div class="workspace-section-heading">
-        <p class="eyebrow">Attendance summary</p>
-        <h2 id="attendance-summary" class="mt-1 text-2xl font-semibold">Recorded participation</h2>
+        <h2 id="attendance-summary" class="text-2xl font-semibold">Recorded participation</h2>
       </div>
 
       <% if @report.events_with_attendance_recorded.positive? %>
-        <dl class="mt-6 grid gap-4 sm:grid-cols-4">
+        <dl class="mt-5 grid gap-x-8 gap-y-5 border-y border-rule py-5 sm:grid-cols-4">
           <% AttendanceRecord::STATUSES.each do |status| %>
-            <div class="border border-rule bg-sheet p-4">
-              <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft"><%= status.humanize %></dt>
-              <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.attendance_count(status) %></dd>
+            <div>
+              <dt class="text-sm font-bold text-moss-dark"><%= status.humanize %></dt>
+              <dd class="mt-1 font-serif text-3xl font-semibold leading-none"><%= @report.attendance_count(status) %></dd>
             </div>
           <% end %>
         </dl>
@@ -84,8 +86,7 @@
 
     <section class="workspace-section" aria-labelledby="member-participation">
       <div class="workspace-section-heading">
-        <p class="eyebrow">Member participation</p>
-        <h2 id="member-participation" class="mt-1 text-2xl font-semibold">Participation record</h2>
+        <h2 id="member-participation" class="text-2xl font-semibold">Participation record</h2>
       </div>
 
       <div class="mt-6 overflow-x-auto">
@@ -135,8 +136,7 @@
 
     <section class="workspace-section" aria-labelledby="event-summary">
       <div class="workspace-section-heading">
-        <p class="eyebrow">Event summary</p>
-        <h2 id="event-summary" class="mt-1 text-2xl font-semibold">Held gatherings</h2>
+        <h2 id="event-summary" class="text-2xl font-semibold">Held gatherings</h2>
       </div>
 
       <% if @report.event_summaries.any? %>

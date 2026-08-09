@@ -6,4 +6,11 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_equal "Summer 2026", current_semester_label(Date.new(2026, 6, 1))
     assert_equal "Fall 2026", current_semester_label(Date.new(2026, 10, 1))
   end
+
+  test "formats event dates with the year" do
+    time = Time.zone.local(2027, 9, 14, 19, 30)
+
+    assert_equal "Tuesday, September 14, 2027", event_date_label(time)
+    assert_equal "Tuesday, September 14, 2027 at 7:30 PM", event_time_label(time)
+  end
 end
