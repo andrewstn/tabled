@@ -37,30 +37,30 @@
         <h2 id="report-summary" class="text-2xl font-semibold">Current semester</h2>
       </div>
 
-      <dl class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div class="border border-rule bg-sheet p-4">
-          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Current members</dt>
-          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.total_members %></dd>
+      <dl class="mt-5 grid gap-x-8 gap-y-5 border-y border-rule py-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
+          <dt class="text-sm font-bold text-moss-dark">Current members</dt>
+          <dd class="mt-1 font-serif text-3xl font-semibold leading-none"><%= @report.total_members %></dd>
         </div>
-        <div class="border border-rule bg-sheet p-4">
-          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Gatherings held</dt>
-          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.events_held %></dd>
+        <div>
+          <dt class="text-sm font-bold text-moss-dark">Gatherings held</dt>
+          <dd class="mt-1 font-serif text-3xl font-semibold leading-none"><%= @report.events_held %></dd>
         </div>
-        <div class="border border-rule bg-sheet p-4">
-          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Attendance recorded</dt>
-          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.events_with_attendance_recorded %></dd>
+        <div>
+          <dt class="text-sm font-bold text-moss-dark">Attendance recorded</dt>
+          <dd class="mt-1 font-serif text-3xl font-semibold leading-none"><%= @report.events_with_attendance_recorded %></dd>
         </div>
-        <div class="border border-rule bg-sheet p-4">
-          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Upcoming gatherings</dt>
-          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.upcoming_events %></dd>
+        <div>
+          <dt class="text-sm font-bold text-moss-dark">Upcoming gatherings</dt>
+          <dd class="mt-1 font-serif text-3xl font-semibold leading-none"><%= @report.upcoming_events %></dd>
         </div>
-        <div class="border border-rule bg-sheet p-4">
-          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Published bulletin posts</dt>
-          <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.published_announcements %></dd>
+        <div>
+          <dt class="text-sm font-bold text-moss-dark">Published bulletin posts</dt>
+          <dd class="mt-1 font-serif text-3xl font-semibold leading-none"><%= @report.published_announcements %></dd>
         </div>
-        <div class="border border-rule bg-sheet p-4">
-          <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft">Open onboarding</dt>
-          <dd class="mt-2 text-sm leading-6"><%= pluralize(@report.pending_invitations, "pending invitation") %> · <%= pluralize(@report.active_recruitment_links, "active recruitment link") %></dd>
+        <div>
+          <dt class="text-sm font-bold text-moss-dark">Open onboarding</dt>
+          <dd class="mt-1 text-sm leading-6"><%= pluralize(@report.pending_invitations, "pending invitation") %> · <%= pluralize(@report.active_recruitment_links, "active recruitment link") %></dd>
         </div>
       </dl>
     </section>
@@ -71,11 +71,11 @@
       </div>
 
       <% if @report.events_with_attendance_recorded.positive? %>
-        <dl class="mt-6 grid gap-4 sm:grid-cols-4">
+        <dl class="mt-5 grid gap-x-8 gap-y-5 border-y border-rule py-5 sm:grid-cols-4">
           <% AttendanceRecord::STATUSES.each do |status| %>
-            <div class="border border-rule bg-sheet p-4">
-              <dt class="text-xs font-bold uppercase tracking-wide text-ink-soft"><%= status.humanize %></dt>
-              <dd class="mt-2 font-serif text-3xl font-semibold"><%= @report.attendance_count(status) %></dd>
+            <div>
+              <dt class="text-sm font-bold text-moss-dark"><%= status.humanize %></dt>
+              <dd class="mt-1 font-serif text-3xl font-semibold leading-none"><%= @report.attendance_count(status) %></dd>
             </div>
           <% end %>
         </dl>

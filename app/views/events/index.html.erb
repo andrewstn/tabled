@@ -11,7 +11,7 @@
     <div class="flex flex-wrap items-end justify-between gap-5">
       <div>
         <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Gatherings</h1>
-        <p class="mt-3 max-w-2xl leading-7 text-ink-soft">Meetings, workshops, and the time your organization spends together.</p>
+        <p class="mt-3 max-w-2xl leading-7 text-ink-soft">Meetings, workshops, and shared time.</p>
       </div>
       <% if EventPolicy.new(current_user, @organization).create? %>
         <%= link_to "Add gathering", new_organization_event_path(@organization), class: "button-primary" %>
