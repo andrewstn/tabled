@@ -32,7 +32,7 @@
 
   <section class="workspace-section" aria-labelledby="announcement-body">
     <div class="workspace-section-heading">
-      <p class="eyebrow">Shared with</p>
+      <p class="text-sm font-bold text-ink-soft">Shared with</p>
       <h2 id="announcement-body" class="mt-1 text-lg font-semibold"><%= @announcement.audience_label %></h2>
     </div>
     <div class="mt-6 whitespace-pre-line text-base leading-8 text-ink"><%= @announcement.body %></div>
@@ -41,8 +41,7 @@
   <% if @announcement_policy.update? && @announcement.announcement_deliveries.any? %>
     <section class="workspace-section border-t border-rule" aria-labelledby="email-delivery">
       <div class="workspace-section-heading">
-        <p class="eyebrow">Email recipients</p>
-        <h2 id="email-delivery" class="mt-1 text-lg font-semibold">Email delivery</h2>
+        <h2 id="email-delivery" class="text-lg font-semibold">Email delivery</h2>
       </div>
       <p class="mt-4 text-sm leading-6 text-ink-soft">
         Sent to <%= pluralize(@announcement.announcement_deliveries.sent.count, "member") %>.

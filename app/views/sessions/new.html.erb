@@ -5,12 +5,12 @@
 
   <div class="md:grid md:grid-cols-[15rem_1fr]">
     <aside class="auth-note" aria-label="About member access">
-      <p class="desk-label">Shared club workspace</p>
-      <p class="mt-5 text-sm leading-6 text-ink-soft">Officers and members sign in here to keep up with the semester.</p>
+      <p class="font-serif text-2xl font-semibold text-ink">Sign in</p>
+      <p class="mt-3 text-sm leading-6 text-ink-soft">View your roster, gatherings, bulletin posts, and semester records.</p>
       <ul class="mt-5 space-y-2 border-l-2 border-amber/60 pl-4 text-sm text-ink-soft">
         <li>Member rosters and roles</li>
-        <li>Meetings and attendance</li>
-        <li>Announcements and follow-up</li>
+        <li>Gatherings and attendance</li>
+        <li>Bulletin posts and follow-up</li>
       </ul>
       <div class="mt-8 border-t border-rule pt-4 text-sm leading-6 text-ink-soft">
         <p class="font-bold text-ink">New to Tabled?</p>
@@ -34,9 +34,8 @@
 
     <div class="auth-form">
       <%= render "shared/auth_heading",
-        eyebrow: "Your organizations",
         title: "Member sign-in",
-        description: "Open your organization workspace for rosters, meetings, announcements, and the work between them." %>
+        description: "Sign in to view the records your organization keeps in Tabled." %>
 
       <%= form_with url: session_path, class: "mt-8 max-w-xl space-y-6" do |form| %>
         <div>

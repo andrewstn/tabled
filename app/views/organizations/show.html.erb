@@ -2,7 +2,6 @@
 
 <article class="binder-page w-full">
   <div class="document-meta">
-    <span>Club workspace</span>
     <span><%= @membership.role.humanize %> access</span>
     <span>Current semester · <%= current_semester_label %></span>
   </div>
@@ -15,8 +14,7 @@
       </div>
     <% end %>
     <div>
-      <p class="eyebrow">This semester</p>
-      <h1 class="mt-2 text-3xl font-semibold sm:text-4xl"><%= @organization.name %></h1>
+      <h1 class="text-3xl font-semibold sm:text-4xl"><%= @organization.name %></h1>
       <% if @organization.description.present? %>
         <p class="mt-3 max-w-3xl leading-7 text-ink-soft"><%= @organization.description %></p>
       <% elsif OrganizationPolicy.new(current_user, @organization).manage? %>
@@ -60,14 +58,13 @@
 
   <div class="lg:grid lg:grid-cols-[1fr_18rem]">
     <div class="divide-y divide-rule lg:border-r lg:border-rule">
-      <section id="around-the-table" class="workspace-section">
+      <section id="member-roster" class="workspace-section">
         <div class="workspace-section-heading">
-          <p class="eyebrow">Members</p>
-          <h2 class="mt-1 text-2xl font-semibold">Around the table</h2>
+          <h2 class="text-2xl font-semibold">Member roster</h2>
         </div>
 
         <div class="mt-7">
-          <h3 class="text-sm font-bold"><%= link_to "Member roster →", organization_members_path(@organization), class: "text-link" %></h3>
+          <h3 class="text-sm font-bold"><%= link_to "Open full roster →", organization_members_path(@organization), class: "text-link" %></h3>
           <div class="mt-3 divide-y divide-rule/70 border-y border-rule">
             <% @dashboard_memberships.each do |membership| %>
               <div class="member-row">
@@ -76,14 +73,13 @@
               </div>
             <% end %>
           </div>
-          <%= render "shared/pagination", paginator: @member_paginator, anchor: "around-the-table" %>
+          <%= render "shared/pagination", paginator: @member_paginator, anchor: "member-roster" %>
         </div>
       </section>
 
       <section class="workspace-section">
         <div>
-          <p class="eyebrow">Events</p>
-          <h2 class="mt-1 text-2xl font-semibold">Upcoming gatherings</h2>
+          <h2 class="text-2xl font-semibold">Upcoming gatherings</h2>
         </div>
 
         <% if @upcoming_events.any? %>
@@ -113,8 +109,7 @@
       </section>
 
       <section class="workspace-section">
-        <p class="eyebrow">Attendance</p>
-        <h2 class="mt-1 text-2xl font-semibold">Recent roll call</h2>
+        <h2 class="text-2xl font-semibold">Recent roll call</h2>
         <% if @recent_attendance_events.any? %>
           <div class="mt-5 divide-y divide-rule border-y border-rule">
             <% @recent_attendance_events.each do |event| %>
@@ -142,8 +137,7 @@
       <section class="border-b border-rule p-5 sm:p-6">
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p class="eyebrow text-amber">Announcements</p>
-            <h2 class="mt-1 text-2xl font-semibold">Bulletin</h2>
+            <h2 class="text-2xl font-semibold">Bulletin</h2>
           </div>
           <%= link_to "View all", organization_announcements_path(@organization), class: "text-link text-xs" %>
         </div>
@@ -163,8 +157,7 @@
       </section>
 
       <section class="border-b border-rule p-5 sm:p-6">
-        <p class="eyebrow text-brick">Active notes</p>
-        <h2 class="mt-1 text-xl font-semibold">What needs attention</h2>
+        <h2 class="text-xl font-semibold">What needs attention</h2>
         <% if @attendance_follow_ups&.any? %>
           <ul class="mt-4 divide-y divide-rule border-y border-rule text-sm">
             <% @attendance_follow_ups.each do |kind, event| %>
@@ -194,8 +187,7 @@
 
       <% if @can_view_reports %>
         <section class="border-b border-rule p-5 sm:p-6">
-          <p class="eyebrow text-moss-dark">Officer records</p>
-          <h2 class="mt-1 text-xl font-semibold">Semester report</h2>
+          <h2 class="text-xl font-semibold">Semester report</h2>
           <p class="mt-3 text-sm leading-6 text-ink-soft"><%= pluralize(@semester_report.total_members, "member") %> · <%= pluralize(@semester_report.events_with_attendance_recorded, "gathering") %> recorded</p>
           <% if @events_needing_attendance_count.positive? %>
             <p class="mt-2 text-sm font-bold text-brick"><%= pluralize(@events_needing_attendance_count, "event") %> still <%= @events_needing_attendance_count == 1 ? "needs" : "need" %> attendance.</p>
@@ -208,8 +200,7 @@
 
       <% if @can_view_activity %>
         <section class="p-5 sm:p-6">
-          <p class="eyebrow">Log book</p>
-          <h2 class="mt-1 text-xl font-semibold">Recent activity</h2>
+          <h2 class="text-xl font-semibold">Recent activity</h2>
           <% if @recent_activity_entries&.any? %>
             <ul class="mt-4 divide-y divide-rule border-y border-rule text-sm">
               <% @recent_activity_entries.each do |entry| %>
@@ -233,8 +224,7 @@
 
       <% if @can_manage_members %>
         <section class="border-t border-rule p-5 sm:p-6">
-          <p class="eyebrow text-moss-dark">Administration</p>
-          <h2 class="mt-1 text-xl font-semibold">Workspace settings</h2>
+          <h2 class="text-xl font-semibold">Organization settings</h2>
           <p class="mt-3 text-sm leading-6 text-ink-soft">Update organization details, ownership, and archive options.</p>
           <p class="mt-4 text-sm font-bold"><%= link_to "Open organization settings →", edit_organization_path(@organization), class: "text-link" %></p>
         </section>

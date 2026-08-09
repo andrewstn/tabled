@@ -9,8 +9,7 @@
 
   <header class="flex flex-wrap items-end justify-between gap-5 border-b-2 border-ink/20 px-5 py-6 sm:px-8">
     <div>
-      <p class="eyebrow">Semester record</p>
-      <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">Semester report</h1>
+      <h1 class="text-3xl font-semibold sm:text-4xl">Semester report</h1>
       <p class="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">A practical record of members, gatherings, and attendance.</p>
     </div>
     <div class="flex flex-wrap gap-3 text-sm" aria-label="Export records">
@@ -30,8 +29,7 @@
   <% else %>
     <section class="workspace-section" aria-labelledby="report-summary">
       <div class="workspace-section-heading">
-        <p class="eyebrow">Record summary</p>
-        <h2 id="report-summary" class="mt-1 text-2xl font-semibold">Current semester</h2>
+        <h2 id="report-summary" class="text-2xl font-semibold">Current semester</h2>
       </div>
 
       <dl class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -64,8 +62,7 @@
 
     <section class="workspace-section" aria-labelledby="attendance-summary">
       <div class="workspace-section-heading">
-        <p class="eyebrow">Attendance summary</p>
-        <h2 id="attendance-summary" class="mt-1 text-2xl font-semibold">Recorded participation</h2>
+        <h2 id="attendance-summary" class="text-2xl font-semibold">Recorded participation</h2>
       </div>
 
       <% if @report.events_with_attendance_recorded.positive? %>
@@ -84,8 +81,7 @@
 
     <section class="workspace-section" aria-labelledby="member-participation">
       <div class="workspace-section-heading">
-        <p class="eyebrow">Member participation</p>
-        <h2 id="member-participation" class="mt-1 text-2xl font-semibold">Participation record</h2>
+        <h2 id="member-participation" class="text-2xl font-semibold">Participation record</h2>
       </div>
 
       <div class="mt-6 overflow-x-auto">
@@ -135,8 +131,7 @@
 
     <section class="workspace-section" aria-labelledby="event-summary">
       <div class="workspace-section-heading">
-        <p class="eyebrow">Event summary</p>
-        <h2 id="event-summary" class="mt-1 text-2xl font-semibold">Held gatherings</h2>
+        <h2 id="event-summary" class="text-2xl font-semibold">Held gatherings</h2>
       </div>
 
       <% if @report.event_summaries.any? %>

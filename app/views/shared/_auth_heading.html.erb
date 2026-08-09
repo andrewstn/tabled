@@ -1,5 +1,7 @@
 <div>
-  <p class="eyebrow"><%= eyebrow %></p>
+  <% if local_assigns[:eyebrow].present? %>
+    <p class="eyebrow"><%= eyebrow %></p>
+  <% end %>
   <h1 class="auth-title"><%= title %></h1>
   <p class="auth-copy"><%= description %></p>
 </div>

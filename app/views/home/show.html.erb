@@ -6,8 +6,8 @@
     <span><%= current_semester_label %></span>
   </div>
   <div class="p-6 sm:p-9">
-    <p class="eyebrow">Welcome, <%= current_user.name %></p>
     <h1 class="mt-2 text-3xl font-semibold">Your organizations</h1>
+    <p class="mt-2 text-sm text-ink-soft">Signed in as <%= current_user.name %>.</p>
 
     <% active_organizations = current_user.organizations.active.order(:name) %>
     <% archived_organizations = current_user.organizations.archived.order(:name) %>

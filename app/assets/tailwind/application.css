@@ -17,10 +17,15 @@
 }
 
 @layer base {
-  button, input, textarea { font: inherit; }
+  html {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Source Sans 3", "Atkinson Hyperlegible", sans-serif;
+  }
+
+  button, input, textarea, select { font: inherit; }
 
   h1, h2, h3 {
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    letter-spacing: 0;
   }
 
   ::selection { @apply bg-amber-pale text-ink; }
@@ -32,9 +37,9 @@
   .auth-sheet { @apply w-full max-w-5xl overflow-hidden border-l-4 border-l-moss border-y border-r border-rule bg-sheet shadow-[2px_3px_0_rgba(93,77,50,0.09)]; }
   .auth-note { @apply border-b border-rule bg-amber-pale/25 p-6 md:border-r md:border-b-0 md:p-8; }
   .auth-form { @apply p-6 sm:p-8 md:p-10; }
-  .document-meta { @apply flex flex-wrap gap-x-6 gap-y-1 border-b border-rule bg-paper-deep/35 px-6 py-2.5 text-xs font-semibold tracking-[0.025em] text-ink-soft; }
-  .eyebrow { @apply text-xs font-bold tracking-[0.035em] text-moss-dark; }
-  .auth-title { @apply mt-2 text-3xl font-semibold leading-tight text-ink; }
+  .document-meta { @apply flex flex-wrap gap-x-6 gap-y-1 border-b border-rule bg-paper-deep/35 px-6 py-2.5 text-xs font-semibold text-ink-soft; }
+  .eyebrow { @apply text-xs font-bold text-moss-dark; }
+  .auth-title { @apply text-3xl font-semibold leading-tight text-ink; }
   .auth-copy { @apply mt-2 max-w-xl leading-7 text-ink-soft; }
   .form-label { @apply mb-1.5 block text-sm font-semibold text-ink; }
   .form-input { @apply w-full border border-rule bg-sheet px-3 py-2.5 text-ink outline-none transition placeholder:text-ink-soft/50 focus:border-moss-dark focus:outline-2 focus:outline-offset-2 focus:outline-moss/40; }
@@ -43,7 +48,7 @@
   .text-link { @apply font-bold text-moss-dark underline decoration-moss/50 underline-offset-4 hover:decoration-moss-dark focus:outline-2 focus:outline-offset-2 focus:outline-moss/50; }
   .binder-page { @apply border-l-4 border-l-moss border-y border-r border-rule bg-sheet shadow-[2px_3px_0_rgba(93,77,50,0.09)]; }
   .section-heading { @apply border-b border-rule pb-2 text-xl font-semibold text-ink; }
-  .desk-label { @apply inline-block border-b-2 border-amber bg-amber-pale/35 px-2 py-1 text-xs font-bold tracking-[0.02em] text-ink-soft; }
+  .desk-label { @apply inline-block border-b-2 border-amber bg-amber-pale/35 px-2 py-1 text-xs font-bold text-ink-soft; }
   .ruled-list { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 2.15rem, rgb(201 189 169 / 0.55) 2.15rem, rgb(201 189 169 / 0.55) calc(2.15rem + 1px)); }
   .flash-note { @apply relative max-w-xl border bg-sheet px-4 py-3 text-sm shadow-[2px_2px_0_rgba(93,77,50,0.10)]; }
   .flash-note::before { content: ""; @apply absolute -top-1 left-5 size-2 rounded-full; }
