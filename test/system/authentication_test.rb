@@ -8,7 +8,7 @@ class AuthenticationSystemTest < ApplicationSystemTestCase
     fill_in "Password", with: "password1234"
     click_on "Sign in"
 
-    assert_text "Signed in as Alex Morgan."
+    assert_text "Signed in as Alex Morgan"
     assert_selector "h1", text: "Your organizations"
   end
 end

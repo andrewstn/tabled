@@ -37,6 +37,6 @@ class EventAttendanceTest < ApplicationSystemTestCase
     fill_in "Member email", with: user.email_address
     fill_in "Password", with: "password1234"
     click_on "Sign in"
-    assert_text "Signed in as #{user.name}."
+    assert_text "Signed in as #{user.name}"
   end
 end

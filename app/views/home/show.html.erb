@@ -5,15 +5,14 @@
     <span>Signed in as <%= current_user.name %></span>
     <span><%= current_semester_label %></span>
   </div>
-  <div class="p-6 sm:p-9">
-    <h1 class="mt-2 text-3xl font-semibold">Your organizations</h1>
-    <p class="mt-2 text-sm text-ink-soft">Signed in as <%= current_user.name %>.</p>
+  <div class="p-5 sm:p-7">
+    <h1 class="text-3xl font-semibold">Your organizations</h1>
 
     <% active_organizations = current_user.organizations.active.order(:name) %>
     <% archived_organizations = current_user.organizations.archived.order(:name) %>
 
     <% if active_organizations.any? || archived_organizations.any? %>
-      <p class="mt-2 text-sm text-ink-soft">Choose an organization to work in.</p>
+      <p class="mt-3 text-sm text-ink-soft">Choose an organization to work in.</p>
       <% if active_organizations.any? %>
         <nav aria-label="Organization workspaces" class="mt-7 border-t border-rule">
           <% active_organizations.each do |organization| %>
