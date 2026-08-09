@@ -11,7 +11,7 @@
     <div class="flex flex-wrap items-start justify-between gap-5">
       <div>
         <h1 class="max-w-4xl text-3xl font-semibold sm:text-4xl"><%= @event.title %></h1>
-        <p class="mt-3 text-sm text-ink-soft"><%= @event.starts_at.strftime("%A, %B %-d") %> · Hosted by <%= @event.created_by.name %></p>
+        <p class="mt-3 text-sm text-ink-soft"><%= event_date_label(@event.starts_at) %> · Hosted by <%= @event.created_by.name %></p>
       </div>
       <% if @event_policy.update? || @event_policy.destroy? %>
         <div aria-label="Organizer tools">
@@ -39,12 +39,12 @@
         <dl class="mt-6 grid gap-x-8 gap-y-5 sm:grid-cols-2">
           <div>
             <dt class="text-sm font-bold text-moss-dark">Starts</dt>
-            <dd class="mt-1 leading-6"><time datetime="<%= @event.starts_at.iso8601 %>"><%= @event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %></time></dd>
+            <dd class="mt-1 leading-6"><time datetime="<%= @event.starts_at.iso8601 %>"><%= event_time_label(@event.starts_at) %></time></dd>
           </div>
           <% if @event.ends_at.present? %>
             <div>
               <dt class="text-sm font-bold text-moss-dark">Ends</dt>
-              <dd class="mt-1 leading-6"><time datetime="<%= @event.ends_at.iso8601 %>"><%= @event.ends_at.strftime("%A, %B %-d at %-I:%M %p") %></time></dd>
+              <dd class="mt-1 leading-6"><time datetime="<%= @event.ends_at.iso8601 %>"><%= event_time_label(@event.ends_at) %></time></dd>
             </div>
           <% end %>
           <% if @event.location.present? %>
@@ -62,7 +62,7 @@
           <% if @event.rsvp_deadline.present? %>
             <div>
               <dt class="text-sm font-bold text-moss-dark">RSVPs close</dt>
-              <dd class="mt-1 leading-6"><time datetime="<%= @event.rsvp_deadline.iso8601 %>"><%= @event.rsvp_deadline.strftime("%A, %B %-d at %-I:%M %p") %></time></dd>
+              <dd class="mt-1 leading-6"><time datetime="<%= @event.rsvp_deadline.iso8601 %>"><%= event_time_label(@event.rsvp_deadline) %></time></dd>
             </div>
           <% end %>
         </dl>

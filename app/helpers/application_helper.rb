@@ -9,6 +9,14 @@ module ApplicationHelper
     "#{term} #{date.year}"
   end
 
+  def event_date_label(time)
+    time.strftime("%A, %B %-d, %Y")
+  end
+
+  def event_time_label(time)
+    time.strftime("%A, %B %-d, %Y at %-I:%M %p")
+  end
+
   def pagination_url(page, anchor: nil)
     url_options = request.path_parameters.merge(request.query_parameters).merge(page: page)
     url_options[:anchor] = anchor if anchor.present?

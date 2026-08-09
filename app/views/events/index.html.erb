@@ -35,7 +35,7 @@
             <div class="min-w-0 flex-1">
               <h3 class="text-lg font-semibold"><%= link_to event.title, organization_event_path(@organization, event), class: "text-link" %></h3>
               <p class="mt-1 text-sm text-ink-soft">
-                <%= event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %>
+                <%= event_time_label(event.starts_at) %>
                 <% if event.location.present? %> · <%= event.location %><% end %>
               </p>
               <p class="mt-2 text-xs font-semibold text-ink-soft">
@@ -73,7 +73,7 @@
             </time>
             <div class="min-w-0 flex-1">
               <h3 class="text-lg font-semibold"><%= link_to event.title, organization_event_path(@organization, event), class: "text-link" %></h3>
-              <p class="mt-1 text-sm text-ink-soft"><%= event.starts_at.strftime("%A, %B %-d at %-I:%M %p") %><% if event.location.present? %> · <%= event.location %><% end %></p>
+              <p class="mt-1 text-sm text-ink-soft"><%= event_time_label(event.starts_at) %><% if event.location.present? %> · <%= event.location %><% end %></p>
             </div>
           </article>
         <% end %>

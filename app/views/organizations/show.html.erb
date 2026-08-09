@@ -92,7 +92,7 @@
                 </time>
                 <div class="min-w-0 flex-1">
                   <h3 class="text-lg font-semibold"><%= link_to event.title, organization_event_path(@organization, event), class: "text-link" %></h3>
-                  <p class="mt-1 text-sm text-ink-soft"><%= event.starts_at.strftime("%A at %-I:%M %p") %><% if event.location.present? %> · <%= event.location %><% end %></p>
+                  <p class="mt-1 text-sm text-ink-soft"><%= event_time_label(event.starts_at) %><% if event.location.present? %> · <%= event.location %><% end %></p>
                   <p class="mt-2 text-xs font-semibold text-ink-soft"><%= pluralize(event.attending_count, "member") %> attending<% if event.capacity.present? %> · <%= event.capacity %> spots<% end %></p>
                 </div>
                 <% if (rsvp = @dashboard_rsvps[event.id]) %><span class="role-tag"><%= rsvp.status.humanize %></span><% end %>
@@ -120,7 +120,7 @@
                 </time>
                 <div class="min-w-0 flex-1">
                   <h3 class="font-semibold"><%= link_to event.title, organization_event_path(@organization, event), class: "text-link" %></h3>
-                  <p class="mt-1 text-sm text-ink-soft"><%= pluralize(event.attendance_records.count { |record| record.present? || record.late? }, "member") %> present or late · attendance recorded</p>
+                  <p class="mt-1 text-sm text-ink-soft"><%= event_date_label(event.starts_at) %> · <%= pluralize(event.attendance_records.count { |record| record.present? || record.late? }, "member") %> present or late · attendance recorded</p>
                 </div>
               </article>
             <% end %>

@@ -50,7 +50,7 @@
             </time>
             <div class="min-w-0 flex-1">
               <h3 class="font-semibold"><%= link_to record.event.title, organization_event_path(@organization, record.event), class: "text-link" %></h3>
-              <p class="mt-1 text-sm text-ink-soft">RSVP: <%= rsvp&.status&.humanize || "No response" %><% if record.checked_in_at %> · Checked in at <%= record.checked_in_at.strftime("%-I:%M %p") %><% end %></p>
+              <p class="mt-1 text-sm text-ink-soft"><%= event_date_label(record.event.starts_at) %> · RSVP: <%= rsvp&.status&.humanize || "No response" %><% if record.checked_in_at %> · Checked in at <%= record.checked_in_at.strftime("%-I:%M %p") %><% end %></p>
             </div>
             <span class="role-tag"><%= record.status.humanize %></span>
           </article>
